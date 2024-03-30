@@ -23,6 +23,8 @@ namespace BepinControl
 
     public class CrowdDelegates
     {
+        public static System.Random rnd = new System.Random();
+
         public static CrowdResponse Money100(ControlClient client, CrowdRequest req)
         {
 
@@ -830,7 +832,7 @@ namespace BepinControl
 
                             if (shop)
                             {
-                                Singleton<WarningSystem>.Instance.SpawnCustomerSpeech(CustomerSpeechType.THIS_IS_THEFT, c.transform, new string[] { });
+                                //Singleton<WarningSystem>.Instance.SpawnCustomerSpeech(CustomerSpeechType.THIS_IS_THEFT, c.transform, new string[] { });
 
                                 LocalizationEntry localizationEntry = CustomerSpeechType.THIS_IS_THEFT.LocalizationEntry();
                                 if (localizationEntry == null)
@@ -841,7 +843,7 @@ namespace BepinControl
                                 float time = (float)getProperty(Singleton<WarningSystem>.Instance, "m_CustomerSpeechLifetime");
 
                                 CustomerSpeech speechObject = LeanPool.Spawn<CustomerSpeech>(prefab, c.transform, false);
-                                //speechObject.Setup(localizationEntry.TableCollection, localizationEntry.TableEntry, new string[] { });
+                                speechObject.Setup(localizationEntry.TableCollection, localizationEntry.TableEntry, new string[] { });
                                 DOVirtual.DelayedCall(time, delegate
                                 {
                                     LeanPool.Despawn(speechObject, 0f);
@@ -850,11 +852,879 @@ namespace BepinControl
                                 TMP_Text text = (TMP_Text)getProperty(speechObject, "m_SpeechText");
                                 //setProperty(text, "m_text", "This is a robbery!");
                                 text.text = "This is a robbery!";
-                                //setProperty(speechObject, "m_SpeechText", text);
+                                setProperty(speechObject, "m_SpeechText", text);
                             }
 
 
                         }
+                    }
+                    catch (Exception e)
+                    {
+                        TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+                    }
+                });
+            }
+            catch (Exception e)
+            {
+                status = CrowdResponse.Status.STATUS_RETRY;
+                TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+            }
+
+            return new CrowdResponse(req.GetReqID(), status, message);
+        }
+
+
+        public static CrowdResponse Soup(ControlClient client, CrowdRequest req)
+        {
+
+            if (!Singleton<StoreStatus>.Instance.IsOpen) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+            CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
+            string message = "";
+
+            try
+            {
+
+                List<Customer> cust = (List<Customer>)getProperty(Singleton<CustomerManager>.Instance, "m_ActiveCustomers");
+
+                bool found = false;
+                foreach (var c in cust)
+                {
+                    bool shop = (bool)getProperty(c, "m_StartedShopping");
+                    if (shop)
+                    {
+                        found = true;
+                        break;
+                    }
+                    shop = (bool)getProperty(c, "m_InCheckout");
+                    if (shop)
+                    {
+                        found = true;
+                        break;
+                    }
+
+                }
+
+                if (!found) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+
+                TestMod.ActionQueue.Enqueue(() =>
+                {
+                    try
+                    {
+                        foreach (var c in cust)
+                        {
+                            Checkout check;
+                            bool shop = (bool)getProperty(c, "m_StartedShopping");
+                            if (!shop) shop = (bool)getProperty(c, "m_InCheckout");
+
+                            if (shop)
+                            {
+                                //Singleton<WarningSystem>.Instance.SpawnCustomerSpeech(CustomerSpeechType.THIS_IS_THEFT, c.transform, new string[] { });
+
+                                LocalizationEntry localizationEntry = CustomerSpeechType.THIS_IS_THEFT.LocalizationEntry();
+                                if (localizationEntry == null)
+                                {
+                                    return;
+                                }
+                                CustomerSpeech prefab = (CustomerSpeech)getProperty(Singleton<WarningSystem>.Instance, "m_CustomerSpeechPrefab");
+                                float time = (float)getProperty(Singleton<WarningSystem>.Instance, "m_CustomerSpeechLifetime");
+
+                                CustomerSpeech speechObject = LeanPool.Spawn<CustomerSpeech>(prefab, c.transform, false);
+                                speechObject.Setup(localizationEntry.TableCollection, localizationEntry.TableEntry, new string[] { });
+                                DOVirtual.DelayedCall(time, delegate
+                                {
+                                    LeanPool.Despawn(speechObject, 0f);
+                                }, true);
+
+                                TMP_Text text = (TMP_Text)getProperty(speechObject, "m_SpeechText");
+                                //setProperty(text, "m_text", "This is a robbery!");
+                                text.text = "I'm at Soup!";
+                                setProperty(speechObject, "m_SpeechText", text);
+                            }
+
+
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+                    }
+                });
+            }
+            catch (Exception e)
+            {
+                status = CrowdResponse.Status.STATUS_RETRY;
+                TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+            }
+
+            return new CrowdResponse(req.GetReqID(), status, message);
+        }
+
+        public static CrowdResponse Breakfast(ControlClient client, CrowdRequest req)
+        {
+
+            if (!Singleton<StoreStatus>.Instance.IsOpen) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+            CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
+            string message = "";
+
+            try
+            {
+
+                List<Customer> cust = (List<Customer>)getProperty(Singleton<CustomerManager>.Instance, "m_ActiveCustomers");
+
+                bool found = false;
+                foreach (var c in cust)
+                {
+                    bool shop = (bool)getProperty(c, "m_StartedShopping");
+                    if (shop)
+                    {
+                        found = true;
+                        break;
+                    }
+                    shop = (bool)getProperty(c, "m_InCheckout");
+                    if (shop)
+                    {
+                        found = true;
+                        break;
+                    }
+
+                }
+
+                if (!found) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+
+                TestMod.ActionQueue.Enqueue(() =>
+                {
+                    try
+                    {
+                        foreach (var c in cust)
+                        {
+                            Checkout check;
+                            bool shop = (bool)getProperty(c, "m_StartedShopping");
+                            if (!shop) shop = (bool)getProperty(c, "m_InCheckout");
+
+                            if (shop)
+                            {
+                                //Singleton<WarningSystem>.Instance.SpawnCustomerSpeech(CustomerSpeechType.THIS_IS_THEFT, c.transform, new string[] { });
+
+                                LocalizationEntry localizationEntry = CustomerSpeechType.THIS_IS_THEFT.LocalizationEntry();
+                                if (localizationEntry == null)
+                                {
+                                    return;
+                                }
+                                CustomerSpeech prefab = (CustomerSpeech)getProperty(Singleton<WarningSystem>.Instance, "m_CustomerSpeechPrefab");
+                                float time = (float)getProperty(Singleton<WarningSystem>.Instance, "m_CustomerSpeechLifetime");
+
+                                CustomerSpeech speechObject = LeanPool.Spawn<CustomerSpeech>(prefab, c.transform, false);
+                                speechObject.Setup(localizationEntry.TableCollection, localizationEntry.TableEntry, new string[] { });
+                                DOVirtual.DelayedCall(time, delegate
+                                {
+                                    LeanPool.Despawn(speechObject, 0f);
+                                }, true);
+
+                                TMP_Text text = (TMP_Text)getProperty(speechObject, "m_SpeechText");
+                                //setProperty(text, "m_text", "This is a robbery!");
+                                text.text = "It's breakfast time!";
+                                setProperty(speechObject, "m_SpeechText", text);
+                            }
+
+
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+                    }
+                });
+            }
+            catch (Exception e)
+            {
+                status = CrowdResponse.Status.STATUS_RETRY;
+                TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+            }
+
+            return new CrowdResponse(req.GetReqID(), status, message);
+        }
+
+        public static CrowdResponse Boneless(ControlClient client, CrowdRequest req)
+        {
+
+            if (!Singleton<StoreStatus>.Instance.IsOpen) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+            CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
+            string message = "";
+
+            try
+            {
+
+                List<Customer> cust = (List<Customer>)getProperty(Singleton<CustomerManager>.Instance, "m_ActiveCustomers");
+
+                bool found = false;
+                foreach (var c in cust)
+                {
+                    bool shop = (bool)getProperty(c, "m_StartedShopping");
+                    if (shop)
+                    {
+                        found = true;
+                        break;
+                    }
+                    shop = (bool)getProperty(c, "m_InCheckout");
+                    if (shop)
+                    {
+                        found = true;
+                        break;
+                    }
+
+                }
+
+                if (!found) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+
+                TestMod.ActionQueue.Enqueue(() =>
+                {
+                    try
+                    {
+                        foreach (var c in cust)
+                        {
+                            Checkout check;
+                            bool shop = (bool)getProperty(c, "m_StartedShopping");
+                            if (!shop) shop = (bool)getProperty(c, "m_InCheckout");
+
+                            if (shop)
+                            {
+                                //Singleton<WarningSystem>.Instance.SpawnCustomerSpeech(CustomerSpeechType.THIS_IS_THEFT, c.transform, new string[] { });
+
+                                LocalizationEntry localizationEntry = CustomerSpeechType.THIS_IS_THEFT.LocalizationEntry();
+                                if (localizationEntry == null)
+                                {
+                                    return;
+                                }
+                                CustomerSpeech prefab = (CustomerSpeech)getProperty(Singleton<WarningSystem>.Instance, "m_CustomerSpeechPrefab");
+                                float time = (float)getProperty(Singleton<WarningSystem>.Instance, "m_CustomerSpeechLifetime");
+
+                                CustomerSpeech speechObject = LeanPool.Spawn<CustomerSpeech>(prefab, c.transform, false);
+                                speechObject.Setup(localizationEntry.TableCollection, localizationEntry.TableEntry, new string[] { });
+                                DOVirtual.DelayedCall(time, delegate
+                                {
+                                    LeanPool.Despawn(speechObject, 0f);
+                                }, true);
+
+                                TMP_Text text = (TMP_Text)getProperty(speechObject, "m_SpeechText");
+                                //setProperty(text, "m_text", "This is a robbery!");
+                                text.text = "Lemme get that pizza BONELESS";
+                                setProperty(speechObject, "m_SpeechText", text);
+                            }
+
+
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+                    }
+                });
+            }
+            catch (Exception e)
+            {
+                status = CrowdResponse.Status.STATUS_RETRY;
+                TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+            }
+
+            return new CrowdResponse(req.GetReqID(), status, message);
+        }
+
+        public static CrowdResponse LightsOn(ControlClient client, CrowdRequest req)
+        {
+
+            if (Singleton<StoreLightManager>.Instance.TurnOn) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+            CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
+            string message = "";
+
+            try
+            {
+                
+
+                TestMod.ActionQueue.Enqueue(() =>
+                {
+                    try
+                    {
+                        Singleton<StoreLightManager>.Instance.TurnOn = true;
+                    }
+                    catch (Exception e)
+                    {
+                        TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+                    }
+                });
+            }
+            catch (Exception e)
+            {
+                status = CrowdResponse.Status.STATUS_RETRY;
+                TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+            }
+
+            return new CrowdResponse(req.GetReqID(), status, message);
+        }
+
+        public static CrowdResponse LightsOff(ControlClient client, CrowdRequest req)
+        {
+
+            if (!Singleton<StoreLightManager>.Instance.TurnOn) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+            CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
+            string message = "";
+
+            try
+            {
+
+
+                TestMod.ActionQueue.Enqueue(() =>
+                {
+                    try
+                    {
+                        Singleton<StoreLightManager>.Instance.TurnOn = false;
+                    }
+                    catch (Exception e)
+                    {
+                        TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+                    }
+                });
+            }
+            catch (Exception e)
+            {
+                status = CrowdResponse.Status.STATUS_RETRY;
+                TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+            }
+
+            return new CrowdResponse(req.GetReqID(), status, message);
+        }
+
+
+        public static CrowdResponse UpgradeStore(ControlClient client, CrowdRequest req)
+        {
+            int level = Singleton<SaveManager>.Instance.Progression.StoreUpgradeLevel;
+            Section[] sections =  (Section[])getProperty(Singleton<SectionManager>.Instance, "m_Sections");
+
+            if (level >= sections.Length) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+            CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
+            string message = "";
+
+            try
+            {
+
+
+                TestMod.ActionQueue.Enqueue(() =>
+                {
+                    try
+                    {
+                        Singleton<SectionManager>.Instance.UpgradeStore();
+                        callFunc(Singleton<SectionManager>.Instance, "PlayAnimations", null);
+                    }
+                    catch (Exception e)
+                    {
+                        TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+                    }
+                });
+            }
+            catch (Exception e)
+            {
+                status = CrowdResponse.Status.STATUS_RETRY;
+                TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+            }
+
+            return new CrowdResponse(req.GetReqID(), status, message);
+        }
+
+        public static CrowdResponse UpgradeStorage(ControlClient client, CrowdRequest req)
+        {
+            int level = Singleton<SaveManager>.Instance.Storage.StorageLevel;
+            StorageSection[] sections = (StorageSection[])getProperty(Singleton<StorageSectionManager>.Instance, "m_StorageSections");
+
+            if (!Singleton<SaveManager>.Instance.Storage.Purchased) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            if (level >= sections.Length) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+            CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
+            string message = "";
+
+            try
+            {
+
+
+                TestMod.ActionQueue.Enqueue(() =>
+                {
+                    try
+                    {
+                        Singleton<StorageSectionManager>.Instance.UpgradeStore();
+                        callFunc(Singleton<StorageSectionManager>.Instance, "PlayAnimations", null);
+                    }
+                    catch (Exception e)
+                    {
+                        TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+                    }
+                });
+            }
+            catch (Exception e)
+            {
+                status = CrowdResponse.Status.STATUS_RETRY;
+                TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+            }
+
+            return new CrowdResponse(req.GetReqID(), status, message);
+        }
+
+        public static CrowdResponse HireCashier(ControlClient client, CrowdRequest req)
+        {
+            List<CashierSO> cashiers = (List<CashierSO>)getProperty(Singleton<IDManager>.Instance, "m_Cashiers");
+
+            
+
+            CashierSO target = null;
+            foreach(CashierSO c in cashiers)
+            {
+                if (!Singleton<EmployeeManager>.Instance.CashiersData.Contains(c.ID))
+                {
+                    target = c;
+                    break;
+                }
+            }
+
+            if(target==null) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+            CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
+            string message = "";
+
+            try
+            {
+
+
+                TestMod.ActionQueue.Enqueue(() =>
+                {
+                    try
+                    {
+                        Singleton<EmployeeManager>.Instance.HireCashier(target.ID, 0);
+                    }
+                    catch (Exception e)
+                    {
+                        TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+                    }
+                });
+            }
+            catch (Exception e)
+            {
+                status = CrowdResponse.Status.STATUS_RETRY;
+                TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+            }
+
+            return new CrowdResponse(req.GetReqID(), status, message);
+        }
+
+        public static CrowdResponse FireCashier(ControlClient client, CrowdRequest req)
+        {
+            List<CashierSO> cashiers = (List<CashierSO>)getProperty(Singleton<IDManager>.Instance, "m_Cashiers");
+
+
+
+
+            if (Singleton<EmployeeManager>.Instance.CashiersData.Count == 0)
+                return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+            CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
+            string message = "";
+
+            try
+            {
+
+
+                TestMod.ActionQueue.Enqueue(() =>
+                {
+                    try
+                    {
+                        Singleton<EmployeeManager>.Instance.FireCashier(Singleton<EmployeeManager>.Instance.CashiersData[0]);
+                    }
+                    catch (Exception e)
+                    {
+                        TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+                    }
+                });
+            }
+            catch (Exception e)
+            {
+                status = CrowdResponse.Status.STATUS_RETRY;
+                TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+            }
+
+            return new CrowdResponse(req.GetReqID(), status, message);
+        }
+
+        public static CrowdResponse HireRestocker(ControlClient client, CrowdRequest req)
+        {
+            if (!Singleton<SaveManager>.Instance.Storage.Purchased) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            List<RestockerSO> restockers = (List<RestockerSO>)getProperty(Singleton<IDManager>.Instance, "m_Restockers");
+
+            List<int> owned = (List<int>)getProperty(Singleton<EmployeeManager>.Instance, "m_RestockersData");
+
+            RestockerSO target = null;
+            foreach (RestockerSO c in restockers)
+            {
+                if (!owned.Contains(c.ID))
+                {
+                    target = c;
+                    break;
+                }
+            }
+
+            if (target == null) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+            CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
+            string message = "";
+
+            try
+            {
+
+
+                TestMod.ActionQueue.Enqueue(() =>
+                {
+                    try
+                    {
+                        Singleton<EmployeeManager>.Instance.HireRestocker(target.ID, 0);
+                    }
+                    catch (Exception e)
+                    {
+                        TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+                    }
+                });
+            }
+            catch (Exception e)
+            {
+                status = CrowdResponse.Status.STATUS_RETRY;
+                TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+            }
+
+            return new CrowdResponse(req.GetReqID(), status, message);
+        }
+
+        public static CrowdResponse FireRestocker(ControlClient client, CrowdRequest req)
+        {
+            List<int> owned = (List<int>)getProperty(Singleton<EmployeeManager>.Instance, "m_RestockersData");
+
+
+            if (owned.Count == 0)
+                return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+            CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
+            string message = "";
+
+            try
+            {
+
+
+                TestMod.ActionQueue.Enqueue(() =>
+                {
+                    try
+                    {
+                        Singleton<EmployeeManager>.Instance.FireRestocker(owned[0]);
+                    }
+                    catch (Exception e)
+                    {
+                        TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+                    }
+                });
+            }
+            catch (Exception e)
+            {
+                status = CrowdResponse.Status.STATUS_RETRY;
+                TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+            }
+
+            return new CrowdResponse(req.GetReqID(), status, message);
+        }
+
+        public static CrowdResponse RaisePrices(ControlClient client, CrowdRequest req)
+        {
+            List<Pricing> prices = (List<Pricing>)getProperty(Singleton<PriceManager>.Instance, "m_PricesSetByPlayer");
+
+            if (prices.Count == 0) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+            CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
+            string message = "";
+
+            try
+            {
+
+
+                TestMod.ActionQueue.Enqueue(() =>
+                {
+                    try
+                    {
+                        foreach(var price in prices)
+                        {
+                            price.Price *= 1.1f;
+                            Singleton<PriceManager>.Instance.PriceSet(price);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+                    }
+                });
+            }
+            catch (Exception e)
+            {
+                status = CrowdResponse.Status.STATUS_RETRY;
+                TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+            }
+
+            return new CrowdResponse(req.GetReqID(), status, message);
+        }
+
+        public static CrowdResponse LowerPrices(ControlClient client, CrowdRequest req)
+        {
+            List<Pricing> prices = (List<Pricing>)getProperty(Singleton<PriceManager>.Instance, "m_PricesSetByPlayer");
+
+            if (prices.Count == 0) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+            CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
+            string message = "";
+
+            try
+            {
+
+
+                TestMod.ActionQueue.Enqueue(() =>
+                {
+                    try
+                    {
+                        foreach (var price in prices)
+                        {
+                            price.Price *= 0.8f;
+                            if (price.Price < 0.25f) price.Price = 0.25f;
+                            Singleton<PriceManager>.Instance.PriceSet(price);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+                    }
+                });
+            }
+            catch (Exception e)
+            {
+                status = CrowdResponse.Status.STATUS_RETRY;
+                TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+            }
+
+            return new CrowdResponse(req.GetReqID(), status, message);
+        }
+
+        public static CrowdResponse LowerPrice(ControlClient client, CrowdRequest req)
+        {
+            List<Pricing> prices = (List<Pricing>)getProperty(Singleton<PriceManager>.Instance, "m_PricesSetByPlayer");
+
+            if (prices.Count == 0) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+            List<Pricing> target = new List<Pricing>();
+            foreach(var price in prices)
+            {
+                if (price.Price > 0.25) target.Add(price);
+            }
+
+
+            if (target.Count == 0) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+            CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
+            string message = "";
+
+            try
+            {
+
+
+                TestMod.ActionQueue.Enqueue(() =>
+                {
+                    try
+                    {
+                        int r = rnd.Next(target.Count);
+
+                        Pricing price = target[r];
+            
+                        price.Price *= 0.8f;
+                        if (price.Price < 0.25f) price.Price = 0.25f;
+                        Singleton<PriceManager>.Instance.PriceSet(price);
+                        
+                    }
+                    catch (Exception e)
+                    {
+                        TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+                    }
+                });
+            }
+            catch (Exception e)
+            {
+                status = CrowdResponse.Status.STATUS_RETRY;
+                TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+            }
+
+            return new CrowdResponse(req.GetReqID(), status, message);
+        }
+
+        public static CrowdResponse RaisePrice(ControlClient client, CrowdRequest req)
+        {
+            List<Pricing> target = (List<Pricing>)getProperty(Singleton<PriceManager>.Instance, "m_PricesSetByPlayer");
+
+            if (target.Count == 0) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+            CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
+            string message = "";
+
+            try
+            {
+
+
+                TestMod.ActionQueue.Enqueue(() =>
+                {
+                    try
+                    {
+                        int r = rnd.Next(target.Count);
+
+                        Pricing price = target[r];
+
+                        price.Price *= 1.1f;
+                        Singleton<PriceManager>.Instance.PriceSet(price);
+
+                    }
+                    catch (Exception e)
+                    {
+                        TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+                    }
+                });
+            }
+            catch (Exception e)
+            {
+                status = CrowdResponse.Status.STATUS_RETRY;
+                TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+            }
+
+            return new CrowdResponse(req.GetReqID(), status, message);
+        }
+
+        public static CrowdResponse RemoveItem(ControlClient client, CrowdRequest req)
+        {
+
+            CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
+            string message = "";
+
+            try
+            {
+                 List<Display> displays = (List<Display>)getProperty(Singleton<DisplayManager>.Instance, "m_Displays");
+
+                TestMod.mls.LogInfo($"displays: {displays.Count}");
+
+                List<DisplaySlot> target = new List<DisplaySlot>();
+
+                foreach (var display in displays)
+                {
+                    DisplaySlot[] slots = (DisplaySlot[])getProperty(display, "m_DisplaySlots");
+
+                    TestMod.mls.LogInfo($"slots: {slots.Length}");
+
+                    foreach (var slot in slots)
+                    {
+                        ItemQuantity data = (ItemQuantity)getProperty(slot, "m_ProductCountData"); 
+                        
+                        if (data == null || !data.HasProduct || data.FirstItemCount <= 0)
+                        {
+
+                        }
+                        else
+                        {
+                            target.Add(slot);
+                        }
+                    }
+                }
+
+                if (target.Count == 0) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+
+                TestMod.ActionQueue.Enqueue(() =>
+                {
+                    try
+                    {
+                        int r = rnd.Next(target.Count);
+
+                        DisplaySlot slot = target[r];
+
+                        Product prod = slot.TakeProductFromDisplay();
+                        LeanPool.Despawn(prod, 0f);
+
+                    }
+                    catch (Exception e)
+                    {
+                        TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+                    }
+                });
+            }
+            catch (Exception e)
+            {
+                status = CrowdResponse.Status.STATUS_RETRY;
+                TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+            }
+
+            return new CrowdResponse(req.GetReqID(), status, message);
+        }
+
+        public static CrowdResponse AddItem(ControlClient client, CrowdRequest req)
+        {
+
+            CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
+            string message = "";
+
+            try
+            {
+                List<Display> displays = (List<Display>)getProperty(Singleton<DisplayManager>.Instance, "m_Displays");
+
+                TestMod.mls.LogInfo($"displays: {displays.Count}");
+
+                List<DisplaySlot> target = new List<DisplaySlot>();
+
+                foreach (var display in displays)
+                {
+                    DisplaySlot[] slots = (DisplaySlot[])getProperty(display, "m_DisplaySlots");
+
+                    TestMod.mls.LogInfo($"slots: {slots.Length}");
+
+                    foreach (var slot in slots)
+                    {
+                        ItemQuantity data = (ItemQuantity)getProperty(slot, "m_ProductCountData");
+
+                        if (data == null || !data.HasLabel || slot.Full)
+                        {
+
+                        }
+                        else
+                        {
+                            target.Add(slot);
+                        }
+                    }
+                }
+
+                if (target.Count == 0) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+
+                TestMod.ActionQueue.Enqueue(() =>
+                {
+                    try
+                    {
+                        int r = rnd.Next(target.Count);
+
+                        DisplaySlot slot = target[r];
+                        ItemQuantity data = (ItemQuantity)getProperty(slot, "m_ProductCountData");
+
+                        ProductSO productSO = Singleton<IDManager>.Instance.ProductSO(data.FirstItemID);
+
+                        Product product = LeanPool.Spawn<Product>(productSO.ProductPrefab, slot.transform, false);
+                        slot.AddProduct(data.FirstItemID, product);
                     }
                     catch (Exception e)
                     {

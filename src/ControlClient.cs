@@ -94,6 +94,28 @@ namespace BepinControl
                 {"despawn", CrowdDelegates.DespawnCustomer},
                 {"theft", CrowdDelegates.Theft},
                 {"robbery", CrowdDelegates.Robbery},
+                {"soup", CrowdDelegates.Soup},
+                {"boneless", CrowdDelegates.Boneless},
+                {"breakfast", CrowdDelegates.Breakfast},
+
+                {"lightson", CrowdDelegates.LightsOn},
+                {"lightsoff", CrowdDelegates.LightsOff},
+
+                {"upgrade", CrowdDelegates.UpgradeStore},
+                {"upgradeb", CrowdDelegates.UpgradeStorage},
+
+                {"hirecashier", CrowdDelegates.HireCashier},
+                {"firecashier", CrowdDelegates.FireCashier},
+                {"hirerestocker", CrowdDelegates.HireRestocker},
+                {"firerestocker", CrowdDelegates.FireRestocker},
+
+                {"pricesup", CrowdDelegates.RaisePrices},
+                {"pricesdown", CrowdDelegates.LowerPrices},
+                {"priceup", CrowdDelegates.RaisePrice},
+                {"pricedown", CrowdDelegates.LowerPrice},
+
+                {"removeitem", CrowdDelegates.RemoveItem},
+                {"additem", CrowdDelegates.AddItem},
             };
         }
 
