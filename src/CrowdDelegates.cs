@@ -34,49 +34,49 @@ namespace BepinControl
             try
             {
 
-                
-                    TestMod.ActionQueue.Enqueue(() =>
+
+                TestMod.ActionQueue.Enqueue(() =>
+                {
+                    try
                     {
-                        try
+                        Singleton<MoneyManager>.Instance.MoneyTransition(100.0f, MoneyManager.TransitionType.CHECKOUT_INCOME);
+
+                        //Time.timeScale = 10.0f;
+
+                        //Singleton<WarningSystem>.Instance.SpawnCustomerSpeech(CustomerSpeechType.THIS_IS_THEFT, Singleton<PlayerController>.Instance.transform, new string[] { });
+
+
+                        /*
+                        CustomerSpeech prefab = (CustomerSpeech)getProperty(Singleton<WarningSystem>.Instance, "m_CustomerSpeechPrefab");
+
+                        TestMod.mls.LogInfo($"prefab: {prefab}");
+
+
+                        LocalizationEntry localizationEntry = new LocalizationEntry();
+                        localizationEntry.TableEntry = "Billy Mays here for OxyClean!";
+
+                        Transform parent = Singleton<PlayerController>.Instance.transform;
+
+                        CustomerSpeech speechObject = LeanPool.Spawn<CustomerSpeech>(prefab, parent, false);
+                        speechObject.Setup(localizationEntry.TableCollection, localizationEntry.TableEntry, new string[] { });
+
+                        LocalizeStringEvent ev = (LocalizeStringEvent)getProperty(speechObject, "m_LocalizeStringEvent");
+
+                        setProperty(ev.StringReference, "m_CurrentStringChangedValue", localizationEntry.TableEntry);
+                        setProperty(speechObject, "m_LocalizeStringEvent", ev);
+
+                        /*DOVirtual.DelayedCall(10.0f, delegate
                         {
-                            Singleton<MoneyManager>.Instance.MoneyTransition(100.0f, MoneyManager.TransitionType.CHECKOUT_INCOME);
+                            LeanPool.Despawn(speechObject, 0f);
+                        }, true);*/
 
-                            //Time.timeScale = 10.0f;
+                    }
+                    catch (Exception e)
+                    {
+                        TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+                    }
+                });
 
-                            //Singleton<WarningSystem>.Instance.SpawnCustomerSpeech(CustomerSpeechType.THIS_IS_THEFT, Singleton<PlayerController>.Instance.transform, new string[] { });
-                            
-
-                            /*
-                            CustomerSpeech prefab = (CustomerSpeech)getProperty(Singleton<WarningSystem>.Instance, "m_CustomerSpeechPrefab");
-
-                            TestMod.mls.LogInfo($"prefab: {prefab}");
-
-
-                            LocalizationEntry localizationEntry = new LocalizationEntry();
-                            localizationEntry.TableEntry = "Billy Mays here for OxyClean!";
-
-                            Transform parent = Singleton<PlayerController>.Instance.transform;
-
-                            CustomerSpeech speechObject = LeanPool.Spawn<CustomerSpeech>(prefab, parent, false);
-                            speechObject.Setup(localizationEntry.TableCollection, localizationEntry.TableEntry, new string[] { });
-
-                            LocalizeStringEvent ev = (LocalizeStringEvent)getProperty(speechObject, "m_LocalizeStringEvent");
-
-                            setProperty(ev.StringReference, "m_CurrentStringChangedValue", localizationEntry.TableEntry);
-                            setProperty(speechObject, "m_LocalizeStringEvent", ev);
-
-                            /*DOVirtual.DelayedCall(10.0f, delegate
-                            {
-                                LeanPool.Despawn(speechObject, 0f);
-                            }, true);*/
-
-                        }
-                        catch (Exception e)
-                        {
-                            TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
-                        }
-                    });
-                
             }
             catch (Exception e)
             {
@@ -153,7 +153,7 @@ namespace BepinControl
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
-            if(!Singleton<MoneyManager>.Instance.HasMoney(100.0f))
+            if (!Singleton<MoneyManager>.Instance.HasMoney(100.0f))
                 return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, message);
 
             try
@@ -252,7 +252,7 @@ namespace BepinControl
             DayCycleManager dm = Singleton<DayCycleManager>.Instance;
 
             if (!Singleton<StoreStatus>.Instance.IsOpen) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
-            if (dm.CurrentHour>=11 && !dm.AM) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            if (dm.CurrentHour >= 11 && !dm.AM) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
 
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
@@ -268,7 +268,7 @@ namespace BepinControl
 
                         //float s = (float)getProperty(dm, "m_GameTimeScale");
 
-                        
+
 
                         float t = (float)getProperty(dm, "m_CurrentTimeInFloat");
                         t += 3600.0f;
@@ -326,15 +326,17 @@ namespace BepinControl
                         setProperty(dm, "m_DayPercentage", t / h);
 
                         int hour = (int)getProperty(dm, "m_CurrentTimeInHours");
-                        
-                        if(hour == 1)
+
+                        if (hour == 1)
                         {
                             hour = 12;
-                        } else if(hour == 12)
+                        }
+                        else if (hour == 12)
                         {
                             hour = 11;
                             setProperty(dm, "m_AM", true);
-                        } else
+                        }
+                        else
                         {
                             hour--;
                         }
@@ -347,15 +349,15 @@ namespace BepinControl
                         {
                             onFullHour();
                         }
-                    
+
 
                         Action onTimeChanged = dm.OnTimeChanged;
                         if (onTimeChanged != null)
                             onTimeChanged();
 
 
-                    //callFunc(dm, "UpdateGameTime", null);
-                    callFunc(dm, "UpdateLighting", null);
+                        //callFunc(dm, "UpdateGameTime", null);
+                        callFunc(dm, "UpdateLighting", null);
 
                     }
                     catch (Exception e)
@@ -378,7 +380,7 @@ namespace BepinControl
             DayCycleManager dm = Singleton<DayCycleManager>.Instance;
 
             if (Singleton<StoreStatus>.Instance.IsOpen) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
-            
+
 
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
@@ -578,7 +580,7 @@ namespace BepinControl
                 {
                     return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, message);
                 }
-                
+
                 TestMod.ActionQueue.Enqueue(() =>
                 {
                     try
@@ -604,7 +606,7 @@ namespace BepinControl
 
         public static CrowdResponse SpawnCustomer(ControlClient client, CrowdRequest req)
         {
-            
+
             if (!Singleton<StoreStatus>.Instance.IsOpen) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
 
 
@@ -660,19 +662,29 @@ namespace BepinControl
                 bool found = false;
                 foreach (var c in cust)
                 {
-                    bool shop = (bool)getProperty(c, "m_StartedShopping");
-                    if (shop)
+
+                    bool isHandingPayment = (bool)getProperty(c, "m_HandingPayment");
+                    bool isPayingViaCard = (bool)getProperty(c, "m_PaymentViaCreditCard");
+
+                    Checkout checkingOut;
+                    checkingOut = (Checkout)getProperty(c, "m_Checkout");
+                    bool isCheckingOut = checkingOut ? true : false;
+
+                    bool isInCheckout = (bool)getProperty(c, "m_InCheckout");
+                    if (isInCheckout && !isCheckingOut && !isHandingPayment && !isPayingViaCard)
                     {
                         found = true;
                         break;
                     }
-                    shop = (bool)getProperty(c, "m_InCheckout");
-                    if (shop)
+
+                    bool isShopping = (bool)getProperty(c, "m_StartedShopping");
+
+                    if (isShopping && !isCheckingOut && !isHandingPayment && !isPayingViaCard)
                     {
                         found = true;
                         break;
                     }
-                    
+
                 }
 
                 if (!found) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
@@ -684,24 +696,24 @@ namespace BepinControl
                     {
                         foreach (var c in cust)
                         {
+
                             Checkout check;
                             bool shop = (bool)getProperty(c, "m_StartedShopping");
-                            if (shop)
+                            check = (Checkout)getProperty(c, "m_Checkout");
+
+                            if (shop && !check)
                             {
-                                check = (Checkout)getProperty(c, "m_Checkout");
-                                if (check) check.Unsubscribe(c);
+                                //if (check) check.Unsubscribe(c);
                                 Singleton<CustomerGenerator>.Instance.DeSpawn(c);
                                 return;
                             }
                             shop = (bool)getProperty(c, "m_InCheckout");
-                            if (shop)
+                            if (shop && !check)
                             {
-                                check = (Checkout)getProperty(c, "m_Checkout");
-                                if (check) check.Unsubscribe(c);
+                                //if (check) check.Unsubscribe(c);
                                 Singleton<CustomerGenerator>.Instance.DeSpawn(c);
                                 return;
                             }
-
 
                         }
                     }
@@ -748,7 +760,7 @@ namespace BepinControl
                         found = true;
                         break;
                     }
-                    
+
                 }
 
                 if (!found) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
@@ -768,7 +780,7 @@ namespace BepinControl
                             {
                                 Singleton<WarningSystem>.Instance.SpawnCustomerSpeech(CustomerSpeechType.THIS_IS_THEFT, c.transform, new string[] { });
                             }
-                            
+
                         }
                     }
                     catch (Exception e)
@@ -828,7 +840,7 @@ namespace BepinControl
                         {
                             Checkout check;
                             bool shop = (bool)getProperty(c, "m_StartedShopping");
-                            if(!shop) shop = (bool)getProperty(c, "m_InCheckout");
+                            if (!shop) shop = (bool)getProperty(c, "m_InCheckout");
 
                             if (shop)
                             {
@@ -1145,7 +1157,7 @@ namespace BepinControl
 
             try
             {
-                
+
 
                 TestMod.ActionQueue.Enqueue(() =>
                 {
@@ -1205,7 +1217,7 @@ namespace BepinControl
         public static CrowdResponse UpgradeStore(ControlClient client, CrowdRequest req)
         {
             int level = Singleton<SaveManager>.Instance.Progression.StoreUpgradeLevel;
-            Section[] sections =  (Section[])getProperty(Singleton<SectionManager>.Instance, "m_Sections");
+            Section[] sections = (Section[])getProperty(Singleton<SectionManager>.Instance, "m_Sections");
 
             if (level >= sections.Length) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
 
@@ -1279,10 +1291,10 @@ namespace BepinControl
         {
             List<CashierSO> cashiers = (List<CashierSO>)getProperty(Singleton<IDManager>.Instance, "m_Cashiers");
 
-            
+
 
             CashierSO target = null;
-            foreach(CashierSO c in cashiers)
+            foreach (CashierSO c in cashiers)
             {
                 if (!Singleton<EmployeeManager>.Instance.CashiersData.Contains(c.ID))
                 {
@@ -1291,7 +1303,7 @@ namespace BepinControl
                 }
             }
 
-            if(target==null) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            if (target == null) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
 
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
@@ -1459,7 +1471,7 @@ namespace BepinControl
                 {
                     try
                     {
-                        foreach(var price in prices)
+                        foreach (var price in prices)
                         {
                             price.Price *= 1.1f;
                             Singleton<PriceManager>.Instance.PriceSet(price);
@@ -1526,7 +1538,7 @@ namespace BepinControl
             if (prices.Count == 0) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
 
             List<Pricing> target = new List<Pricing>();
-            foreach(var price in prices)
+            foreach (var price in prices)
             {
                 if (price.Price > 0.25) target.Add(price);
             }
@@ -1548,11 +1560,11 @@ namespace BepinControl
                         int r = rnd.Next(target.Count);
 
                         Pricing price = target[r];
-            
+
                         price.Price *= 0.8f;
                         if (price.Price < 0.25f) price.Price = 0.25f;
                         Singleton<PriceManager>.Instance.PriceSet(price);
-                        
+
                     }
                     catch (Exception e)
                     {
@@ -1617,7 +1629,7 @@ namespace BepinControl
 
             try
             {
-                 List<Display> displays = (List<Display>)getProperty(Singleton<DisplayManager>.Instance, "m_Displays");
+                List<Display> displays = (List<Display>)getProperty(Singleton<DisplayManager>.Instance, "m_Displays");
 
                 TestMod.mls.LogInfo($"displays: {displays.Count}");
 
@@ -1631,8 +1643,8 @@ namespace BepinControl
 
                     foreach (var slot in slots)
                     {
-                        ItemQuantity data = (ItemQuantity)getProperty(slot, "m_ProductCountData"); 
-                        
+                        ItemQuantity data = (ItemQuantity)getProperty(slot, "m_ProductCountData");
+
                         if (data == null || !data.HasProduct || data.FirstItemCount <= 0)
                         {
 
@@ -1746,7 +1758,7 @@ namespace BepinControl
             int dur = 30;
             if (req.duration > 0) dur = req.duration / 1000;
 
-            if(!Singleton<StoreStatus>.Instance.IsOpen) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            if (!Singleton<StoreStatus>.Instance.IsOpen) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
 
             if (TimedThread.isRunning(TimedType.GAME_ULTRA_SLOW)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
             if (TimedThread.isRunning(TimedType.GAME_SLOW)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
