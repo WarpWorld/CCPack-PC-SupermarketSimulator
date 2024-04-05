@@ -495,6 +495,7 @@ namespace BepinControl
             try
             {
                 PlayerObjectHolder hold = Singleton<PlayerObjectHolder>.Instance;
+                PlayerInteraction player = Singleton<PlayerInteraction>.Instance;
 
                 GameObject obj = (GameObject)getProperty(hold, "m_CurrentObject");
 
@@ -535,6 +536,8 @@ namespace BepinControl
                     try
                     {
                         Singleton<PlayerObjectHolder>.Instance.ThrowObject();
+                        player.onThrow();
+                        
                     }
                     catch (Exception e)
                     {
@@ -561,6 +564,7 @@ namespace BepinControl
             try
             {
                 PlayerObjectHolder hold = Singleton<PlayerObjectHolder>.Instance;
+                PlayerInteraction player = Singleton<PlayerInteraction>.Instance;
 
                 GameObject obj = (GameObject)getProperty(hold, "m_CurrentObject");
 
@@ -581,11 +585,17 @@ namespace BepinControl
                     return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, message);
                 }
 
+
+
                 TestMod.ActionQueue.Enqueue(() =>
                 {
                     try
                     {
                         Singleton<PlayerObjectHolder>.Instance.DropObject();
+                        player.onDrop();
+                        player.onDisable();
+
+
                     }
                     catch (Exception e)
                     {
