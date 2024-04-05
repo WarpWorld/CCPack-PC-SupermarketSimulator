@@ -41,9 +41,9 @@ namespace BepinControl
                         {
                             Singleton<MoneyManager>.Instance.MoneyTransition(100.0f, MoneyManager.TransitionType.CHECKOUT_INCOME);
 
-                            Time.timeScale = 10.0f;
+                            //Time.timeScale = 10.0f;
 
-                            Singleton<WarningSystem>.Instance.SpawnCustomerSpeech(CustomerSpeechType.THIS_IS_THEFT, Singleton<PlayerController>.Instance.transform, new string[] { });
+                            //Singleton<WarningSystem>.Instance.SpawnCustomerSpeech(CustomerSpeechType.THIS_IS_THEFT, Singleton<PlayerController>.Instance.transform, new string[] { });
                             
 
                             /*
