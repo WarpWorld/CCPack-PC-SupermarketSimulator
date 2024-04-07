@@ -1,4 +1,5 @@
 ﻿
+using MyBox;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -7,17 +8,46 @@ using UnityEngine;
 
 namespace BepinControl
 {
+
+
     public enum TimedType
     {
         GAME_ULTRA_SLOW,
         GAME_SLOW,
         GAME_FAST,
-        GAME_ULTRA_FAST
+        GAME_ULTRA_FAST,
+        HIGH_FOV,
+        LOW_FOV,
+        SET_LANGUAGE,
+        FORCE_CARD,
+        FORCE_CASH,
+        FORCE_MATH
     }
+
+
     public class Timed
     {
         public TimedType type;
         float old;
+
+        
+
+        private Dictionary<string, object> customVariables = new Dictionary<string, object>();
+
+        public T GetCustomVariable<T>(string key)
+        {
+            if (customVariables.TryGetValue(key, out object value))
+            {
+                return (T)value;
+            }
+
+            throw new KeyNotFoundException($"Custom variable with key '{key}' not found.");
+        }
+
+        public void SetCustomVariables(Dictionary<string, object> variables)
+        {
+            customVariables = variables;
+        }
 
         public Timed(TimedType t) { 
             type = t;
@@ -33,6 +63,7 @@ namespace BepinControl
 
         public void removeEffect()
         {
+
             switch (type)
             {
                 case TimedType.GAME_ULTRA_SLOW:
@@ -43,6 +74,57 @@ namespace BepinControl
                         TestMod.ActionQueue.Enqueue(() =>
                         {
                             Time.timeScale = 1.0f;
+                        });
+                        break;
+                    }
+                case TimedType.LOW_FOV:
+                case TimedType.HIGH_FOV:
+                    {
+                        TestMod.ActionQueue.Enqueue(() =>
+                        {
+                            SaveManager saveManager = Singleton<SaveManager>.Instance;
+                            CameraSettings camera = Singleton<CameraSettings>.Instance;
+                            camera.SetFOV(saveManager.Settings.FOV);
+                        });
+                        break;
+                    }
+                case TimedType.SET_LANGUAGE:
+                    {
+
+                        TestMod.ActionQueue.Enqueue(() =>
+                        {
+                            // Doesn't always seem to revert, not 100% sure. Might be frame/tick related?
+                            SettingsMenuManager settingsMenuManager = Singleton<SettingsMenuManager>.Instance;
+                            bool isChangingLanguage = (bool)CrowdDelegates.getProperty(settingsMenuManager, "m_ChangingLocale");
+                            int oldLanguage = GetCustomVariable<int>("oldLanguage");
+                            isChangingLanguage = false;
+                            settingsMenuManager.SetLanguage(oldLanguage);
+                        });
+                        break;
+                    }
+                case TimedType.FORCE_CASH:
+                    {
+                        TestMod.ActionQueue.Enqueue(() =>
+                        {
+                            TestMod.ForceUseCredit = false;
+                            TestMod.ForceUseCash = false;
+                        });
+                        break;
+                    }
+                case TimedType.FORCE_CARD:
+                    {
+                        TestMod.ActionQueue.Enqueue(() =>
+                        {
+                            TestMod.ForceUseCash = false;
+                            TestMod.ForceUseCredit = false;
+                        });
+                        break;
+                    }
+                case TimedType.FORCE_MATH:
+                    {
+                        TestMod.ActionQueue.Enqueue(() =>
+                        {
+                            TestMod.ForceMath = false;
                         });
                         break;
                     }
@@ -88,6 +170,62 @@ namespace BepinControl
                         });
                         break;
                     }
+                case TimedType.HIGH_FOV:
+                    {
+                        TestMod.ActionQueue.Enqueue(() =>
+                        {
+                            CameraSettings camera = Singleton<CameraSettings>.Instance;
+                            camera.SetFOV(140f);
+                        });
+                        break;
+                    }
+                case TimedType.LOW_FOV:
+                    {
+                        TestMod.ActionQueue.Enqueue(() =>
+                        {
+                            CameraSettings camera = Singleton<CameraSettings>.Instance;
+                            camera.SetFOV(30f);
+                        });
+                        break;
+                    }
+                case TimedType.SET_LANGUAGE:
+                    {
+                        TestMod.ActionQueue.Enqueue(() =>
+                        {
+                            int newLanguage = GetCustomVariable<int>("newLanguage");
+                            SettingsMenuManager settingsMenuManager = Singleton<SettingsMenuManager>.Instance;
+                            bool isChangingLanguage = (bool)CrowdDelegates.getProperty(settingsMenuManager, "m_ChangingLocale");
+                            isChangingLanguage = false;
+                            settingsMenuManager.SetLanguage(newLanguage);
+                        });
+                        break;
+                    }
+                case TimedType.FORCE_CASH:
+                    {
+                        TestMod.ActionQueue.Enqueue(() =>
+                        {
+                            TestMod.ForceUseCredit = false;
+                            TestMod.ForceUseCash = true;
+                        });
+                        break;
+                    }
+                case TimedType.FORCE_CARD:
+                    {
+                        TestMod.ActionQueue.Enqueue(() =>
+                        {
+                            TestMod.ForceUseCash = false;
+                            TestMod.ForceUseCredit = true;
+                        });
+                        break;
+                    }
+                case TimedType.FORCE_MATH:
+                    {
+                        TestMod.ActionQueue.Enqueue(() =>
+                        {
+                            TestMod.ForceMath = true;
+                        });
+                        break;
+                    }
 
             }
         }
@@ -117,7 +255,9 @@ namespace BepinControl
             foreach (var thread in threads)
             {
                 if (!thread.paused)
-                    thread.effect.tick();
+                {
+                   thread.effect.tick();
+                }
             }
         }
         public static void addTime(int duration)
@@ -186,9 +326,9 @@ namespace BepinControl
             {
                 TestMod.mls.LogInfo(e.ToString());
             }
-        }    
-        
-        public TimedThread(int id, TimedType type, int duration)
+        }
+
+        public TimedThread(int id, TimedType type, int duration, Dictionary<string, object> customVariables = null)
         {
             this.effect = new Timed(type);
             this.duration = duration;
@@ -196,6 +336,12 @@ namespace BepinControl
             this.id = id;
             paused = false;
 
+            if (customVariables == null)
+            {
+                customVariables = new Dictionary<string, object>();
+            }
+
+            this.effect.SetCustomVariables(customVariables);
             try
             {
                 lock (threads)

@@ -32,6 +32,20 @@ namespace CrowdControl.Games.Packs.SupermarketSimulator
                 new Effect("Game Speed: Fast", "fast") { Duration = 30, Category = "Game Speed"},
                 new Effect("Game Speed: Ultra Fast", "ultrafast") { Duration = 15, Category = "Game Speed"},
 
+                new Effect("High FOV", "highfov") { Duration = 30, Category = "Game FOV"},
+                new Effect("Low FOV", "lowfov") { Duration = 30, Category = "Game FOV"},
+
+                new Effect("Set Language to English", "setlanguage_english") { Duration = 5, Category = "Game Language"},
+                new Effect("Set Language to German", "setlanguage_german") { Duration = 5, Category = "Game Language"},
+                new Effect("Set Language to French", "setlanguage_french") { Duration = 5, Category = "Game Language"},
+                new Effect("Set Language to Italiano", "setlanguage_italiano") { Duration = 5, Category = "Game Language"},
+                new Effect("Set Language to Espanol", "setlanguage_espanol") { Duration = 5, Category = "Game Language"},
+                new Effect("Set Language to Portugal", "setlanguage_portugal") { Duration = 5, Category = "Game Language"},
+                new Effect("Set Language to Brazil", "setlanguage_brazil") { Duration = 5, Category = "Game Language"},
+                new Effect("Set Language to Nederlands", "setlanguage_nederlands") { Duration = 5, Category = "Game Language"},
+                new Effect("Set Language to Turkce", "setlanguage_turkce") { Duration = 5, Category = "Game Language"},
+
+
                 new Effect("Advance Time One Hour", "plushour") { Category = "Time"},
                 new Effect("Rollback Time One Hour", "minushour") { Category = "Time"},
 
@@ -54,6 +68,36 @@ namespace CrowdControl.Games.Packs.SupermarketSimulator
                 new Effect("Deliver Toilet Paper", "box_toilet") { Category = "Boxes"},
                 new Effect("Deliver Cat Food", "box_cat") { Category = "Boxes"},
                 new Effect("Deliver Lasagna", "box_lasag") { Category = "Boxes"},
+
+
+
+                new Effect("Deliver Cereal", "playerbox_cereal") { Category = "Player Boxes"},
+                new Effect("Deliver Bread", "playerbox_bread") { Category = "Player Boxes"},
+                new Effect("Deliver Milk", "playerbox_milk") { Category = "Player Boxes"},
+                new Effect("Deliver Soda", "playerbox_soda") { Category = "Player Boxes"},
+                new Effect("Deliver Eggs", "playerbox_eggs") { Category = "Player Boxes"},
+                new Effect("Deliver Salmon", "playerbox_salmon") { Category = "Player Boxes"},
+                new Effect("Deliver Mayo", "playerbox_mayo") { Category = "Player Boxes"},
+                new Effect("Deliver Whiskey", "playerbox_whiskey") { Category = "Player Boxes"},
+                new Effect("Deliver Books", "playerbox_book") { Category = "Player Boxes"},
+                new Effect("Deliver Toilet Paper", "playerbox_toilet") { Category = "Player Boxes"},
+                new Effect("Deliver Cat Food", "playerbox_cat") { Category = "Player Boxes"},
+                new Effect("Deliver Lasagna", "playerbox_lasag") { Category = "Player Boxes"},
+
+
+
+                new Effect("Teleport Street", "teleport_street") { Category = "Teleport"},
+                new Effect("Teleport Across Street", "teleport_acrossstreet") { Category = "Teleport"},
+                new Effect("Teleport Store", "teleport_store") { Category = "Teleport"},
+
+
+                new Effect("Force Cash Only", "forcepayment_cash") { Duration = 60, Category = "Payments"},
+                new Effect("Force Card Only", "forcepayment_card") { Duration = 60, Category = "Payments"},
+
+                new Effect("Force Math", "forcemath") { Description = "Forces the player to do the math for correct change!", Duration = 60, Category = "Math"},
+
+                // new Effect("Close Checkout", "closecheckout") { Category = "Checkout"},
+                // new Effect("Open Checkout", "opencheckout") { Category = "Checkout"},
 
                 new Effect("Drop Held Item", "drop") { Category = "Held Items"},
                 new Effect("Throw Held Item", "throw") { Category = "Held Items"},

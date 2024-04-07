@@ -28,6 +28,7 @@ using BepinControl;
 using System.Runtime.InteropServices;
 using System.Runtime.ConstrainedExecution;
 using System.Security.Cryptography;
+using TMPro;
 
 namespace BepinControl
 {
@@ -46,16 +47,21 @@ namespace BepinControl
         internal static TestMod Instance = null;
         private ControlClient client = null;
 
+        public static bool ForceUseCash = false;
+        public static bool ForceUseCredit = false;
+        public static bool ForceMath = false;
+
+
         void Awake()
         {
-            
+
 
             Instance = this;
             mls = BepInEx.Logging.Logger.CreateLogSource("Crowd Control");
 
             mls.LogInfo($"Loaded {modGUID}. Patching.");
             harmony.PatchAll(typeof(TestMod));
-
+            harmony.PatchAll();
             mls.LogInfo($"Initializing Crowd Control");
 
             try
@@ -74,7 +80,10 @@ namespace BepinControl
 
             mls = Logger;
         }
-        
+
+
+
+
 
         public static Queue<Action> ActionQueue = new Queue<Action>();
 
@@ -89,7 +98,7 @@ namespace BepinControl
                 action.Invoke();
             }
 
-            lock(TimedThread.threads)
+            lock (TimedThread.threads)
             {
                 foreach (var thread in TimedThread.threads)
                 {
@@ -99,7 +108,74 @@ namespace BepinControl
             }
 
         }
-        
+
+
+        [HarmonyPatch(typeof(Customer), "DoPayment")]
+        public static class Customer_DoPayment_Patch
+        {
+            public static void Prefix(ref bool viaCreditCard)
+            {
+                if (ForceUseCash)
+                {
+                    viaCreditCard = false;
+                    return;
+                }
+                if (ForceUseCredit)
+                {
+                    viaCreditCard = true;
+                    return;
+                }
+
+            }
+        }
+
+
+        [HarmonyPatch(typeof(CashRegisterScreen))] // Target the CashRegisterScreen class
+        [HarmonyPatch("CorrectChangeText", MethodType.Setter)] // Target the setter of the CorrectChangeText property
+        public static class CorrectChangeTextPatch
+        {
+            static bool Prefix(CashRegisterScreen __instance)
+            {
+                // Access the TMP_Text component directly and set its text
+                TMP_Text textComponent = (TMP_Text)AccessTools.Field(__instance.GetType(), "m_CorrectChangeText").GetValue(__instance);
+                if (textComponent != null && ForceMath)
+                { 
+                    textComponent.text = "DO THE MATH";
+                    return false;
+                }
+
+                return textComponent; 
+            }
+        }
+
+
+        [HarmonyPatch(typeof(Checkout), "ChangeState")]
+        public static class Checkout_ChangeState_Patch
+        {
+
+            public static void Prefix(ref Checkout.State newState)
+            {
+
+                if (ForceUseCredit || ForceUseCash)
+                {
+                    if (newState == Checkout.State.CUSTOMER_HANDING_CASH || newState == Checkout.State.CUSTOMER_HANDING_CARD)
+                    {
+                        if (ForceUseCredit) newState = Checkout.State.CUSTOMER_HANDING_CARD;
+                        if (ForceUseCash) newState = Checkout.State.CUSTOMER_HANDING_CASH;
+                    }
+
+                    if (newState == Checkout.State.PAYMENT_CASH || newState == Checkout.State.PAYMENT_CREDIT_CARD)
+                    {
+                        if (ForceUseCash) newState = Checkout.State.PAYMENT_CASH;
+                        if (ForceUseCredit) newState = Checkout.State.PAYMENT_CREDIT_CARD;
+                    }
+                }
+
+
+            }
+        }
+
+
     }
-        
+
 }

@@ -68,6 +68,19 @@ namespace BepinControl
                 {"fast", CrowdDelegates.SpeedFast},
                 {"ultrafast", CrowdDelegates.SpeedUltraFast},
 
+                {"highfov", CrowdDelegates.HighFOV},
+                {"lowfov", CrowdDelegates.LowFOV},
+
+                {"setlanguage_english", CrowdDelegates.SetLanguage},
+                {"setlanguage_german", CrowdDelegates.SetLanguage},
+                {"setlanguage_french", CrowdDelegates.SetLanguage},
+                {"setlanguage_italiano", CrowdDelegates.SetLanguage},
+                {"setlanguage_espanol", CrowdDelegates.SetLanguage},
+                {"setlanguage_portugal", CrowdDelegates.SetLanguage},
+                {"setlanguage_brazil", CrowdDelegates.SetLanguage},
+                {"setlanguage_nederlands", CrowdDelegates.SetLanguage},
+                {"setlanguage_turkce", CrowdDelegates.SetLanguage},
+
                 {"plushour", CrowdDelegates.PlusHour},
                 {"minushour", CrowdDelegates.MinusHour},
 
@@ -86,6 +99,32 @@ namespace BepinControl
                 {"box_toilet", CrowdDelegates.SendBox},
                 {"box_cat", CrowdDelegates.SendBox},
                 {"box_lasag", CrowdDelegates.SendBox},
+
+
+                {"playerbox_cereal", CrowdDelegates.PlayerSendBox},
+                {"playerbox_bread", CrowdDelegates.PlayerSendBox},
+                {"playerbox_milk", CrowdDelegates.PlayerSendBox},
+                {"playerbox_soda", CrowdDelegates.PlayerSendBox},
+                {"playerbox_eggs", CrowdDelegates.PlayerSendBox},
+                {"playerbox_salmon", CrowdDelegates.PlayerSendBox},
+                {"playerbox_mayo", CrowdDelegates.PlayerSendBox},
+                {"playerbox_whiskey", CrowdDelegates.PlayerSendBox},
+                {"playerbox_book", CrowdDelegates.PlayerSendBox},
+                {"playerbox_toilet", CrowdDelegates.PlayerSendBox},
+                {"playerbox_cat", CrowdDelegates.PlayerSendBox},
+                {"playerbox_lasag", CrowdDelegates.PlayerSendBox},
+
+                {"teleport_street", CrowdDelegates.TeleportPlayer},
+                {"teleport_acrossstreet", CrowdDelegates.TeleportPlayer},
+                {"teleport_store", CrowdDelegates.TeleportPlayer},
+
+                {"forcepayment_cash", CrowdDelegates.ForcePaymentType},
+                {"forcepayment_card", CrowdDelegates.ForcePaymentType},
+
+                {"forcemath", CrowdDelegates.ForceMath},
+
+                // {"closecheckout", CrowdDelegates.CloseCheckout},
+                // {"opencheckout", CrowdDelegates.OpenCheckout},
 
                 {"throw", CrowdDelegates.ThrowItem},
                 {"drop", CrowdDelegates.DropItem},
@@ -195,18 +234,20 @@ namespace BepinControl
         {
             inGame = true;
 
-            if(!isReady()) inGame = false;
+            if (!isReady()) inGame = false;
 
             if (!inGame)
             {
                 TimedThread.addTime(200);
                 paused = true;
-            } else if(paused)
+            }
+            else if (paused)
             {
                 paused = false;
                 TimedThread.unPause();
                 TimedThread.tickTime(200);
-            }  else
+            }
+            else
             {
                 TimedThread.tickTime(200);
             }
@@ -219,7 +260,7 @@ namespace BepinControl
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             while (Running)
             {
-                
+
                 TestMod.mls.LogInfo("Attempting to connect to Crowd Control");
 
                 try

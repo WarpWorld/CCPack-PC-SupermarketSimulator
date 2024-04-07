@@ -12,6 +12,7 @@ using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Localization.Components;
+using static SaveManager;
 using static System.Net.Mime.MediaTypeNames;
 using static UnityEngine.EventSystems.EventTrigger;
 using static UnityEngine.GraphicsBuffer;
@@ -20,6 +21,7 @@ using static UnityEngine.GraphicsBuffer;
 namespace BepinControl
 {
     public delegate CrowdResponse CrowdDelegate(ControlClient client, CrowdRequest req);
+
 
     public class CrowdDelegates
     {
@@ -487,10 +489,142 @@ namespace BepinControl
             return new CrowdResponse(req.GetReqID(), status, message);
         }
 
+
+        public static CrowdResponse TeleportPlayer(ControlClient client, CrowdRequest req)
+        {
+            CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
+            string message = "";
+
+            try
+            {
+                TestMod.ActionQueue.Enqueue(() =>
+                {
+                    try
+                    {
+
+                        Transform pos = Singleton<PlayerController>.Instance.transform;
+                        TestMod.mls.LogInfo($"Player POS: {pos.position}");
+
+                        string location = req.code.Split('_')[1];
+                        Vector3 teleportPosition = new Vector3();
+                        switch (location)
+                        {
+                            case "street":
+                                teleportPosition = new Vector3(4.52f, -0.06f, 6.60f);
+                                break;
+                            case "acrossstreet":
+                                teleportPosition = new Vector3(15.80f, -0.06f, 6.22f);
+                                break;
+                            case "store":
+                                teleportPosition = new Vector3(-3.94f, -0.06f, 6.60f);
+                                break;
+                        }
+
+                        pos.position = teleportPosition;
+
+     
+                    }
+                    catch (Exception e)
+                    {
+                        TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+                    }
+                });
+            }
+            catch (Exception e)
+            {
+                status = CrowdResponse.Status.STATUS_RETRY;
+                TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+            }
+
+            return new CrowdResponse(req.GetReqID(), status, message);
+
+        }
+
+
+
+
+        public static CrowdResponse PlayerSendBox(ControlClient client, CrowdRequest req)
+        {
+            CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
+            string message = "";
+
+            try
+            {
+                TestMod.ActionQueue.Enqueue(() =>
+                {
+                    try
+                    {
+                        Transform pos = Singleton<PlayerController>.Instance.transform;
+                        
+                        //Want to spawn an empty box, but this is having issues, will check later ask D for help :)
+                        //Box box = Singleton<DummyBoxGenerator>.Instance.GenerateBox(false, BoxSize._8x8x8, pos.position + Vector3.up * Singleton<DeliveryManager>.Instance.space * (float)2.0f, Quaternion.identity, null);
+
+                        string prod = req.code.Split('_')[1];
+                        ProductSO product = getProduct(prod);
+                        Box box = Singleton<BoxGenerator>.Instance.SpawnBox(product, pos.position + Vector3.up * Singleton<DeliveryManager>.Instance.space * (float)2.0f, Quaternion.identity, null);
+                        box.Setup(product.ID, true);
+
+                    }
+                    catch (Exception e)
+                    {
+                        TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+                    }
+                });
+            }
+            catch (Exception e)
+            {
+                status = CrowdResponse.Status.STATUS_RETRY;
+                TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+            }
+
+            return new CrowdResponse(req.GetReqID(), status, message);
+        }
+
+
+        public static CrowdResponse ForcePaymentType(ControlClient client, CrowdRequest req)
+        {
+            int dur = 30;
+            if (req.duration > 0) dur = req.duration / 1000;
+
+            CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
+            string message = "";
+
+            if (!Singleton<StoreStatus>.Instance.IsOpen) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+            List<Customer> cust = (List<Customer>)getProperty(Singleton<CustomerManager>.Instance, "m_ActiveCustomers");
+
+            bool found = false;
+            foreach (var c in cust)
+            {
+                bool isHandingPayment = (bool)getProperty(c, "m_HandingPayment");
+                if (isHandingPayment) found = true;
+            }
+
+            if (found) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, message);
+
+
+            if (TimedThread.isRunning(TimedType.FORCE_CASH)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            if (TimedThread.isRunning(TimedType.FORCE_CARD)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+            string paymentType = req.code.Split('_')[1];
+
+            if (paymentType == "cash") new Thread(new TimedThread(req.GetReqID(), TimedType.FORCE_CASH, dur * 1000).Run).Start();
+            if (paymentType == "card") new Thread(new TimedThread(req.GetReqID(), TimedType.FORCE_CARD, dur * 1000).Run).Start();
+
+            return new CrowdResponse(req.GetReqID(), status, message);
+        }
+
+
+
+
+
+
         public static CrowdResponse ThrowItem(ControlClient client, CrowdRequest req)
         {
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
+
+     
 
             try
             {
@@ -566,6 +700,10 @@ namespace BepinControl
                 PlayerObjectHolder hold = Singleton<PlayerObjectHolder>.Instance;
                 PlayerInteraction player = Singleton<PlayerInteraction>.Instance;
 
+
+                
+
+
                 GameObject obj = (GameObject)getProperty(hold, "m_CurrentObject");
 
                 if (obj == null)
@@ -586,14 +724,12 @@ namespace BepinControl
                 }
 
 
-
                 TestMod.ActionQueue.Enqueue(() =>
                 {
                     try
                     {
                         Singleton<PlayerObjectHolder>.Instance.DropObject();
                         player.onDrop();
-                        player.onDisable();
 
 
                     }
@@ -1826,6 +1962,134 @@ namespace BepinControl
             new Thread(new TimedThread(req.GetReqID(), TimedType.GAME_ULTRA_FAST, dur * 1000).Run).Start();
             return new TimedResponse(req.GetReqID(), dur * 1000, CrowdResponse.Status.STATUS_SUCCESS);
         }
+
+
+        public static CrowdResponse ForceMath(ControlClient client, CrowdRequest req)
+        {
+            int dur = 30;
+            if (req.duration > 0) dur = req.duration / 1000;
+
+            if (!Singleton<StoreStatus>.Instance.IsOpen) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            if (TimedThread.isRunning(TimedType.FORCE_MATH)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+            CashRegisterScreen cashRegisterScreen = Singleton<CashRegisterScreen>.Instance;
+            TMP_Text text = (TMP_Text)getProperty(cashRegisterScreen, "m_CorrectChangeText");
+            text.text = "DO THE MATH";
+            setProperty(cashRegisterScreen, "m_CorrectChangeText", text);
+
+            new Thread(new TimedThread(req.GetReqID(), TimedType.FORCE_MATH, dur * 1000).Run).Start();
+            return new TimedResponse(req.GetReqID(), dur * 1000, CrowdResponse.Status.STATUS_SUCCESS);
+        }
+
+
+        public static CrowdResponse HighFOV(ControlClient client, CrowdRequest req)
+        {
+            int dur = 30;
+            if (req.duration > 0) dur = req.duration / 1000;
+
+
+            if (TimedThread.isRunning(TimedType.HIGH_FOV)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            if (TimedThread.isRunning(TimedType.LOW_FOV)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+            new Thread(new TimedThread(req.GetReqID(), TimedType.HIGH_FOV, dur * 1000).Run).Start();
+            return new TimedResponse(req.GetReqID(), dur * 1000, CrowdResponse.Status.STATUS_SUCCESS);
+        }
+
+        public static CrowdResponse LowFOV(ControlClient client, CrowdRequest req)
+        {
+            int dur = 30;
+            if (req.duration > 0) dur = req.duration / 1000;
+
+            if (TimedThread.isRunning(TimedType.HIGH_FOV)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            if (TimedThread.isRunning(TimedType.LOW_FOV)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+            new Thread(new TimedThread(req.GetReqID(), TimedType.LOW_FOV, dur * 1000).Run).Start();
+            return new TimedResponse(req.GetReqID(), dur * 1000, CrowdResponse.Status.STATUS_SUCCESS);
+        }
+
+        public static CrowdResponse SetLanguage(ControlClient client, CrowdRequest req)
+        {
+            int dur = 30;
+            if (req.duration > 0) dur = req.duration / 1000;
+
+
+            SaveManager saveManager = Singleton<SaveManager>.Instance;
+            int currentLanguage = saveManager.Settings.LanguageSetting;
+
+            string language = req.code.Split('_')[1];
+            int newLanguage = 0;
+            switch (language)
+            {
+                case "english":
+                    {
+                        newLanguage = 0;
+                        break;
+                    }
+                case "french":
+                    {
+                        newLanguage = 1;
+                        break;
+                    }
+                case "german":
+                    {
+                        newLanguage = 2;
+                        break;
+                    }
+                case "italiano":
+                    {
+                        newLanguage = 3;
+                        break;
+                    }
+                case "espanol":
+                    {
+                        newLanguage = 4;
+                        break;
+                    }
+                case "portugal":
+                    {
+                        newLanguage = 5;
+                        break;
+                    }
+                case "brazil":
+                    {
+                        newLanguage = 6;
+                        break;
+                    }
+                case "nederlands":
+                    {
+                        newLanguage = 7;
+                        break;
+                    }
+                case "turkce":
+                    {
+                        newLanguage = 8;
+                        break;
+                    }
+            };
+
+
+            CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
+            string message = "";
+
+            if (currentLanguage == newLanguage) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "");
+            if (TimedThread.isRunning(TimedType.SET_LANGUAGE)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+
+            Dictionary<string, object> customVariables = new Dictionary<string, object>
+            {
+                { "oldLanguage", currentLanguage },
+                { "newLanguage", newLanguage }
+            };
+
+            TestMod.mls.LogInfo($"orgLanguage: {currentLanguage}");
+            TestMod.mls.LogInfo($"newLanguage: {newLanguage}");
+
+
+            new Thread(new TimedThread(req.GetReqID(), TimedType.SET_LANGUAGE, dur * 1000, customVariables).Run).Start();
+            return new TimedResponse(req.GetReqID(), dur * 1000, CrowdResponse.Status.STATUS_SUCCESS);
+
+        }
+
 
 
         public static void setProperty(System.Object a, string prop, System.Object val)
