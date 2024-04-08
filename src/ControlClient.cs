@@ -114,9 +114,10 @@ namespace BepinControl
                 {"playerbox_cat", CrowdDelegates.PlayerSendBox},
                 {"playerbox_lasag", CrowdDelegates.PlayerSendBox},
 
-                {"teleport_street", CrowdDelegates.TeleportPlayer},
+                {"teleport_outsidestore", CrowdDelegates.TeleportPlayer},
                 {"teleport_acrossstreet", CrowdDelegates.TeleportPlayer},
-                {"teleport_store", CrowdDelegates.TeleportPlayer},
+                {"teleport_faraway", CrowdDelegates.TeleportPlayer},
+                {"teleport_computer", CrowdDelegates.TeleportPlayer},
 
                 {"forcepayment_cash", CrowdDelegates.ForcePaymentType},
                 {"forcepayment_card", CrowdDelegates.ForcePaymentType},

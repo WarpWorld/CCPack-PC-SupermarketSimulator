@@ -509,20 +509,24 @@ namespace BepinControl
                         Vector3 teleportPosition = new Vector3();
                         switch (location)
                         {
-                            case "street":
-                                teleportPosition = new Vector3(4.52f, -0.06f, 6.60f);
+                            case "outsidestore":
+                                Transform loadingPOS = (Transform)getProperty(Singleton<DeliveryManager>.Instance, "m_DeliveryPosition");
+                                teleportPosition = loadingPOS.position;
                                 break;
                             case "acrossstreet":
                                 teleportPosition = new Vector3(15.80f, -0.06f, 6.22f);
                                 break;
-                            case "store":
-                                teleportPosition = new Vector3(-3.94f, -0.06f, 6.60f);
+                            case "computer":
+                                Transform computerPOS = (Transform)getProperty(Singleton<Computer>.Instance, "m_PlayerPosition");
+                                teleportPosition = computerPOS.position;
+                                break;
+                            case "faraway":
+                                teleportPosition = new Vector3(-64.75f, -0.04f, 46.34f);
                                 break;
                         }
 
                         pos.position = teleportPosition;
-
-     
+                             
                     }
                     catch (Exception e)
                     {

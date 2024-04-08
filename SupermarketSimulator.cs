@@ -86,10 +86,10 @@ namespace CrowdControl.Games.Packs.SupermarketSimulator
 
 
 
-                new Effect("Teleport Street", "teleport_street") { Category = "Teleport"},
+                new Effect("Teleport Outside Store", "teleport_outsidestore") { Category = "Teleport"},
                 new Effect("Teleport Across Street", "teleport_acrossstreet") { Category = "Teleport"},
-                new Effect("Teleport Store", "teleport_store") { Category = "Teleport"},
-
+                new Effect("Teleport Far Away", "teleport_faraway") { Category = "Teleport"},
+                new Effect("Teleport to Computer", "teleport_computer") { Category = "Teleport"},
 
                 new Effect("Force Cash Only", "forcepayment_cash") { Duration = 60, Category = "Payments"},
                 new Effect("Force Card Only", "forcepayment_card") { Duration = 60, Category = "Payments"},
