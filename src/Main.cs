@@ -50,6 +50,8 @@ namespace BepinControl
         public static bool ForceUseCash = false;
         public static bool ForceUseCredit = false;
         public static bool ForceMath = false;
+        public static bool ForceExactChange = false;
+        public static bool AllowMissCharge = false;
 
 
         void Awake()
@@ -109,6 +111,32 @@ namespace BepinControl
 
         }
 
+
+        [HarmonyPatch(typeof(Checkout), "TryFinishingCardPayment")]
+        public static class TryFinishingCardPayment_Patch
+        {
+            public static bool Prefix(ref bool __result, ref float posTotal, Checkout __instance)
+            {
+                if (!AllowMissCharge) return true;
+                FieldInfo totalPriceField = AccessTools.Field(typeof(Checkout), "m_TotalPrice");
+                // If the player puts in up to 1.5 the original price they can charge that but no more also allows them to undercharge
+                if (((float)totalPriceField.GetValue(__instance)) * 1.5 >= posTotal) totalPriceField.SetValue(__instance, posTotal);
+                
+                return true;
+            }
+
+        }
+
+        [HarmonyPatch(typeof(CustomerPayment), "GenerateRandomPayment")]
+        public static class CustomerPayment_GenerateRandomPayment_ExactChange_Patch
+        {
+            public static bool Prefix(ref float __result, float totalPrice)
+            {
+                if (!ForceExactChange) return true;
+                __result = totalPrice;
+                return false;
+            }
+        }
 
         [HarmonyPatch(typeof(Customer), "DoPayment")]
         public static class Customer_DoPayment_Patch

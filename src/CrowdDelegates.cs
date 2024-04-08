@@ -2033,26 +2033,55 @@ namespace BepinControl
         }
 
 
+
+        public static CrowdResponse ForceExactChange(ControlClient client, CrowdRequest req)
+        {
+            int dur = 30;
+            if (req.duration > 0) dur = req.duration / 1000;
+            TestMod.mls.LogInfo($"running");
+
+            if (TimedThread.isRunning(TimedType.FORCE_EXACT_CHANGE)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            if (TimedThread.isRunning(TimedType.FORCE_MATH)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            if (TimedThread.isRunning(TimedType.FORCE_CARD)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+            new Thread(new TimedThread(req.GetReqID(), TimedType.FORCE_EXACT_CHANGE, dur * 1000).Run).Start();
+            return new TimedResponse(req.GetReqID(), dur * 1000, CrowdResponse.Status.STATUS_SUCCESS);
+        }
+
+        public static CrowdResponse AllowMischarges(ControlClient client, CrowdRequest req)
+        {
+            int dur = 30;
+            if (req.duration > 0) dur = req.duration / 1000;
+            TestMod.mls.LogInfo($"running");
+
+            if (TimedThread.isRunning(TimedType.ALLOW_MISSCHARGE)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            if (TimedThread.isRunning(TimedType.FORCE_EXACT_CHANGE)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            if (TimedThread.isRunning(TimedType.FORCE_CASH)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+            new Thread(new TimedThread(req.GetReqID(), TimedType.ALLOW_MISSCHARGE, dur * 1000).Run).Start();
+            return new TimedResponse(req.GetReqID(), dur * 1000, CrowdResponse.Status.STATUS_SUCCESS);
+        }
+
+
         public static CrowdResponse InvertX(ControlClient client, CrowdRequest req)
         {
             int dur = 30;
             if (req.duration > 0) dur = req.duration / 1000;
+            TestMod.mls.LogInfo($"running");
 
             // if (TimedThread.isRunning(TimedType.INVERT_X)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
 
 
-            SaveManager saveManager = Singleton<SaveManager>.Instance;
-            //saveManager.Settings.InvertXAxis = !saveManager.Settings.InvertXAxis;
-            InputActions inputActions = Singleton<InputActions>.Instance;
+            //PosTerminal posTerminal = Singleton<PosTerminal>.Instance;
+            //CustomerPayment customerPayment = Singleton<CustomerPayment>.Instance;
 
 
 
-            Vector2 myVector = new Vector2(0.00f, 0.00f);
 
-            setProperty(inputActions, "m_Look", myVector);
-            TestMod.mls.LogInfo($"myVector: {myVector}");
-            TestMod.mls.LogInfo($"inputActions: {inputActions}");
-            TestMod.mls.LogInfo($"m_Look: {getProperty(inputActions, "m_Look")}");
+            
+
+
+            //TestMod.mls.LogInfo($"POS: {getProperty(posTerminal, "m_Buttons")}");
 
 
             //new Thread(new TimedThread(req.GetReqID(), TimedType.INVERT_X, dur * 1000).Run).Start();

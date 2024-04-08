@@ -25,7 +25,9 @@ namespace BepinControl
         INVERT_X,
         INVERT_Y,
         SENSITIVITY_LOW,
-        SENSITIVITY_HIGH
+        SENSITIVITY_HIGH,
+        FORCE_EXACT_CHANGE,
+        ALLOW_MISSCHARGE
     }
 
 
@@ -140,12 +142,19 @@ namespace BepinControl
                         });
                         break;
                     }
-                case TimedType.INVERT_Y:
+                case TimedType.FORCE_EXACT_CHANGE:
                     {
                         TestMod.ActionQueue.Enqueue(() =>
                         {
-                            SaveManager saveManager = Singleton<SaveManager>.Instance;
-                            saveManager.Settings.InvertYAxis = !saveManager.Settings.InvertYAxis;
+                            TestMod.ForceExactChange = true;
+                        });
+                        break;
+                    }
+                case TimedType.ALLOW_MISSCHARGE:
+                    {
+                        TestMod.ActionQueue.Enqueue(() =>
+                        {
+                            TestMod.AllowMissCharge = true;
                         });
                         break;
                     }
@@ -282,12 +291,19 @@ namespace BepinControl
                             });
                             break;
                         }
-                    case TimedType.INVERT_Y:
+                    case TimedType.FORCE_EXACT_CHANGE:
                         {
                             TestMod.ActionQueue.Enqueue(() =>
                             {
-                                SaveManager saveManager = Singleton<SaveManager>.Instance;
-                                saveManager.Settings.InvertYAxis = !saveManager.Settings.InvertYAxis;
+                                TestMod.ForceExactChange = false;
+                            });
+                            break;
+                        }
+                    case TimedType.ALLOW_MISSCHARGE:
+                        {
+                            TestMod.ActionQueue.Enqueue(() =>
+                            {
+                                TestMod.AllowMissCharge = false;
                             });
                             break;
                         }
