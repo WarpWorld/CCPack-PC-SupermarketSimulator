@@ -70,6 +70,50 @@ namespace BepinControl
                         });
                         break;
                     }
+                case TimedType.HIGH_FOV:
+                    {
+                        TestMod.ActionQueue.Enqueue(() =>
+                        {
+                            CameraSettings camera = Singleton<CameraSettings>.Instance;
+                            camera.SetFOV(140f);
+                        });
+                        break;
+                    }
+                case TimedType.LOW_FOV:
+                    {
+                        TestMod.ActionQueue.Enqueue(() =>
+                        {
+                            CameraSettings camera = Singleton<CameraSettings>.Instance;
+                            camera.SetFOV(30f);
+                        });
+                        break;
+                    }
+                case TimedType.FORCE_CASH:
+                    {
+                        TestMod.ActionQueue.Enqueue(() =>
+                        {
+                            TestMod.ForceUseCredit = false;
+                            TestMod.ForceUseCash = true;
+                        });
+                        break;
+                    }
+                case TimedType.FORCE_CARD:
+                    {
+                        TestMod.ActionQueue.Enqueue(() =>
+                        {
+                            TestMod.ForceUseCash = false;
+                            TestMod.ForceUseCredit = true;
+                        });
+                        break;
+                    }
+                case TimedType.FORCE_MATH:
+                    {
+                        TestMod.ActionQueue.Enqueue(() =>
+                        {
+                            TestMod.ForceMath = true;
+                        });
+                        break;
+                    }
             }
         }
 
@@ -243,51 +287,6 @@ namespace BepinControl
                         });
                         break;
                     }
-                case TimedType.HIGH_FOV:
-                    {
-                        TestMod.ActionQueue.Enqueue(() =>
-                        {
-                            CameraSettings camera = Singleton<CameraSettings>.Instance;
-                            camera.SetFOV(140f);
-                        });
-                        break;
-                    }
-                case TimedType.LOW_FOV:
-                    {
-                        TestMod.ActionQueue.Enqueue(() =>
-                        {
-                            CameraSettings camera = Singleton<CameraSettings>.Instance;
-                            camera.SetFOV(30f);
-                        });
-                        break;
-                    }
-                case TimedType.FORCE_CASH:
-                    {
-                        TestMod.ActionQueue.Enqueue(() =>
-                        {
-                            TestMod.ForceUseCredit = false;
-                            TestMod.ForceUseCash = true;
-                        });
-                        break;
-                    }
-                case TimedType.FORCE_CARD:
-                    {
-                        TestMod.ActionQueue.Enqueue(() =>
-                        {
-                            TestMod.ForceUseCash = false;
-                            TestMod.ForceUseCredit = true;
-                        });
-                        break;
-                    }
-                case TimedType.FORCE_MATH:
-                    {
-                        TestMod.ActionQueue.Enqueue(() =>
-                        {
-                            TestMod.ForceMath = true;
-                        });
-                        break;
-                    }
-
             }
         }
     }
