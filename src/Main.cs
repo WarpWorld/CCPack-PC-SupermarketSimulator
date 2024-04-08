@@ -92,7 +92,7 @@ namespace BepinControl
         [HarmonyPrefix]
         static void RunEffects()
         {
-            if (ActionQueue.Count > 0)
+            while (ActionQueue.Count > 0)
             {
                 Action action = ActionQueue.Dequeue();
                 action.Invoke();

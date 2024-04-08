@@ -32,9 +32,9 @@ namespace BepinControl
 
         
 
-        private Dictionary<string, object> customVariables = new Dictionary<string, object>();
+        private static Dictionary<string, object> customVariables = new Dictionary<string, object>();
 
-        public T GetCustomVariable<T>(string key)
+        public static T GetCustomVariable<T>(string key)
         {
             if (customVariables.TryGetValue(key, out object value))
             {
@@ -57,79 +57,152 @@ namespace BepinControl
         {
             switch (type)
             {
-
-            }
-        }
-
-        public void removeEffect()
-        {
-
-            switch (type)
-            {
-                case TimedType.GAME_ULTRA_SLOW:
-                case TimedType.GAME_SLOW:
-                case TimedType.GAME_FAST:
-                case TimedType.GAME_ULTRA_FAST:
-                    {
-                        TestMod.ActionQueue.Enqueue(() =>
-                        {
-                            Time.timeScale = 1.0f;
-                        });
-                        break;
-                    }
-                case TimedType.LOW_FOV:
-                case TimedType.HIGH_FOV:
-                    {
-                        TestMod.ActionQueue.Enqueue(() =>
-                        {
-                            SaveManager saveManager = Singleton<SaveManager>.Instance;
-                            CameraSettings camera = Singleton<CameraSettings>.Instance;
-                            camera.SetFOV(saveManager.Settings.FOV);
-                        });
-                        break;
-                    }
                 case TimedType.SET_LANGUAGE:
                     {
-
                         TestMod.ActionQueue.Enqueue(() =>
                         {
-                            // Doesn't always seem to revert, not 100% sure. Might be frame/tick related?
+                            int newLanguage = GetCustomVariable<int>("newLanguage");
                             SettingsMenuManager settingsMenuManager = Singleton<SettingsMenuManager>.Instance;
                             bool isChangingLanguage = (bool)CrowdDelegates.getProperty(settingsMenuManager, "m_ChangingLocale");
-                            int oldLanguage = GetCustomVariable<int>("oldLanguage");
                             isChangingLanguage = false;
-                            settingsMenuManager.SetLanguage(oldLanguage);
-                        });
-                        break;
-                    }
-                case TimedType.FORCE_CASH:
-                    {
-                        TestMod.ActionQueue.Enqueue(() =>
-                        {
-                            TestMod.ForceUseCredit = false;
-                            TestMod.ForceUseCash = false;
-                        });
-                        break;
-                    }
-                case TimedType.FORCE_CARD:
-                    {
-                        TestMod.ActionQueue.Enqueue(() =>
-                        {
-                            TestMod.ForceUseCash = false;
-                            TestMod.ForceUseCredit = false;
-                        });
-                        break;
-                    }
-                case TimedType.FORCE_MATH:
-                    {
-                        TestMod.ActionQueue.Enqueue(() =>
-                        {
-                            TestMod.ForceMath = false;
+                            CrowdDelegates.setProperty(settingsMenuManager, "m_ChangingLocale", false);
+                            settingsMenuManager.SetLanguage(newLanguage);
                         });
                         break;
                     }
             }
         }
+
+    
+        public static bool removeEffect(TimedType etype)
+        {
+            try
+            {
+                switch (etype)
+                {
+                    case TimedType.GAME_ULTRA_SLOW:
+                    case TimedType.GAME_SLOW:
+                    case TimedType.GAME_FAST:
+                    case TimedType.GAME_ULTRA_FAST:
+                        {
+                            TestMod.ActionQueue.Enqueue(() =>
+                            {
+                                try
+                                {
+                                    Time.timeScale = 1.0f;
+                                }
+                                catch (Exception e)
+                                {
+                                    TestMod.mls.LogInfo(e.ToString());
+                                    Timed.removeEffect(etype);
+                                }
+                            });
+                            break;
+                        }
+                    case TimedType.LOW_FOV:
+                    case TimedType.HIGH_FOV:
+                        {
+                            TestMod.ActionQueue.Enqueue(() =>
+                            {
+                                try
+                                {
+                                    SaveManager saveManager = Singleton<SaveManager>.Instance;
+                                    CameraSettings camera = Singleton<CameraSettings>.Instance;
+                                    camera.SetFOV(saveManager.Settings.FOV);
+                                }
+                                catch (Exception e)
+                                {
+                                    TestMod.mls.LogInfo(e.ToString());
+                                    Timed.removeEffect(etype);
+                                }
+                            });
+                            break;
+                        }
+                    case TimedType.SET_LANGUAGE:
+                        {
+
+                            TestMod.ActionQueue.Enqueue(() =>
+                            {
+                                try
+                                {
+                                    // Doesn't always seem to revert, not 100% sure. Might be frame/tick related?
+                                    SettingsMenuManager settingsMenuManager = Singleton<SettingsMenuManager>.Instance;
+                                    bool isChangingLanguage = (bool)CrowdDelegates.getProperty(settingsMenuManager, "m_ChangingLocale");
+                                    int oldLanguage = Timed.GetCustomVariable<int>("oldLanguage");
+
+                                    if (oldLanguage < 0) oldLanguage = 0;
+
+                                    isChangingLanguage = false;
+                                    CrowdDelegates.setProperty(settingsMenuManager, "m_ChangingLocale", false);
+                                    settingsMenuManager.SetLanguage(oldLanguage);
+
+                                }
+                                catch (Exception e)
+                                {
+                                    TestMod.mls.LogInfo(e.ToString());
+                                    Timed.removeEffect(etype);
+                                }
+                            });
+                            break;
+                        }
+                    case TimedType.FORCE_CASH:
+                        {
+                            TestMod.ActionQueue.Enqueue(() =>
+                            {
+                                try
+                                {
+                                    TestMod.ForceUseCredit = false;
+                                    TestMod.ForceUseCash = false;
+                                }
+                                catch (Exception e)
+                                {
+                                    TestMod.mls.LogInfo(e.ToString());
+                                    Timed.removeEffect(etype);
+                                }
+                            });
+                            break;
+                        }
+                    case TimedType.FORCE_CARD:
+                        {
+                            TestMod.ActionQueue.Enqueue(() =>
+                            {
+                                try { 
+                                    TestMod.ForceUseCash = false;
+                                    TestMod.ForceUseCredit = false;
+                                }
+                                catch (Exception e)
+                                {
+                                    TestMod.mls.LogInfo(e.ToString());
+                                    Timed.removeEffect(etype);
+                                }
+                            });
+                            break;
+                        }
+                    case TimedType.FORCE_MATH:
+                        {
+                            TestMod.ActionQueue.Enqueue(() =>
+                            {
+                                try
+                                {
+                                    TestMod.ForceMath = false;
+                                }
+                                catch (Exception e)
+                                {
+                                    TestMod.mls.LogInfo(e.ToString());
+                                    Timed.removeEffect(etype);
+                                }
+                            });
+                            break;
+                        }
+                }
+            } catch(Exception e)
+            {
+                TestMod.mls.LogInfo(e.ToString());
+                return false;
+            }
+            return true;
+        }
+
         static int frames = 0;
 
         public void tick()
@@ -185,18 +258,6 @@ namespace BepinControl
                         {
                             CameraSettings camera = Singleton<CameraSettings>.Instance;
                             camera.SetFOV(30f);
-                        });
-                        break;
-                    }
-                case TimedType.SET_LANGUAGE:
-                    {
-                        TestMod.ActionQueue.Enqueue(() =>
-                        {
-                            int newLanguage = GetCustomVariable<int>("newLanguage");
-                            SettingsMenuManager settingsMenuManager = Singleton<SettingsMenuManager>.Instance;
-                            bool isChangingLanguage = (bool)CrowdDelegates.getProperty(settingsMenuManager, "m_ChangingLocale");
-                            isChangingLanguage = false;
-                            settingsMenuManager.SetLanguage(newLanguage);
                         });
                         break;
                     }
@@ -360,23 +421,30 @@ namespace BepinControl
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 
             effect.addEffect();
-
+            bool error = false;
             try
             {
-                int time = Volatile.Read(ref duration); ;
-                while (time > 0)
+                do
                 {
-                    Interlocked.Add(ref duration, -time);
-                    Thread.Sleep(time);
+                    error = false;
+                    int time = Volatile.Read(ref duration); ;
+                    while (time > 0)
+                    {
+                        Interlocked.Add(ref duration, -time);
+                        Thread.Sleep(time);
 
-                    time = Volatile.Read(ref duration);
-                }
-                effect.removeEffect();
-                lock (threads)
-                {
-                    threads.Remove(this);
-                }
-                new TimedResponse(id, 0, CrowdResponse.Status.STATUS_STOP).Send(ControlClient.Socket);
+                        time = Volatile.Read(ref duration);
+                    }
+                    if (Timed.removeEffect(effect.type))
+                    {
+                        lock (threads)
+                        {
+                            threads.Remove(this);
+                        }
+                        new TimedResponse(id, 0, CrowdResponse.Status.STATUS_STOP).Send(ControlClient.Socket);
+                    }
+                    else error = true;
+                } while (error);
             }
             catch (Exception e)
             {
