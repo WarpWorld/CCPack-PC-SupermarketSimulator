@@ -559,9 +559,9 @@ namespace BepinControl
                     try
                     {
                         Transform pos = Singleton<PlayerController>.Instance.transform;
-                        
+
                         //Want to spawn an empty box, but this is having issues, will check later ask D for help :)
-                        //Box box = Singleton<DummyBoxGenerator>.Instance.GenerateBox(false, BoxSize._8x8x8, pos.position + Vector3.up * Singleton<DeliveryManager>.Instance.space * (float)2.0f, Quaternion.identity, null);
+                        //Box box = Singleton<DummyBoxGenerator>.Instance.GenerateBox(false, BoxSize._8x8x8, pos.position + Vector3.up * Singleton<DummyBoxGenerator>.Instance.space * (float)2.0f, Quaternion.identity, null);
 
                         string prod = req.code.Split('_')[1];
                         ProductSO product = getProduct(prod);
