@@ -27,7 +27,7 @@ namespace BepinControl
         SENSITIVITY_LOW,
         SENSITIVITY_HIGH,
         FORCE_EXACT_CHANGE,
-        ALLOW_MISSCHARGE
+        ALLOW_MISCHARGE
     }
 
 
@@ -150,11 +150,11 @@ namespace BepinControl
                         });
                         break;
                     }
-                case TimedType.ALLOW_MISSCHARGE:
+                case TimedType.ALLOW_MISCHARGE:
                     {
                         TestMod.ActionQueue.Enqueue(() =>
                         {
-                            TestMod.AllowMissCharge = true;
+                            TestMod.AllowMischarge = true;
                         });
                         break;
                     }
@@ -299,11 +299,11 @@ namespace BepinControl
                             });
                             break;
                         }
-                    case TimedType.ALLOW_MISSCHARGE:
+                    case TimedType.ALLOW_MISCHARGE:
                         {
                             TestMod.ActionQueue.Enqueue(() =>
                             {
-                                TestMod.AllowMissCharge = false;
+                                TestMod.AllowMischarge = false;
                             });
                             break;
                         }

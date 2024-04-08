@@ -2038,7 +2038,6 @@ namespace BepinControl
         {
             int dur = 30;
             if (req.duration > 0) dur = req.duration / 1000;
-            TestMod.mls.LogInfo($"running");
 
             if (TimedThread.isRunning(TimedType.FORCE_EXACT_CHANGE)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
             if (TimedThread.isRunning(TimedType.FORCE_MATH)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
@@ -2052,13 +2051,12 @@ namespace BepinControl
         {
             int dur = 30;
             if (req.duration > 0) dur = req.duration / 1000;
-            TestMod.mls.LogInfo($"running");
 
-            if (TimedThread.isRunning(TimedType.ALLOW_MISSCHARGE)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            if (TimedThread.isRunning(TimedType.ALLOW_MISCHARGE)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
             if (TimedThread.isRunning(TimedType.FORCE_EXACT_CHANGE)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
             if (TimedThread.isRunning(TimedType.FORCE_CASH)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
 
-            new Thread(new TimedThread(req.GetReqID(), TimedType.ALLOW_MISSCHARGE, dur * 1000).Run).Start();
+            new Thread(new TimedThread(req.GetReqID(), TimedType.ALLOW_MISCHARGE, dur * 1000).Run).Start();
             return new TimedResponse(req.GetReqID(), dur * 1000, CrowdResponse.Status.STATUS_SUCCESS);
         }
 
@@ -2074,11 +2072,13 @@ namespace BepinControl
 
             //PosTerminal posTerminal = Singleton<PosTerminal>.Instance;
             //CustomerPayment customerPayment = Singleton<CustomerPayment>.Instance;
+            //WarningCanvas warningCanvas = Singleton<WarningCanvas>.Instance;
+
+            //ShowInteractionWarning(InteractionWarningType warningType, params string[] args)
+
+            //callFunc(warningCanvas, "ShowInteractionWarning", new object[] { InteractionWarningType.CANT_THROW, "Testing!" });
 
 
-
-
-            
 
 
             //TestMod.mls.LogInfo($"POS: {getProperty(posTerminal, "m_Buttons")}");

@@ -51,7 +51,7 @@ namespace BepinControl
         public static bool ForceUseCredit = false;
         public static bool ForceMath = false;
         public static bool ForceExactChange = false;
-        public static bool AllowMissCharge = false;
+        public static bool AllowMischarge = false;
 
 
         void Awake()
@@ -84,7 +84,48 @@ namespace BepinControl
         }
 
 
+        public class CustomGUIMessages : MonoBehaviour
+        {
+            
 
+            private readonly Dictionary<string, string> flagMessages = new Dictionary<string, string>
+            {
+                {"ForceUseCash", "All customers only have cash."},
+                {"ForceUseCredit", "All customers only have card."},
+                {"ForceExactChange", "All customers will pay in exact change."},
+                {"AllowMischarge", "You can currently over charge card payments."}
+            };
+
+            private List<string> activeMessages = new List<string>();
+
+            void Update()
+            {
+                UpdateActiveMessages();
+            }
+
+            void UpdateActiveMessages()
+            {
+                activeMessages.Clear();
+
+                if (ForceUseCash) activeMessages.Add(flagMessages["ForceUseCash"]);
+                if (ForceUseCredit) activeMessages.Add(flagMessages["ForceUseCredit"]);
+                if (ForceExactChange) activeMessages.Add(flagMessages["ForceExactChange"]);
+                if (AllowMischarge) activeMessages.Add(flagMessages["AllowMischarge"]);
+            }
+
+            void OnGUI()
+            {
+                GUIStyle guiStyle = new GUIStyle();
+                guiStyle.fontSize = 14;
+
+                int yOffset = 0; // Vertical offset for each message
+                foreach (string message in activeMessages)
+                {
+                    GUI.Label(new Rect(10, 10 + yOffset, 300, 50), message, guiStyle);
+                    yOffset += 20; // Increase the offset for the next message
+                }
+            }
+        }
 
 
         public static Queue<Action> ActionQueue = new Queue<Action>();
@@ -94,6 +135,7 @@ namespace BepinControl
         [HarmonyPrefix]
         static void RunEffects()
         {
+
             while (ActionQueue.Count > 0)
             {
                 Action action = ActionQueue.Dequeue();
@@ -112,12 +154,33 @@ namespace BepinControl
         }
 
 
+        public class CustomGUIClass : MonoBehaviour
+        {
+            void OnGUI()
+            {
+                GUIStyle guiStyle = new GUIStyle();
+                guiStyle.fontSize = 24;
+                
+                GUI.Label(new Rect(10, 10, 300, 50), "Hello from Custom GUI!", guiStyle);
+            }
+        }
+
+        [HarmonyPatch(typeof(PlayerInteraction), "Start")]
+        public static class AddCustomGUIClassPatch
+        {
+            static void Postfix(PlayerInteraction __instance)
+            {
+                if (__instance.gameObject.GetComponent<CustomGUIMessages>() == null) __instance.gameObject.AddComponent<CustomGUIMessages>();
+            }
+        }
+
+
         [HarmonyPatch(typeof(Checkout), "TryFinishingCardPayment")]
         public static class TryFinishingCardPayment_Patch
         {
             public static bool Prefix(ref bool __result, ref float posTotal, Checkout __instance)
             {
-                if (!AllowMissCharge) return true;
+                if (!AllowMischarge) return true;
                 FieldInfo totalPriceField = AccessTools.Field(typeof(Checkout), "m_TotalPrice");
                 // If the player puts in up to 1.5 the original price they can charge that but no more also allows them to undercharge
                 if (((float)totalPriceField.GetValue(__instance)) * 1.5 >= posTotal) totalPriceField.SetValue(__instance, posTotal);

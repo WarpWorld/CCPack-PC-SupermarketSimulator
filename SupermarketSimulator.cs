@@ -100,7 +100,7 @@ namespace CrowdControl.Games.Packs.SupermarketSimulator
                 new Effect("Force Math", "forcemath") { Description = "Forces the player to do the math for correct change!", Duration = 60, Category = "Payments"},
 
 
-                //new Effect("Invert X-Axis", "invertx") { Category = "Axis Control"},
+                new Effect("Invert X-Axis", "invertx") { Category = "Axis Control"},
                 //new Effect("Invert Y-Axis", "inverty") { Category = "Axis Control"},
 
                 // new Effect("Close Checkout", "closecheckout") { Category = "Checkout"},
