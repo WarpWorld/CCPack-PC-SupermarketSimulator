@@ -35,15 +35,15 @@ namespace CrowdControl.Games.Packs.SupermarketSimulator
                 new Effect("High FOV", "highfov") { Duration = 30, Category = "Game FOV"},
                 new Effect("Low FOV", "lowfov") { Duration = 30, Category = "Game FOV"},
 
-                new Effect("Set Language to English", "setlanguage_english") { Duration = 5, Category = "Game Language"},
-                new Effect("Set Language to German", "setlanguage_german") { Duration = 5, Category = "Game Language"},
-                new Effect("Set Language to French", "setlanguage_french") { Duration = 5, Category = "Game Language"},
-                new Effect("Set Language to Italiano", "setlanguage_italiano") { Duration = 5, Category = "Game Language"},
-                new Effect("Set Language to Espanol", "setlanguage_espanol") { Duration = 5, Category = "Game Language"},
-                new Effect("Set Language to Portugal", "setlanguage_portugal") { Duration = 5, Category = "Game Language"},
-                new Effect("Set Language to Brazil", "setlanguage_brazil") { Duration = 5, Category = "Game Language"},
-                new Effect("Set Language to Nederlands", "setlanguage_nederlands") { Duration = 5, Category = "Game Language"},
-                new Effect("Set Language to Turkce", "setlanguage_turkce") { Duration = 5, Category = "Game Language"},
+                new Effect("Set Language to English", "setlanguage_english") { Duration = 60, Category = "Game Language"},
+                new Effect("Set Language to German", "setlanguage_german") { Duration = 60, Category = "Game Language"},
+                new Effect("Set Language to French", "setlanguage_french") { Duration = 60, Category = "Game Language"},
+                new Effect("Set Language to Italiano", "setlanguage_italiano") { Duration = 60, Category = "Game Language"},
+                new Effect("Set Language to Espanol", "setlanguage_espanol") { Duration = 60, Category = "Game Language"},
+                new Effect("Set Language to Portugal", "setlanguage_portugal") { Duration = 60, Category = "Game Language"},
+                new Effect("Set Language to Brazil", "setlanguage_brazil") { Duration = 60, Category = "Game Language"},
+                new Effect("Set Language to Nederlands", "setlanguage_nederlands") { Duration = 60, Category = "Game Language"},
+                new Effect("Set Language to Turkce", "setlanguage_turkce") { Duration = 60, Category = "Game Language"},
 
 
                 new Effect("Advance Time One Hour", "plushour") { Category = "Time"},
@@ -85,9 +85,6 @@ namespace CrowdControl.Games.Packs.SupermarketSimulator
                 new Effect("Deliver Lasagna to Player", "playerbox_lasag") { Category = "Player Boxes"},
 
 
-
-
-
                 new Effect("Teleport Outside Store", "teleport_outsidestore") { Category = "Teleport"},
                 new Effect("Teleport Across Street", "teleport_acrossstreet") { Category = "Teleport"},
                 new Effect("Teleport Far Away", "teleport_faraway") { Category = "Teleport"},
@@ -100,8 +97,8 @@ namespace CrowdControl.Games.Packs.SupermarketSimulator
                 new Effect("Force Math", "forcemath") { Description = "Forces the player to do the math for correct change!", Duration = 60, Category = "Payments"},
 
 
-                new Effect("Invert X-Axis", "invertx") { Category = "Axis Control"},
-                new Effect("Invert Y-Axis", "inverty") { Category = "Axis Control"},
+                new Effect("Invert X-Axis", "invertx") { Duration = 30, Category = "Axis Control"},
+                new Effect("Invert Y-Axis", "inverty") { Duration = 30, Category = "Axis Control"},
 
                 // new Effect("Close Checkout", "closecheckout") { Category = "Checkout"},
                 // new Effect("Open Checkout", "opencheckout") { Category = "Checkout"},
