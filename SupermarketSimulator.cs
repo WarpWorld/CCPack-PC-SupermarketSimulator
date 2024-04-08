@@ -71,18 +71,23 @@ namespace CrowdControl.Games.Packs.SupermarketSimulator
 
 
 
-                new Effect("Deliver Cereal", "playerbox_cereal") { Category = "Player Boxes"},
-                new Effect("Deliver Bread", "playerbox_bread") { Category = "Player Boxes"},
-                new Effect("Deliver Milk", "playerbox_milk") { Category = "Player Boxes"},
-                new Effect("Deliver Soda", "playerbox_soda") { Category = "Player Boxes"},
-                new Effect("Deliver Eggs", "playerbox_eggs") { Category = "Player Boxes"},
-                new Effect("Deliver Salmon", "playerbox_salmon") { Category = "Player Boxes"},
-                new Effect("Deliver Mayo", "playerbox_mayo") { Category = "Player Boxes"},
-                new Effect("Deliver Whiskey", "playerbox_whiskey") { Category = "Player Boxes"},
-                new Effect("Deliver Books", "playerbox_book") { Category = "Player Boxes"},
-                new Effect("Deliver Toilet Paper", "playerbox_toilet") { Category = "Player Boxes"},
-                new Effect("Deliver Cat Food", "playerbox_cat") { Category = "Player Boxes"},
-                new Effect("Deliver Lasagna", "playerbox_lasag") { Category = "Player Boxes"},
+                new Effect("Deliver Cereal to Player", "playerbox_cereal") { Category = "Player Boxes"},
+                new Effect("Deliver Bread to Player", "playerbox_bread") { Category = "Player Boxes"},
+                new Effect("Deliver Milk to Player", "playerbox_milk") { Category = "Player Boxes"},
+                new Effect("Deliver Soda to Player", "playerbox_soda") { Category = "Player Boxes"},
+                new Effect("Deliver Eggs to Player", "playerbox_eggs") { Category = "Player Boxes"},
+                new Effect("Deliver Salmon to Player", "playerbox_salmon") { Category = "Player Boxes"},
+                new Effect("Deliver Mayo to Player", "playerbox_mayo") { Category = "Player Boxes"},
+                new Effect("Deliver Whiskey to Player", "playerbox_whiskey") { Category = "Player Boxes"},
+                new Effect("Deliver Books to Player", "playerbox_book") { Category = "Player Boxes"},
+                new Effect("Deliver Toilet Paper to Player", "playerbox_toilet") { Category = "Player Boxes"},
+                new Effect("Deliver Cat Food to Player", "playerbox_cat") { Category = "Player Boxes"},
+                new Effect("Deliver Lasagna to Player", "playerbox_lasag") { Category = "Player Boxes"},
+
+
+                new Effect("Send Small Empty Box", "playeremptybox_eggs") { Category = "Empty Boxes"},
+                new Effect("Send Medium Empty Box", "playeremptybox_cereal") { Category = "Empty Boxes"},
+                new Effect("Send Large Empty Box", "playeremptybox_toilet") { Category = "Empty Boxes"},
 
 
 

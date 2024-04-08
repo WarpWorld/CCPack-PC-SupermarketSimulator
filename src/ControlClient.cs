@@ -114,6 +114,11 @@ namespace BepinControl
                 {"playerbox_cat", CrowdDelegates.PlayerSendBox},
                 {"playerbox_lasag", CrowdDelegates.PlayerSendBox},
 
+                {"playeremptybox_eggs", CrowdDelegates.PlayerSendEmptyBox},
+                {"playeremptybox_cereal", CrowdDelegates.PlayerSendEmptyBox},
+                {"playeremptybox_toilet", CrowdDelegates.PlayerSendEmptyBox},
+
+
                 {"teleport_outsidestore", CrowdDelegates.TeleportPlayer},
                 {"teleport_acrossstreet", CrowdDelegates.TeleportPlayer},
                 {"teleport_faraway", CrowdDelegates.TeleportPlayer},

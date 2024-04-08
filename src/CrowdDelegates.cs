@@ -560,13 +560,12 @@ namespace BepinControl
                     {
                         Transform pos = Singleton<PlayerController>.Instance.transform;
 
-                        //Want to spawn an empty box, but this is having issues, will check later ask D for help :)
-                        //Box box = Singleton<DummyBoxGenerator>.Instance.GenerateBox(false, BoxSize._8x8x8, pos.position + Vector3.up * Singleton<DummyBoxGenerator>.Instance.space * (float)2.0f, Quaternion.identity, null);
-
                         string prod = req.code.Split('_')[1];
                         ProductSO product = getProduct(prod);
+
                         Box box = Singleton<BoxGenerator>.Instance.SpawnBox(product, pos.position + Vector3.up * Singleton<DeliveryManager>.Instance.space * (float)2.0f, Quaternion.identity, null);
                         box.Setup(product.ID, true);
+
 
                     }
                     catch (Exception e)
@@ -584,6 +583,44 @@ namespace BepinControl
             return new CrowdResponse(req.GetReqID(), status, message);
         }
 
+
+
+        public static CrowdResponse PlayerSendEmptyBox(ControlClient client, CrowdRequest req)
+        {
+            CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
+            string message = "";
+
+            try
+            {
+                TestMod.ActionQueue.Enqueue(() =>
+                {
+                    try
+                    {
+                        Transform pos = Singleton<PlayerController>.Instance.transform;
+
+                        string prod = req.code.Split('_')[1];
+                        ProductSO product = getProduct(prod);
+
+                        Box box = Singleton<BoxGenerator>.Instance.SpawnBox(product, pos.position + Vector3.up * Singleton<DeliveryManager>.Instance.space * (float)2.0f, Quaternion.identity, null);
+                        //-1 will make it empty, but will still use the products size from above
+                        box.Setup(-1, true);
+
+
+                    }
+                    catch (Exception e)
+                    {
+                        TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+                    }
+                });
+            }
+            catch (Exception e)
+            {
+                status = CrowdResponse.Status.STATUS_RETRY;
+                TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+            }
+
+            return new CrowdResponse(req.GetReqID(), status, message);
+        }
 
         public static CrowdResponse ForcePaymentType(ControlClient client, CrowdRequest req)
         {
