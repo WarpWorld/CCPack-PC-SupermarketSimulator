@@ -95,13 +95,13 @@ namespace CrowdControl.Games.Packs.SupermarketSimulator
 
                 new Effect("Force Cash Only", "forcepayment_cash") { Duration = 60, Category = "Payments"},
                 new Effect("Force Card Only", "forcepayment_card") { Duration = 60, Category = "Payments"},
-                new Effect("Force Exchange Change", "forceexactchange") { Duration = 60, Category = "Payments"},
+                new Effect("Force Exact Change", "forceexactchange") { Duration = 60, Category = "Payments"},
                 new Effect("Allow Credit Mischarges", "allowmischarges") { Duration = 60, Category = "Payments"},
                 new Effect("Force Math", "forcemath") { Description = "Forces the player to do the math for correct change!", Duration = 60, Category = "Payments"},
 
 
-                //new Effect("Invert X-Axis", "invertx") { Category = "Axis Control"},
-                //new Effect("Invert Y-Axis", "inverty") { Category = "Axis Control"},
+                new Effect("Invert X-Axis", "invertx") { Category = "Axis Control"},
+                new Effect("Invert Y-Axis", "inverty") { Category = "Axis Control"},
 
                 // new Effect("Close Checkout", "closecheckout") { Category = "Checkout"},
                 // new Effect("Open Checkout", "opencheckout") { Category = "Checkout"},

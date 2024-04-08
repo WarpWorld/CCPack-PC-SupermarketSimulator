@@ -52,7 +52,7 @@ namespace BepinControl
         public static bool ForceMath = false;
         public static bool ForceExactChange = false;
         public static bool AllowMischarge = false;
-
+        public static int CurrentLanguage = 0;
 
         void Awake()
         {
@@ -86,14 +86,77 @@ namespace BepinControl
 
         public class CustomGUIMessages : MonoBehaviour
         {
-            
-
-            private readonly Dictionary<string, string> flagMessages = new Dictionary<string, string>
+            public enum Language
             {
-                {"ForceUseCash", "All customers only have cash."},
-                {"ForceUseCredit", "All customers only have card."},
-                {"ForceExactChange", "All customers will pay in exact change."},
-                {"AllowMischarge", "You can currently over charge card payments."}
+                English = 0,
+                French = 1,
+                German = 2,
+                Italian = 3,
+                Spanish = 4,
+                Portugal = 5,
+                Brazil = 6,
+                Netherlands = 7,
+                Turkey = 8
+            }
+
+            private readonly Dictionary<string, Dictionary<Language, string>> flagMessages = new Dictionary<string, Dictionary<Language, string>>
+            {
+                {
+                    "ForceUseCash", new Dictionary<Language, string>
+                    {
+                        { Language.English, "All customers only have cash." },
+                        { Language.French, "Tous les clients n'ont que de l'argent liquide." },
+                        { Language.German, "Alle Kunden haben nur Bargeld." },
+                        { Language.Italian, "Tutti i clienti hanno solo contanti." },
+                        { Language.Spanish, "Todos los clientes solo tienen efectivo." },
+                        { Language.Portugal, "Todos os clientes só têm dinheiro." },
+                        { Language.Brazil, "Todos os clientes só têm dinheiro." },
+                        { Language.Netherlands, "Alle klanten hebben alleen contant geld." },
+                        { Language.Turkey, "Tüm müşterilerin sadece nakit parası var." }
+                    }
+                },
+                {
+                    "ForceUseCredit", new Dictionary<Language, string>
+                    {
+                        { Language.English, "All customers only have card." },
+                        { Language.French, "Tous les clients n'ont que des cartes." },
+                        { Language.German, "Alle Kunden haben nur Karten." },
+                        { Language.Italian, "Tutti i clienti hanno solo carta." },
+                        { Language.Spanish, "Todos los clientes solo tienen tarjeta." },
+                        { Language.Portugal, "Todos os clientes só têm cartão." },
+                        { Language.Brazil, "Todos os clientes só têm cartão." },
+                        { Language.Netherlands, "Alle klanten hebben alleen een kaart." },
+                        { Language.Turkey, "Tüm müşterilerin sadece kartı var." }
+                    }
+                },
+                {
+                    "ForceExactChange", new Dictionary<Language, string>
+                    {
+                        { Language.English, "All customers will pay in exact change." },
+                        { Language.French, "Tous les clients paieront avec l'appoint exact." },
+                        { Language.German, "Alle Kunden zahlen mit genauem Wechselgeld." },
+                        { Language.Italian, "Tutti i clienti pagheranno con il resto esatto." },
+                        { Language.Spanish, "Todos los clientes pagarán con el cambio exacto." },
+                        { Language.Portugal, "Todos os clientes pagarão com o troco exato." },
+                        { Language.Brazil, "Todos os clientes pagarão com o troco exato." },
+                        { Language.Netherlands, "Alle klanten betalen met precies wisselgeld." },
+                        { Language.Turkey, "Tüm müşteriler tam para üstüyle ödeyecek." }
+                    }
+                },
+                {
+                    "AllowMischarge", new Dictionary<Language, string>
+                    {
+                        { Language.English, "You can currently overcharge card payments." },
+                        { Language.French, "Vous pouvez actuellement surcharger les paiements par carte." },
+                        { Language.German, "Sie können derzeit Kartenzahlungen überladen." },
+                        { Language.Italian, "Attualmente puoi addebitare eccessivamente i pagamenti con carta." },
+                        { Language.Spanish, "Actualmente puedes sobrecargar los pagos con tarjeta." },
+                        { Language.Portugal, "Atualmente, você pode sobrecarregar os pagamentos com cartão." },
+                        { Language.Brazil, "Atualmente, você pode sobrecarregar os pagamentos com cartão." },
+                        { Language.Netherlands, "U kunt momenteel kaartbetalingen te veel in rekening brengen." },
+                        { Language.Turkey, "Şu anda kart ödemelerinden fazla ücret alabilirsiniz." }
+                    }
+                }
             };
 
             private List<string> activeMessages = new List<string>();
@@ -105,12 +168,14 @@ namespace BepinControl
 
             void UpdateActiveMessages()
             {
-                activeMessages.Clear();
+                if (CurrentLanguage > 8) CurrentLanguage = 0;
+                Language currentLanguage = (Language)CurrentLanguage;
 
-                if (ForceUseCash) activeMessages.Add(flagMessages["ForceUseCash"]);
-                if (ForceUseCredit) activeMessages.Add(flagMessages["ForceUseCredit"]);
-                if (ForceExactChange) activeMessages.Add(flagMessages["ForceExactChange"]);
-                if (AllowMischarge) activeMessages.Add(flagMessages["AllowMischarge"]);
+                activeMessages.Clear();
+                if (ForceUseCash) activeMessages.Add(flagMessages["ForceUseCash"][currentLanguage]);
+                if (ForceUseCredit) activeMessages.Add(flagMessages["ForceUseCredit"][currentLanguage]);
+                if (ForceExactChange) activeMessages.Add(flagMessages["ForceExactChange"][currentLanguage]);
+                if (AllowMischarge) activeMessages.Add(flagMessages["AllowMischarge"][currentLanguage]);
             }
 
             void OnGUI()
@@ -154,16 +219,7 @@ namespace BepinControl
         }
 
 
-        public class CustomGUIClass : MonoBehaviour
-        {
-            void OnGUI()
-            {
-                GUIStyle guiStyle = new GUIStyle();
-                guiStyle.fontSize = 24;
-                
-                GUI.Label(new Rect(10, 10, 300, 50), "Hello from Custom GUI!", guiStyle);
-            }
-        }
+
 
         [HarmonyPatch(typeof(PlayerInteraction), "Start")]
         public static class AddCustomGUIClassPatch
@@ -184,7 +240,7 @@ namespace BepinControl
                 FieldInfo totalPriceField = AccessTools.Field(typeof(Checkout), "m_TotalPrice");
                 // If the player puts in up to 1.5 the original price they can charge that but no more also allows them to undercharge
                 if (((float)totalPriceField.GetValue(__instance)) * 1.5 >= posTotal) totalPriceField.SetValue(__instance, posTotal);
-                
+
                 return true;
             }
 
@@ -230,12 +286,12 @@ namespace BepinControl
                 // Access the TMP_Text component directly and set its text
                 TMP_Text textComponent = (TMP_Text)AccessTools.Field(__instance.GetType(), "m_CorrectChangeText").GetValue(__instance);
                 if (textComponent != null && ForceMath)
-                { 
+                {
                     textComponent.text = "DO THE MATH";
                     return false;
                 }
 
-                return textComponent; 
+                return textComponent;
             }
         }
 

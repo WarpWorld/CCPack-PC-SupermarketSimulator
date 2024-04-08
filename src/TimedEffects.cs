@@ -72,6 +72,7 @@ namespace BepinControl
                             bool isChangingLanguage = (bool)CrowdDelegates.getProperty(settingsMenuManager, "m_ChangingLocale");
                             isChangingLanguage = false;
                             CrowdDelegates.setProperty(settingsMenuManager, "m_ChangingLocale", false);
+                            TestMod.CurrentLanguage = newLanguage;
                             settingsMenuManager.SetLanguage(newLanguage);
                         });
                         break;
@@ -126,18 +127,20 @@ namespace BepinControl
                         {
 
                             SaveManager saveManager = Singleton<SaveManager>.Instance;
-                            //saveManager.Settings.InvertXAxis = !saveManager.Settings.InvertXAxis;
-                            InputActions inputActions = Singleton<InputActions>.Instance;
+                            SettingsMenuManager settingsMenuManager = Singleton<SettingsMenuManager>.Instance;
+                            settingsMenuManager.InvertXAxis(!saveManager.Settings.InvertXAxis);
 
-                            TestMod.mls.LogInfo($"test: {CrowdDelegates.getProperty(inputActions, "m_Look")}");
+                        });
+                        break;
+                    }
+                case TimedType.INVERT_Y:
+                    {
+                        TestMod.ActionQueue.Enqueue(() =>
+                        {
 
-
-                            Vector2 myVector = new Vector2(-1.00f, -1.00f);
-
-                            CrowdDelegates.setProperty(inputActions, "m_Look", myVector);
-                            
-
-                            //m_InputActionAsset.FindAction("Look", false).ApplyParameterOverride("invertVector2:invertX", this.m_Settings.InvertXAxis, 0)
+                            SaveManager saveManager = Singleton<SaveManager>.Instance;
+                            SettingsMenuManager settingsMenuManager = Singleton<SettingsMenuManager>.Instance;
+                            settingsMenuManager.InvertYAxis(!saveManager.Settings.InvertYAxis);
 
                         });
                         break;
@@ -220,6 +223,8 @@ namespace BepinControl
 
                                     if (oldLanguage < 0) oldLanguage = 0;
 
+                                    TestMod.CurrentLanguage = oldLanguage;
+
                                     isChangingLanguage = false;
                                     CrowdDelegates.setProperty(settingsMenuManager, "m_ChangingLocale", false);
                                     settingsMenuManager.SetLanguage(oldLanguage);
@@ -286,8 +291,23 @@ namespace BepinControl
                         {
                             TestMod.ActionQueue.Enqueue(() =>
                             {
+
                                 SaveManager saveManager = Singleton<SaveManager>.Instance;
-                                saveManager.Settings.InvertXAxis = !saveManager.Settings.InvertXAxis;
+                                SettingsMenuManager settingsMenuManager = Singleton<SettingsMenuManager>.Instance;
+                                settingsMenuManager.InvertXAxis(!saveManager.Settings.InvertXAxis);
+
+                            });
+                            break;
+                        }
+                    case TimedType.INVERT_Y:
+                        {
+                            TestMod.ActionQueue.Enqueue(() =>
+                            {
+
+                                SaveManager saveManager = Singleton<SaveManager>.Instance;
+                                SettingsMenuManager settingsMenuManager = Singleton<SettingsMenuManager>.Instance;
+                                settingsMenuManager.InvertXAxis(!saveManager.Settings.InvertYAxis);
+
                             });
                             break;
                         }

@@ -656,7 +656,9 @@ namespace BepinControl
 
             if (TimedThread.isRunning(TimedType.FORCE_CASH)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
             if (TimedThread.isRunning(TimedType.FORCE_CARD)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
-
+            
+            GetCurrentLanguage();
+            
             string paymentType = req.code.Split('_')[1];
 
             if (paymentType == "cash") new Thread(new TimedThread(req.GetReqID(), TimedType.FORCE_CASH, dur * 1000).Run).Start();
@@ -2043,6 +2045,8 @@ namespace BepinControl
             if (TimedThread.isRunning(TimedType.FORCE_MATH)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
             if (TimedThread.isRunning(TimedType.FORCE_CARD)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
 
+            GetCurrentLanguage();
+
             new Thread(new TimedThread(req.GetReqID(), TimedType.FORCE_EXACT_CHANGE, dur * 1000).Run).Start();
             return new TimedResponse(req.GetReqID(), dur * 1000, CrowdResponse.Status.STATUS_SUCCESS);
         }
@@ -2056,6 +2060,9 @@ namespace BepinControl
             if (TimedThread.isRunning(TimedType.FORCE_EXACT_CHANGE)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
             if (TimedThread.isRunning(TimedType.FORCE_CASH)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
 
+            GetCurrentLanguage();
+
+
             new Thread(new TimedThread(req.GetReqID(), TimedType.ALLOW_MISCHARGE, dur * 1000).Run).Start();
             return new TimedResponse(req.GetReqID(), dur * 1000, CrowdResponse.Status.STATUS_SUCCESS);
         }
@@ -2067,24 +2074,9 @@ namespace BepinControl
             if (req.duration > 0) dur = req.duration / 1000;
             TestMod.mls.LogInfo($"running");
 
-            // if (TimedThread.isRunning(TimedType.INVERT_X)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            if (TimedThread.isRunning(TimedType.INVERT_X)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
 
-
-            //PosTerminal posTerminal = Singleton<PosTerminal>.Instance;
-            //CustomerPayment customerPayment = Singleton<CustomerPayment>.Instance;
-            //WarningCanvas warningCanvas = Singleton<WarningCanvas>.Instance;
-
-            //ShowInteractionWarning(InteractionWarningType warningType, params string[] args)
-
-            //callFunc(warningCanvas, "ShowInteractionWarning", new object[] { InteractionWarningType.CANT_THROW, "Testing!" });
-
-
-
-
-            //TestMod.mls.LogInfo($"POS: {getProperty(posTerminal, "m_Buttons")}");
-
-
-            //new Thread(new TimedThread(req.GetReqID(), TimedType.INVERT_X, dur * 1000).Run).Start();
+            new Thread(new TimedThread(req.GetReqID(), TimedType.INVERT_X, dur * 1000).Run).Start();
             return new TimedResponse(req.GetReqID(), dur * 1000, CrowdResponse.Status.STATUS_SUCCESS);
         }
 
@@ -2150,11 +2142,23 @@ namespace BepinControl
             return new TimedResponse(req.GetReqID(), dur * 1000, CrowdResponse.Status.STATUS_SUCCESS);
         }
 
+        public static void GetCurrentLanguage()
+        {
+
+            // if this is running, we dont want to do anything
+            if (TimedThread.isRunning(TimedType.SET_LANGUAGE)) return;
+
+            SaveManager saveManager = Singleton<SaveManager>.Instance;
+            int currentLanguage = saveManager.Settings.LanguageSetting;
+            TestMod.CurrentLanguage = currentLanguage;
+            return;
+
+        }
+
         public static CrowdResponse SetLanguage(ControlClient client, CrowdRequest req)
         {
             int dur = 30;
             if (req.duration > 0) dur = req.duration / 1000;
-
 
             SaveManager saveManager = Singleton<SaveManager>.Instance;
             int currentLanguage = saveManager.Settings.LanguageSetting;
