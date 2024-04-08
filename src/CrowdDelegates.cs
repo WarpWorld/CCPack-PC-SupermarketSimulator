@@ -26,6 +26,7 @@ namespace BepinControl
     public class CrowdDelegates
     {
         public static System.Random rnd = new System.Random();
+        
 
         public static CrowdResponse Money100(ControlClient client, CrowdRequest req)
         {
@@ -521,7 +522,16 @@ namespace BepinControl
                                 teleportPosition = computerPOS.position;
                                 break;
                             case "faraway":
-                                teleportPosition = new Vector3(-64.75f, -0.04f, 46.34f);
+                                Vector3[] positions = new Vector3[]
+                                {
+                                    new Vector3(-64.75f, -0.04f, 46.34f),
+                                    new Vector3(90.38f, -0.06f, -52.40f),
+                                    new Vector3(98.13f, -0.01f, 64.64f),
+                                    new Vector3(-65.27f, -0.06f, -24.99f)
+                                };
+                                System.Random random = new System.Random();
+                                int randomIndex = random.Next(0, positions.Length);
+                                teleportPosition = positions[randomIndex];
                                 break;
                         }
 
@@ -2023,6 +2033,68 @@ namespace BepinControl
         }
 
 
+        public static CrowdResponse InvertX(ControlClient client, CrowdRequest req)
+        {
+            int dur = 30;
+            if (req.duration > 0) dur = req.duration / 1000;
+
+            // if (TimedThread.isRunning(TimedType.INVERT_X)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+
+            SaveManager saveManager = Singleton<SaveManager>.Instance;
+            //saveManager.Settings.InvertXAxis = !saveManager.Settings.InvertXAxis;
+            InputActions inputActions = Singleton<InputActions>.Instance;
+
+
+
+            Vector2 myVector = new Vector2(0.00f, 0.00f);
+
+            setProperty(inputActions, "m_Look", myVector);
+            TestMod.mls.LogInfo($"myVector: {myVector}");
+            TestMod.mls.LogInfo($"inputActions: {inputActions}");
+            TestMod.mls.LogInfo($"m_Look: {getProperty(inputActions, "m_Look")}");
+
+
+            //new Thread(new TimedThread(req.GetReqID(), TimedType.INVERT_X, dur * 1000).Run).Start();
+            return new TimedResponse(req.GetReqID(), dur * 1000, CrowdResponse.Status.STATUS_SUCCESS);
+        }
+
+        public static CrowdResponse InvertY(ControlClient client, CrowdRequest req)
+        {
+            int dur = 30;
+            if (req.duration > 0) dur = req.duration / 1000;
+
+            if (TimedThread.isRunning(TimedType.INVERT_Y)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+            new Thread(new TimedThread(req.GetReqID(), TimedType.INVERT_Y, dur * 1000).Run).Start();
+            return new TimedResponse(req.GetReqID(), dur * 1000, CrowdResponse.Status.STATUS_SUCCESS);
+        }
+
+        public static CrowdResponse SensitivityLow(ControlClient client, CrowdRequest req)
+        {
+            int dur = 30;
+            if (req.duration > 0) dur = req.duration / 1000;
+
+
+            if (TimedThread.isRunning(TimedType.SENSITIVITY_LOW)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+            new Thread(new TimedThread(req.GetReqID(), TimedType.SENSITIVITY_LOW, dur * 1000).Run).Start();
+            return new TimedResponse(req.GetReqID(), dur * 1000, CrowdResponse.Status.STATUS_SUCCESS);
+        }
+
+        public static CrowdResponse SensitivityHigh(ControlClient client, CrowdRequest req)
+        {
+            int dur = 30;
+            if (req.duration > 0) dur = req.duration / 1000;
+
+
+            if (TimedThread.isRunning(TimedType.SENSITIVITY_HIGH)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+            new Thread(new TimedThread(req.GetReqID(), TimedType.SENSITIVITY_HIGH, dur * 1000).Run).Start();
+            return new TimedResponse(req.GetReqID(), dur * 1000, CrowdResponse.Status.STATUS_SUCCESS);
+        }
+
+
         public static CrowdResponse HighFOV(ControlClient client, CrowdRequest req)
         {
             int dur = 30;
@@ -2035,6 +2107,7 @@ namespace BepinControl
             new Thread(new TimedThread(req.GetReqID(), TimedType.HIGH_FOV, dur * 1000).Run).Start();
             return new TimedResponse(req.GetReqID(), dur * 1000, CrowdResponse.Status.STATUS_SUCCESS);
         }
+
 
         public static CrowdResponse LowFOV(ControlClient client, CrowdRequest req)
         {
@@ -2121,9 +2194,6 @@ namespace BepinControl
                 { "oldLanguage", currentLanguage },
                 { "newLanguage", newLanguage }
             };
-
-            TestMod.mls.LogInfo($"orgLanguage: {currentLanguage}");
-            TestMod.mls.LogInfo($"newLanguage: {newLanguage}");
 
 
             new Thread(new TimedThread(req.GetReqID(), TimedType.SET_LANGUAGE, dur * 1000, customVariables).Run).Start();

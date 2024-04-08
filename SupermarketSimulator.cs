@@ -85,9 +85,6 @@ namespace CrowdControl.Games.Packs.SupermarketSimulator
                 new Effect("Deliver Lasagna to Player", "playerbox_lasag") { Category = "Player Boxes"},
 
 
-                new Effect("Send Small Empty Box", "playeremptybox_eggs") { Category = "Empty Boxes"},
-                new Effect("Send Medium Empty Box", "playeremptybox_cereal") { Category = "Empty Boxes"},
-                new Effect("Send Large Empty Box", "playeremptybox_toilet") { Category = "Empty Boxes"},
 
 
 
@@ -100,6 +97,10 @@ namespace CrowdControl.Games.Packs.SupermarketSimulator
                 new Effect("Force Card Only", "forcepayment_card") { Duration = 60, Category = "Payments"},
 
                 new Effect("Force Math", "forcemath") { Description = "Forces the player to do the math for correct change!", Duration = 60, Category = "Math"},
+
+
+                // new Effect("Invert X-Axis", "invertx") { Category = "Axis Control"},
+                // new Effect("Invert Y-Axis", "inverty") { Category = "Axis Control"},
 
                 // new Effect("Close Checkout", "closecheckout") { Category = "Checkout"},
                 // new Effect("Open Checkout", "opencheckout") { Category = "Checkout"},

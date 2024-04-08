@@ -21,7 +21,11 @@ namespace BepinControl
         SET_LANGUAGE,
         FORCE_CARD,
         FORCE_CASH,
-        FORCE_MATH
+        FORCE_MATH,
+        INVERT_X,
+        INVERT_Y,
+        SENSITIVITY_LOW,
+        SENSITIVITY_HIGH
     }
 
 
@@ -111,6 +115,37 @@ namespace BepinControl
                         TestMod.ActionQueue.Enqueue(() =>
                         {
                             TestMod.ForceMath = true;
+                        });
+                        break;
+                    }
+                case TimedType.INVERT_X:
+                    {
+                        TestMod.ActionQueue.Enqueue(() =>
+                        {
+
+                            SaveManager saveManager = Singleton<SaveManager>.Instance;
+                            //saveManager.Settings.InvertXAxis = !saveManager.Settings.InvertXAxis;
+                            InputActions inputActions = Singleton<InputActions>.Instance;
+
+                            TestMod.mls.LogInfo($"test: {CrowdDelegates.getProperty(inputActions, "m_Look")}");
+
+
+                            Vector2 myVector = new Vector2(-1.00f, -1.00f);
+
+                            CrowdDelegates.setProperty(inputActions, "m_Look", myVector);
+                            
+
+                            //m_InputActionAsset.FindAction("Look", false).ApplyParameterOverride("invertVector2:invertX", this.m_Settings.InvertXAxis, 0)
+
+                        });
+                        break;
+                    }
+                case TimedType.INVERT_Y:
+                    {
+                        TestMod.ActionQueue.Enqueue(() =>
+                        {
+                            SaveManager saveManager = Singleton<SaveManager>.Instance;
+                            saveManager.Settings.InvertYAxis = !saveManager.Settings.InvertYAxis;
                         });
                         break;
                     }
@@ -235,6 +270,24 @@ namespace BepinControl
                                     TestMod.mls.LogInfo(e.ToString());
                                     Timed.removeEffect(etype);
                                 }
+                            });
+                            break;
+                        }
+                    case TimedType.INVERT_X:
+                        {
+                            TestMod.ActionQueue.Enqueue(() =>
+                            {
+                                SaveManager saveManager = Singleton<SaveManager>.Instance;
+                                saveManager.Settings.InvertXAxis = !saveManager.Settings.InvertXAxis;
+                            });
+                            break;
+                        }
+                    case TimedType.INVERT_Y:
+                        {
+                            TestMod.ActionQueue.Enqueue(() =>
+                            {
+                                SaveManager saveManager = Singleton<SaveManager>.Instance;
+                                saveManager.Settings.InvertYAxis = !saveManager.Settings.InvertYAxis;
                             });
                             break;
                         }

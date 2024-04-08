@@ -118,6 +118,9 @@ namespace BepinControl
                 {"playeremptybox_cereal", CrowdDelegates.PlayerSendEmptyBox},
                 {"playeremptybox_toilet", CrowdDelegates.PlayerSendEmptyBox},
 
+                // {"invertx", CrowdDelegates.InvertX},
+                // {"inverty", CrowdDelegates.InvertY},
+
 
                 {"teleport_outsidestore", CrowdDelegates.TeleportPlayer},
                 {"teleport_acrossstreet", CrowdDelegates.TeleportPlayer},
