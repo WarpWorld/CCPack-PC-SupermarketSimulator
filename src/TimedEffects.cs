@@ -306,7 +306,7 @@ namespace BepinControl
 
                                 SaveManager saveManager = Singleton<SaveManager>.Instance;
                                 SettingsMenuManager settingsMenuManager = Singleton<SettingsMenuManager>.Instance;
-                                settingsMenuManager.InvertXAxis(!saveManager.Settings.InvertYAxis);
+                                settingsMenuManager.InvertYAxis(!saveManager.Settings.InvertYAxis);
 
                             });
                             break;
