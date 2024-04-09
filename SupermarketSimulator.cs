@@ -69,10 +69,9 @@ namespace CrowdControl.Games.Packs.SupermarketSimulator
                 new Effect("Deliver Cat Food", "box_cat") { Category = "Boxes"},
                 new Effect("Deliver Lasagna", "box_lasag") { Category = "Boxes"},
 
-                new Effect("Send a Small Empty Box", "playeremptybox_lasag") { Description = "Send a small empty box to the player.", Category = "Player Boxes"},
-                new Effect("Send a Medium Empty Box", "playeremptybox_lasag") { Description = "Send a small empty box to the player.", Category = "Player Boxes"},
-                new Effect("Send a Large Empty Box", "playeremptybox_lasag") { Description = "Send a small empty box to the player.", Category = "Player Boxes"},
-
+                new Effect("Send a Small Empty Box", "playeremptybox_eggs") { Description = "Send a small empty box to the player.", Category = "Player Boxes"},
+                new Effect("Send a Medium Empty Box", "playeremptybox_cereal") { Description = "Send a small empty box to the player.", Category = "Player Boxes"},
+                new Effect("Send a Large Empty Box", "playeremptybox_toilet") { Description = "Send a small empty box to the player.", Category = "Player Boxes"},
 
                 new Effect("Send Cereal to Player", "playerbox_cereal") { Description = "Send some cereal to the player.", Category = "Player Boxes"},
                 new Effect("Send Bread to Player", "playerbox_bread") { Description = "Send some bread to the player.", Category = "Player Boxes"},
