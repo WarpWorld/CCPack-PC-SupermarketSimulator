@@ -18,15 +18,38 @@ using static UnityEngine.EventSystems.EventTrigger;
 using static UnityEngine.GraphicsBuffer;
 
 
+
+
 namespace BepinControl
 {
     public delegate CrowdResponse CrowdDelegate(ControlClient client, CrowdRequest req);
+
+    public static class CustomerChatNames
+    {
+        private static Dictionary<int, string> chatNames = new Dictionary<int, string>();
+
+        public static void SetChatName(int customerId, string name)
+        {
+            chatNames[customerId] = name;
+        }
+
+        public static string GetChatName(int customerId)
+        {
+            if (chatNames.TryGetValue(customerId, out string name))
+            {
+                return name;
+            }
+            return null; // Or a default name
+        }
+    }
+
 
 
     public class CrowdDelegates
     {
         public static System.Random rnd = new System.Random();
-        
+
+
 
         public static CrowdResponse Money100(ControlClient client, CrowdRequest req)
         {
@@ -677,9 +700,8 @@ namespace BepinControl
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
-     
 
-            try
+                try
             {
                 PlayerObjectHolder hold = Singleton<PlayerObjectHolder>.Instance;
                 PlayerInteraction player = Singleton<PlayerInteraction>.Instance;
@@ -821,9 +843,14 @@ namespace BepinControl
                         Transform door = (Transform)getProperty(Singleton<CustomerManager>.Instance, "m_StoreDoor");
 
                         Customer customer = Singleton<CustomerGenerator>.Instance.Spawn(door.position);
+                        CustomerChatNames.SetChatName(customer.gameObject.GetInstanceID(), "jaku");
+                        TestMod.mls.LogInfo($"set name: {customer.gameObject.GetInstanceID()}");
                         customer.GoToStore(door.position);
+
                         List<Customer> cust = (List<Customer>)getProperty(Singleton<CustomerManager>.Instance, "m_ActiveCustomers");
+                        
                         cust.Add(customer);
+                        //customer.SetChatName("jaku");
                         setProperty(Singleton<CustomerManager>.Instance, "m_ActiveCustomers", cust);
 
                         //Singleton<CustomerManager>.Instance.SpawnCustomer(door.position);

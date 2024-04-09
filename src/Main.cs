@@ -64,6 +64,8 @@ namespace BepinControl
             mls.LogInfo($"Loaded {modGUID}. Patching.");
             harmony.PatchAll(typeof(TestMod));
             harmony.PatchAll();
+            CustomerGeneratorPatches.ApplyPatches(harmony);
+
             mls.LogInfo($"Initializing Crowd Control");
 
             try
@@ -218,6 +220,60 @@ namespace BepinControl
 
         }
 
+        public static class CustomerGeneratorPatches
+        {
+            public static void ApplyPatches(Harmony harmonyInstance)
+            {
+                var originalSpawn = typeof(CustomerGenerator).GetMethod("Spawn", new Type[] { });
+                var postfixSpawn = new HarmonyMethod(typeof(CustomerGeneratorPatches).GetMethod(nameof(SpawnPostfix), BindingFlags.Static | BindingFlags.NonPublic));
+                harmonyInstance.Patch(originalSpawn, null, postfixSpawn);
+
+                var originalSpawnVector = typeof(CustomerGenerator).GetMethod("Spawn", new Type[] { typeof(Vector3) });
+                var postfixSpawnVector = new HarmonyMethod(typeof(CustomerGeneratorPatches).GetMethod(nameof(SpawnVectorPostfix), BindingFlags.Static | BindingFlags.NonPublic));
+                harmonyInstance.Patch(originalSpawnVector, null, postfixSpawnVector);
+            }
+
+            private static void SpawnPostfix(Customer __result)
+            {
+                AddNamePlateToCustomer(__result);
+            }
+
+            private static void SpawnVectorPostfix(Customer __result)
+            {
+                AddNamePlateToCustomer(__result);
+            }
+
+            private static void AddNamePlateToCustomer(Customer customer)
+            {
+                if (customer == null) return;
+
+
+                TestMod.mls.LogInfo($"get name: {customer.gameObject.GetInstanceID()}");
+
+                if (customer.transform.Find("NamePlate") != null) return;
+
+                string chatName = CustomerChatNames.GetChatName(customer.gameObject.GetInstanceID());
+
+                mls.LogInfo($"chatName {chatName}");
+
+                if (string.IsNullOrEmpty(chatName)) return;
+
+                GameObject namePlate = new GameObject("NamePlate");
+                namePlate.transform.SetParent(customer.transform);
+                namePlate.transform.localPosition = Vector3.up * 1.6f;
+                namePlate.transform.LookAt(2 * namePlate.transform.position - Camera.main.transform.position);
+                
+                TextMeshPro tmp = namePlate.AddComponent<TextMeshPro>();
+
+
+                tmp.text = "test"; 
+                tmp.alignment = TextAlignmentOptions.Center;
+                tmp.fontSize = 1;
+
+                //need to make it always face the camera... at least would be nice
+
+            }
+        }
 
 
 
