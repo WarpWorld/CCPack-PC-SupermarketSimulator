@@ -24,6 +24,8 @@ namespace BepinControl
 {
     public delegate CrowdResponse CrowdDelegate(ControlClient client, CrowdRequest req);
 
+
+
     public static class CustomerChatNames
     {
         private static Dictionary<int, string> chatNames = new Dictionary<int, string>();
@@ -49,7 +51,98 @@ namespace BepinControl
     {
         public static System.Random rnd = new System.Random();
 
+        public enum Language
+        {
+            English = 0,
+            French = 1,
+            German = 2,
+            Italian = 3,
+            Spanish = 4,
+            Portugal = 5,
+            Brazil = 6,
+            Netherlands = 7,
+            Turkey = 8
+        }
 
+        private static readonly Dictionary<string, Dictionary<Language, string>> chatMessages = new Dictionary<string, Dictionary<Language, string>>
+                {
+                    {
+                        "Pizza", new Dictionary<Language, string>
+                        {
+                            { Language.English, "Lemme get that pizza BONELESS!" },
+                            { Language.French, "Laisse-moi avoir cette pizza SANS OS !" },
+                            { Language.German, "Lass mir diese Pizza OHNE KNOCHEN!" },
+                            { Language.Italian, "Dammi quella pizza SENZA OSSA!" },
+                            { Language.Spanish, "¡Dame esa pizza SIN HUESOS!" },
+                            { Language.Portugal, "Deixa-me ter essa pizza SEM OSSOS!" },
+                            { Language.Brazil, "Deixa eu pegar essa pizza SEM OSSO!" },
+                            { Language.Netherlands, "Laat me die pizza ZONDER BOTTEN hebben!" },
+                            { Language.Turkey, "Bana kemiksiz o pizzayı ver!" }
+                        }
+                    },
+                    {
+                        "Soup", new Dictionary<Language, string>
+                        {
+                            { Language.English, "I'm at soup!" },
+                            { Language.French, "Je suis à la soupe !" },
+                            { Language.German, "Ich bin bei der Suppe!" },
+                            { Language.Italian, "Sono alla zuppa!" },
+                            { Language.Spanish, "¡Estoy en la sopa!" },
+                            { Language.Portugal, "Estou na sopa!" },
+                            { Language.Brazil, "Estou na sopa!" },
+                            { Language.Netherlands, "Ik ben bij de soep!" },
+                            { Language.Turkey, "Çorbadayım!" }
+                        }
+                    },
+                    {
+                        "Breakfast", new Dictionary<Language, string>
+                        {
+                            { Language.English, "It's breakfast time." },
+                            { Language.French, "C'est l'heure du petit-déjeuner." },
+                            { Language.German, "Es ist Frühstückszeit." },
+                            { Language.Italian, "È ora di colazione." },
+                            { Language.Spanish, "Es hora del desayuno." },
+                            { Language.Portugal, "É hora do café da manhã." },
+                            { Language.Brazil, "É hora do café da manhã." },
+                            { Language.Netherlands, "Het is ontbijttijd." },
+                            { Language.Turkey, "Kahvaltı zamanı." }
+                        }
+                    },
+                    {
+                        "Robbery", new Dictionary<Language, string>
+                        {
+                            { Language.English, "This is a robbery!" },
+                            { Language.French, "C'est un vol !" },
+                            { Language.German, "Das ist ein Überfall!" },
+                            { Language.Italian, "Questa è una rapina!" },
+                            { Language.Spanish, "¡Esto es un robo!" },
+                            { Language.Portugal, "Isto é um assalto!" },
+                            { Language.Brazil, "Isto é um assalto!" },
+                            { Language.Netherlands, "Dit is een overval!" },
+                            { Language.Turkey, "Bu bir soygun!" }
+                        }
+                    }
+                };
+
+
+        public static string GetChatMessage(string phrase) 
+        {
+
+            GetCurrentLanguage(); 
+
+            Language currentLanguage = (Language)TestMod.CurrentLanguage;
+
+            if (chatMessages.TryGetValue(phrase, out var languageDict))
+            {
+                if (languageDict.TryGetValue(currentLanguage, out var message))
+                {
+                    return message;
+                }
+            }
+
+            return "Message not found";
+
+        }
 
         public static CrowdResponse Money100(ControlClient client, CrowdRequest req)
         {
@@ -1092,8 +1185,12 @@ namespace BepinControl
                                 }, true);
 
                                 TMP_Text text = (TMP_Text)getProperty(speechObject, "m_SpeechText");
+
                                 //setProperty(text, "m_text", "This is a robbery!");
-                                text.text = "This is a robbery!";
+                                
+                                
+                                text.text = GetChatMessage("Robbery"); //chatMessages["Robbery"][currentLanguage];
+                                //text.text = "This is a robbery!";
                                 setProperty(speechObject, "m_SpeechText", text);
                             }
 
@@ -1180,8 +1277,11 @@ namespace BepinControl
                                 }, true);
 
                                 TMP_Text text = (TMP_Text)getProperty(speechObject, "m_SpeechText");
-                                //setProperty(text, "m_text", "This is a robbery!");
-                                text.text = "I'm at Soup!";
+
+                                Language currentLanguage = (Language)TestMod.CurrentLanguage;
+                                
+                                text.text = GetChatMessage("Soup"); //chatMessages["Soup"][currentLanguage];
+                                //text.text = "I'm at Soup!";
                                 setProperty(speechObject, "m_SpeechText", text);
                             }
 
@@ -1267,8 +1367,11 @@ namespace BepinControl
                                 }, true);
 
                                 TMP_Text text = (TMP_Text)getProperty(speechObject, "m_SpeechText");
-                                //setProperty(text, "m_text", "This is a robbery!");
-                                text.text = "It's breakfast time!";
+
+                                Language currentLanguage = (Language)TestMod.CurrentLanguage;
+                                
+                                text.text = GetChatMessage("Breakfast"); //chatMessages["Breakfast"][currentLanguage];
+                                //text.text = "It's breakfast time!";
                                 setProperty(speechObject, "m_SpeechText", text);
                             }
 
@@ -1345,6 +1448,8 @@ namespace BepinControl
                                 }
                                 CustomerSpeech prefab = (CustomerSpeech)getProperty(Singleton<WarningSystem>.Instance, "m_CustomerSpeechPrefab");
                                 float time = (float)getProperty(Singleton<WarningSystem>.Instance, "m_CustomerSpeechLifetime");
+                                
+                                GetCurrentLanguage();
 
                                 CustomerSpeech speechObject = LeanPool.Spawn<CustomerSpeech>(prefab, c.transform, false);
                                 speechObject.Setup(localizationEntry.TableCollection, localizationEntry.TableEntry, new string[] { });
@@ -1354,8 +1459,10 @@ namespace BepinControl
                                 }, true);
 
                                 TMP_Text text = (TMP_Text)getProperty(speechObject, "m_SpeechText");
-                                //setProperty(text, "m_text", "This is a robbery!");
-                                text.text = "Lemme get that pizza BONELESS";
+                                
+
+                                text.text = GetChatMessage("Pizza");// chatMessages["Pizza"][currentLanguage];
+                                //text.text = "Lemme get that pizza BONELESS";
                                 setProperty(speechObject, "m_SpeechText", text);
                             }
 
@@ -2182,6 +2289,8 @@ namespace BepinControl
             SaveManager saveManager = Singleton<SaveManager>.Instance;
             int currentLanguage = saveManager.Settings.LanguageSetting;
             TestMod.CurrentLanguage = currentLanguage;
+            if (currentLanguage > 8) TestMod.CurrentLanguage = 0;
+
             return;
 
         }
