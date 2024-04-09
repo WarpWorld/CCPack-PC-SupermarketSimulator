@@ -38,7 +38,7 @@ namespace BepinControl
         // Mod Details
         private const string modGUID = "WarpWorld.CrowdControl";
         private const string modName = "Crowd Control";
-        private const string modVersion = "1.0.2.0";
+        private const string modVersion = "1.0.3.0";
 
         private readonly Harmony harmony = new Harmony(modGUID);
 
@@ -259,14 +259,13 @@ namespace BepinControl
                 if (customer == null) return;
 
 
-                TestMod.mls.LogInfo($"get name: {customer.gameObject.GetInstanceID()}");
-
+         
                 if (customer.transform.Find("NamePlate") != null) return;
 
                 //string chatName = CustomerChatNames.GetChatName(customer.gameObject.GetInstanceID());
                 string chatName = NameOverride;
 
-                mls.LogInfo($"chatName {chatName}");
+         
 
                 if (string.IsNullOrEmpty(chatName)) return;
 

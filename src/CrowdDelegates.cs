@@ -131,7 +131,7 @@ namespace BepinControl
             GetCurrentLanguage(); 
 
             Language currentLanguage = (Language)TestMod.CurrentLanguage;
-
+            if (currentLanguage < 0) currentLanguage = 0;
             if (chatMessages.TryGetValue(phrase, out var languageDict))
             {
                 if (languageDict.TryGetValue(currentLanguage, out var message))
@@ -139,6 +139,8 @@ namespace BepinControl
                     return message;
                 }
             }
+
+            
 
             return "Message not found";
 
