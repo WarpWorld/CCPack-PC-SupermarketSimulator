@@ -842,9 +842,13 @@ namespace BepinControl
                     {
                         Transform door = (Transform)getProperty(Singleton<CustomerManager>.Instance, "m_StoreDoor");
 
+                        TestMod.NameOverride = req.viewer;
                         Customer customer = Singleton<CustomerGenerator>.Instance.Spawn(door.position);
-                        CustomerChatNames.SetChatName(customer.gameObject.GetInstanceID(), "jaku");
-                        TestMod.mls.LogInfo($"set name: {customer.gameObject.GetInstanceID()}");
+
+                        
+
+                        //CustomerChatNames.SetChatName(customer.gameObject.GetInstanceID(), req.viewer);
+                        //TestMod.mls.LogInfo($"set name: {customer.gameObject.GetInstanceID()}");
                         customer.GoToStore(door.position);
 
                         List<Customer> cust = (List<Customer>)getProperty(Singleton<CustomerManager>.Instance, "m_ActiveCustomers");

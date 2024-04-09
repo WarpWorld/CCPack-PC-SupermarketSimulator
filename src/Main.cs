@@ -54,6 +54,9 @@ namespace BepinControl
         public static bool AllowMischarge = false;
         public static int CurrentLanguage = 0;
 
+        public static string NameOverride = "";
+        public static List<GameObject> nameplates = new List<GameObject>();
+
         void Awake()
         {
 
@@ -203,6 +206,14 @@ namespace BepinControl
         static void RunEffects()
         {
 
+            foreach(GameObject namePlate in nameplates)
+            {
+                if (namePlate)
+                {
+                    namePlate.transform.LookAt(2 * namePlate.transform.position - Camera.main.transform.position);
+                }
+            }
+
             while (ActionQueue.Count > 0)
             {
                 Action action = ActionQueue.Dequeue();
@@ -252,21 +263,25 @@ namespace BepinControl
 
                 if (customer.transform.Find("NamePlate") != null) return;
 
-                string chatName = CustomerChatNames.GetChatName(customer.gameObject.GetInstanceID());
+                //string chatName = CustomerChatNames.GetChatName(customer.gameObject.GetInstanceID());
+                string chatName = NameOverride;
 
                 mls.LogInfo($"chatName {chatName}");
 
                 if (string.IsNullOrEmpty(chatName)) return;
 
+
+                NameOverride = "";
+
                 GameObject namePlate = new GameObject("NamePlate");
                 namePlate.transform.SetParent(customer.transform);
                 namePlate.transform.localPosition = Vector3.up * 1.6f;
                 namePlate.transform.LookAt(2 * namePlate.transform.position - Camera.main.transform.position);
-                
+
                 TextMeshPro tmp = namePlate.AddComponent<TextMeshPro>();
+                nameplates.Add(namePlate);
 
-
-                tmp.text = "test"; 
+                tmp.text = chatName; 
                 tmp.alignment = TextAlignmentOptions.Center;
                 tmp.fontSize = 1;
 
