@@ -127,7 +127,7 @@ namespace BepinControl
                         { Language.French, "Tous les clients n'ont que des cartes." },
                         { Language.German, "Alle Kunden haben nur Karten." },
                         { Language.Italian, "Tutti i clienti hanno solo carta." },
-                        { Language.Spanish, "Todos los clientes solo tienen tarjeta." },
+                        { Language.Spanish, "Todos los clientes solo tienen tarjeta de credito." },
                         { Language.Portugal, "Todos os clientes só têm cartão." },
                         { Language.Brazil, "Todos os clientes só têm cartão." },
                         { Language.Netherlands, "Alle klanten hebben alleen een kaart." },
@@ -155,7 +155,7 @@ namespace BepinControl
                         { Language.French, "Vous pouvez actuellement surcharger les paiements par carte." },
                         { Language.German, "Sie können derzeit Kartenzahlungen überladen." },
                         { Language.Italian, "Attualmente puoi addebitare eccessivamente i pagamenti con carta." },
-                        { Language.Spanish, "Actualmente puedes sobrecargar los pagos con tarjeta." },
+                        { Language.Spanish, "Actualmente puedes sobrecargar los pagos con tarjeta de credito." },
                         { Language.Portugal, "Atualmente, você pode sobrecarregar os pagamentos com cartão." },
                         { Language.Brazil, "Atualmente, você pode sobrecarregar os pagamentos com cartão." },
                         { Language.Netherlands, "U kunt momenteel kaartbetalingen te veel in rekening brengen." },
@@ -309,7 +309,6 @@ namespace BepinControl
             {
                 if (!AllowMischarge) return true;
                 FieldInfo totalPriceField = AccessTools.Field(typeof(Checkout), "m_TotalPrice");
-                // If the player puts in up to 1.5 the original price they can charge that but no more also allows them to undercharge
                 if (((float)totalPriceField.GetValue(__instance)) * 1.5 >= posTotal) totalPriceField.SetValue(__instance, posTotal);
 
                 return true;
