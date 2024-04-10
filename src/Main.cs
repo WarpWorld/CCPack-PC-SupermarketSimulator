@@ -30,6 +30,8 @@ using System.Runtime.ConstrainedExecution;
 using System.Security.Cryptography;
 using TMPro;
 
+
+
 namespace BepinControl
 {
     [BepInPlugin(modGUID, modName, modVersion)]
@@ -49,13 +51,16 @@ namespace BepinControl
 
         public static bool ForceUseCash = false;
         public static bool ForceUseCredit = false;
+        public static bool ForceRequireChange = false;
         public static bool ForceMath = false;
         public static bool ForceExactChange = false;
         public static bool AllowMischarge = false;
+        public static bool ForceLargeBills = false;
         public static int CurrentLanguage = 0;
 
         public static string NameOverride = "";
         public static List<GameObject> nameplates = new List<GameObject>();
+
 
         void Awake()
         {
@@ -149,6 +154,20 @@ namespace BepinControl
                     }
                 },
                 {
+                    "ForceRequireChange", new Dictionary<Language, string>
+                    {
+                        { Language.English, "All customers will not pay in exact change." },
+                        { Language.French, "Tous les clients ne paieront pas avec l'appoint exact." },
+                        { Language.German, "Alle Kunden werden nicht mit dem genauen Betrag bezahlen." },
+                        { Language.Italian, "Tutti i clienti non pagheranno con il resto esatto." },
+                        { Language.Spanish, "Todos los clientes no pagarán con el cambio exacto." },
+                        { Language.Portugal, "Todos os clientes não pagarão com o troco exato." },
+                        { Language.Brazil, "Todos os clientes não vão pagar com o troco exato." },
+                        { Language.Netherlands, "Niet alle klanten zullen met het exacte wisselgeld betalen." },
+                        { Language.Turkey, "Tüm müşteriler tam para üstü ile ödeme yapmayacak." }
+                    }
+                },
+                {
                     "AllowMischarge", new Dictionary<Language, string>
                     {
                         { Language.English, "You can currently overcharge card payments." },
@@ -180,6 +199,7 @@ namespace BepinControl
                 if (ForceUseCash) activeMessages.Add(flagMessages["ForceUseCash"][currentLanguage]);
                 if (ForceUseCredit) activeMessages.Add(flagMessages["ForceUseCredit"][currentLanguage]);
                 if (ForceExactChange) activeMessages.Add(flagMessages["ForceExactChange"][currentLanguage]);
+                if (ForceRequireChange) activeMessages.Add(flagMessages["ForceRequireChange"][currentLanguage]);
                 if (AllowMischarge) activeMessages.Add(flagMessages["AllowMischarge"][currentLanguage]);
             }
 
@@ -315,11 +335,48 @@ namespace BepinControl
 
         }
 
+
+
+        [HarmonyPatch(typeof(MoneyGenerator), "SpawnCustomerPayment")]
+        public static class MoneyGenerator_SpawnCustomerPayment_Patch
+        {
+            static void Postfix (ref GameObject __result)
+            {
+
+                if (__result != null && ForceLargeBills)
+                {
+                    float size = Random.Range(6.0f, 24.0f);
+                    __result.transform.localScale = new Vector3(size, size, size);
+                }
+            }
+
+        }
+
+
         [HarmonyPatch(typeof(CustomerPayment), "GenerateRandomPayment")]
         public static class CustomerPayment_GenerateRandomPayment_ExactChange_Patch
         {
             public static bool Prefix(ref float __result, float totalPrice)
             {
+                if (ForceRequireChange)
+                {
+
+                    float badLuck = Random.Range(0.0f, 1.0f);
+                    float randomChange = Random.Range(0.00f, 0.99f);
+
+                    if (badLuck < 0.1f )
+                    {
+                        __result = totalPrice + Random.Range(1, 100) + 1000 + randomChange;
+                       
+                    } else
+                    {
+                        __result = totalPrice + Random.Range(1, 100) + randomChange;
+                    }
+
+                    return false;
+
+                }
+
                 if (!ForceExactChange) return true;
                 __result = totalPrice;
                 return false;

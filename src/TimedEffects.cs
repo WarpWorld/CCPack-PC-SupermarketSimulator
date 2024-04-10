@@ -27,6 +27,8 @@ namespace BepinControl
         SENSITIVITY_LOW,
         SENSITIVITY_HIGH,
         FORCE_EXACT_CHANGE,
+        FORCE_REQUIRE_CHANGE,
+        FORCE_LARGE_BILLS,
         ALLOW_MISCHARGE
     }
 
@@ -150,6 +152,14 @@ namespace BepinControl
                         TestMod.ActionQueue.Enqueue(() =>
                         {
                             TestMod.ForceExactChange = true;
+                        });
+                        break;
+                    }
+                case TimedType.FORCE_REQUIRE_CHANGE:
+                    {
+                        TestMod.ActionQueue.Enqueue(() =>
+                        {
+                            TestMod.ForceRequireChange = true;
                         });
                         break;
                     }
@@ -319,11 +329,27 @@ namespace BepinControl
                             });
                             break;
                         }
+                    case TimedType.FORCE_REQUIRE_CHANGE:
+                        {
+                            TestMod.ActionQueue.Enqueue(() =>
+                            {
+                                TestMod.ForceRequireChange = false;
+                            });
+                            break;
+                        }
                     case TimedType.ALLOW_MISCHARGE:
                         {
                             TestMod.ActionQueue.Enqueue(() =>
                             {
                                 TestMod.AllowMischarge = false;
+                            });
+                            break;
+                        }
+                    case TimedType.FORCE_LARGE_BILLS:
+                        {
+                            TestMod.ActionQueue.Enqueue(() =>
+                            {
+                                TestMod.ForceLargeBills = false;
                             });
                             break;
                         }

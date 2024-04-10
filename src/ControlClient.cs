@@ -121,9 +121,11 @@ namespace BepinControl
                 {"invertx", CrowdDelegates.InvertX},
                 {"inverty", CrowdDelegates.InvertY},
 
-
                 {"forceexactchange", CrowdDelegates.ForceExactChange},
+                {"forcerequirechange", CrowdDelegates.ForceRequireChange},
                 {"allowmischarges", CrowdDelegates.AllowMischarges},
+                {"forcelargebills", CrowdDelegates.ForceLargeBills},
+
 
                 {"teleport_outsidestore", CrowdDelegates.TeleportPlayer},
                 {"teleport_acrossstreet", CrowdDelegates.TeleportPlayer},
