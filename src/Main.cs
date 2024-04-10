@@ -40,7 +40,7 @@ namespace BepinControl
         // Mod Details
         private const string modGUID = "WarpWorld.CrowdControl";
         private const string modName = "Crowd Control";
-        private const string modVersion = "1.0.3.0";
+        private const string modVersion = "1.0.4.0";
 
         private readonly Harmony harmony = new Harmony(modGUID);
 
@@ -226,7 +226,7 @@ namespace BepinControl
         static void RunEffects()
         {
 
-            foreach(GameObject namePlate in nameplates)
+            foreach (GameObject namePlate in nameplates)
             {
                 if (namePlate)
                 {
@@ -279,13 +279,13 @@ namespace BepinControl
                 if (customer == null) return;
 
 
-         
+
                 if (customer.transform.Find("NamePlate") != null) return;
 
                 //string chatName = CustomerChatNames.GetChatName(customer.gameObject.GetInstanceID());
                 string chatName = NameOverride;
 
-         
+
 
                 if (string.IsNullOrEmpty(chatName)) return;
 
@@ -300,7 +300,7 @@ namespace BepinControl
                 TextMeshPro tmp = namePlate.AddComponent<TextMeshPro>();
                 nameplates.Add(namePlate);
 
-                tmp.text = chatName; 
+                tmp.text = chatName;
                 tmp.alignment = TextAlignmentOptions.Center;
                 tmp.fontSize = 1;
 
@@ -340,7 +340,7 @@ namespace BepinControl
         [HarmonyPatch(typeof(MoneyGenerator), "SpawnCustomerPayment")]
         public static class MoneyGenerator_SpawnCustomerPayment_Patch
         {
-            static void Postfix (ref GameObject __result)
+            static void Postfix(ref GameObject __result)
             {
 
                 if (__result != null && ForceLargeBills)
@@ -364,11 +364,12 @@ namespace BepinControl
                     float badLuck = Random.Range(0.0f, 1.0f);
                     float randomChange = Random.Range(0.00f, 0.99f);
 
-                    if (badLuck < 0.1f )
+                    if (badLuck < 0.1f)
                     {
                         __result = totalPrice + Random.Range(1, 100) + 1000 + randomChange;
-                       
-                    } else
+
+                    }
+                    else
                     {
                         __result = totalPrice + Random.Range(1, 100) + randomChange;
                     }
