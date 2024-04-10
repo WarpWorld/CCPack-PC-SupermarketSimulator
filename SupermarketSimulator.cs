@@ -96,7 +96,7 @@ namespace CrowdControl.Games.Packs.SupermarketSimulator
                 new Effect("Force Card Only", "forcepayment_card") { Description = "Force all customers to pay with card only.", Duration = 60, Category = "Payments"},
                 new Effect("Force Exact Change", "forceexactchange") { Description = "Force all customers to pay with exact change when paying in cash.", Duration = 60, Category = "Payments"},
                 new Effect("Customers Overpay", "forcerequirechange") { Description = "Force all customers to not pay with exact change when paying in cash.", Duration = 60, Category = "Payments"},
-                new Effect("Force Large Bills", "forcerequirechange") { Description = "Force customers that are paying with cash to use \"Large Bills\".", Duration = 60, Category = "Payments"},
+                new Effect("Force Large Bills", "forcelargebills") { Description = "Force customers that are paying with cash to use \"Large Bills\".", Duration = 60, Category = "Payments"},
 
                 new Effect("Allow Credit Mischarges", "allowmischarges") { Description = "Allow the caisher to mischarge the customer by a certain amount.", Duration = 60, Category = "Payments"},
                 new Effect("Force Math", "forcemath") { Description = "Forces the player to do the math for correct change!", Duration = 60, Category = "Payments"},
