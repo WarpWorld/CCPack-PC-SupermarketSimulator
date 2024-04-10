@@ -40,7 +40,7 @@ namespace BepinControl
         // Mod Details
         private const string modGUID = "WarpWorld.CrowdControl";
         private const string modName = "Crowd Control";
-        private const string modVersion = "1.0.4.0";
+        private const string modVersion = "1.0.5.0";
 
         private readonly Harmony harmony = new Harmony(modGUID);
 
@@ -343,10 +343,13 @@ namespace BepinControl
             static void Postfix(ref GameObject __result)
             {
 
-                if (__result != null && ForceLargeBills)
+                if (__result != null)
                 {
-                    float size = Random.Range(6.0f, 24.0f);
-                    __result.transform.localScale = new Vector3(size, size, size);
+                    if (ForceLargeBills)
+                    {
+                        float size = Random.Range(6.0f, 24.0f);
+                        __result.transform.localScale = new Vector3(size, size, size);
+                    }
                 }
             }
 

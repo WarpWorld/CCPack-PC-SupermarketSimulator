@@ -171,6 +171,14 @@ namespace BepinControl
                         });
                         break;
                     }
+                case TimedType.FORCE_LARGE_BILLS:
+                    {
+                        TestMod.ActionQueue.Enqueue(() =>
+                        {
+                            TestMod.ForceLargeBills = true;
+                        });
+                        break;
+                    }
             }
         }
 
