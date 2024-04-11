@@ -69,7 +69,9 @@ namespace BepinControl
                     {
                         TestMod.ActionQueue.Enqueue(() =>
                         {
-                            int newLanguage = GetCustomVariable<int>("newLanguage");
+
+                  
+                            int newLanguage = TestMod.NewLanguage;
                             SettingsMenuManager settingsMenuManager = Singleton<SettingsMenuManager>.Instance;
                             bool isChangingLanguage = (bool)CrowdDelegates.getProperty(settingsMenuManager, "m_ChangingLocale");
                             isChangingLanguage = false;
@@ -237,7 +239,8 @@ namespace BepinControl
                                     // Doesn't always seem to revert, not 100% sure. Might be frame/tick related?
                                     SettingsMenuManager settingsMenuManager = Singleton<SettingsMenuManager>.Instance;
                                     bool isChangingLanguage = (bool)CrowdDelegates.getProperty(settingsMenuManager, "m_ChangingLocale");
-                                    int oldLanguage = Timed.GetCustomVariable<int>("oldLanguage");
+                                    int oldLanguage = TestMod.OrgLanguage;
+
 
                                     if (oldLanguage < 0) oldLanguage = 0;
 

@@ -29,6 +29,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.ConstrainedExecution;
 using System.Security.Cryptography;
 using TMPro;
+using UnityEngine.EventSystems;
 
 
 
@@ -40,7 +41,7 @@ namespace BepinControl
         // Mod Details
         private const string modGUID = "WarpWorld.CrowdControl";
         private const string modName = "Crowd Control";
-        private const string modVersion = "1.0.5.0";
+        private const string modVersion = "1.0.6.0";
 
         private readonly Harmony harmony = new Harmony(modGUID);
 
@@ -49,6 +50,7 @@ namespace BepinControl
         internal static TestMod Instance = null;
         private ControlClient client = null;
 
+        public static bool isFocused = true;
         public static bool ForceUseCash = false;
         public static bool ForceUseCredit = false;
         public static bool ForceRequireChange = false;
@@ -57,6 +59,12 @@ namespace BepinControl
         public static bool AllowMischarge = false;
         public static bool ForceLargeBills = false;
         public static int CurrentLanguage = 0;
+
+        public static int OrgLanguage = 0;
+        public static int NewLanguage = 0;
+
+
+        public static string currentHeldItem;
 
         public static string NameOverride = "";
         public static List<GameObject> nameplates = new List<GameObject>();
@@ -309,6 +317,25 @@ namespace BepinControl
             }
         }
 
+
+        [HarmonyPatch(typeof(PlayerInteraction), "SetCurrentInteraction")]
+        public static class PlayerInteraction_SetCurrentInteraction_Patch
+        {
+            static void Postfix(InteractactableType type)
+            {
+                currentHeldItem = type.ToString();
+            }
+        }
+
+
+        [HarmonyPatch(typeof(EventSystem), "OnApplicationFocus")]
+        public static class EventSystem_OnApplicationFocus_Patch
+        {
+            static void Postfix(bool hasFocus)
+            {
+                isFocused = hasFocus;
+            }
+        }
 
 
         [HarmonyPatch(typeof(PlayerInteraction), "Start")]

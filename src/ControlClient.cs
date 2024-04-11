@@ -20,6 +20,7 @@
  * USA
  */
 
+using MyBox;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -27,6 +28,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.Localization.Pseudo;
 
 
 namespace BepinControl
@@ -118,6 +120,9 @@ namespace BepinControl
                 {"playeremptybox_cereal", CrowdDelegates.PlayerSendEmptyBox},
                 {"playeremptybox_toilet", CrowdDelegates.PlayerSendEmptyBox},
 
+                {"clearunusedboxes", CrowdDelegates.ClearBoxes},
+
+
                 {"invertx", CrowdDelegates.InvertX},
                 {"inverty", CrowdDelegates.InvertY},
 
@@ -176,7 +181,15 @@ namespace BepinControl
         {
             try
             {
+                //make sure the game is in focus otherwise don't let effects trigger
+                if (!TestMod.isFocused) return false;
                 //add check for whether the game is in a state it can accept effects
+                PlayerInteraction player = Singleton<PlayerInteraction>.Instance;
+                if (player == null) return false;
+                bool isPaused = (bool)CrowdDelegates.getProperty(player, "m_Paused");
+                if (isPaused) return false;
+
+
             }
             catch (Exception e)
             {

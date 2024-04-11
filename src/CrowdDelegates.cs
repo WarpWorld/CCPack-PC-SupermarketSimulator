@@ -12,12 +12,11 @@ using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Localization.Components;
+using UnityEngine.UI;
 using static SaveManager;
 using static System.Net.Mime.MediaTypeNames;
 using static UnityEngine.EventSystems.EventTrigger;
 using static UnityEngine.GraphicsBuffer;
-
-
 
 
 namespace BepinControl
@@ -50,7 +49,7 @@ namespace BepinControl
     public class CrowdDelegates
     {
         public static System.Random rnd = new System.Random();
-
+        public static int maxBoxCount = 100; 
         public enum Language
         {
             English = 0,
@@ -276,7 +275,7 @@ namespace BepinControl
             string message = "";
 
             if (!Singleton<MoneyManager>.Instance.HasMoney(100.0f))
-                return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, message);
+                return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Can't remove more cash than they have");
 
             try
             {
@@ -309,7 +308,7 @@ namespace BepinControl
             string message = "";
 
             if (!Singleton<MoneyManager>.Instance.HasMoney(1000.0f))
-                return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, message);
+                return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Can't remove more cash than they have");
 
             try
             {
@@ -342,7 +341,7 @@ namespace BepinControl
             string message = "";
 
             if (!Singleton<MoneyManager>.Instance.HasMoney(10000.0f))
-                return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, message);
+                return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Can't remove more cash than they have");
 
             try
             {
@@ -583,6 +582,10 @@ namespace BepinControl
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
+            //GameObject[] boxes = GameObject.FindGameObjectsWithTag("Box");
+            //int boxCount = boxes.Length;
+            //if (boxCount > maxBoxCount) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Too many boxes");
+
             try
             {
                 TestMod.ActionQueue.Enqueue(() =>
@@ -683,6 +686,10 @@ namespace BepinControl
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
+            //GameObject[] boxes = GameObject.FindGameObjectsWithTag("Box");
+            //int boxCount = boxes.Length;
+            //if (boxCount > maxBoxCount) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Too many boxes");
+
             try
             {
                 TestMod.ActionQueue.Enqueue(() =>
@@ -715,12 +722,59 @@ namespace BepinControl
         }
 
 
+        public static CrowdResponse ClearBoxes(ControlClient client, CrowdRequest req)
+        {
 
-        public static CrowdResponse PlayerSendEmptyBox(ControlClient client, CrowdRequest req)
+
+            CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
+            string message = "";
+
+            GameObject[] boxes = GameObject.FindGameObjectsWithTag("Box");
+            int boxCount = boxes.Length;
+            //TestMod.mls.LogInfo($"Box Count: {boxCount}");
+
+            if (boxCount < 1) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "No boxes to despawn.");
+
+            try
+            {
+                TestMod.ActionQueue.Enqueue(() =>
+                {
+                    try
+                    {
+
+                        foreach (GameObject box in boxes)
+                        {
+                            Box boxComponent = box.GetComponent<Box>();
+                            if (boxComponent) box.SetActive(false);
+                        }
+
+
+                    }
+                    catch (Exception e)
+                    {
+                        TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+                    }
+                });
+            }
+            catch (Exception e)
+            {
+                status = CrowdResponse.Status.STATUS_RETRY;
+                TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+            }
+
+            return new CrowdResponse(req.GetReqID(), status, message);
+
+           
+        }
+
+    public static CrowdResponse PlayerSendEmptyBox(ControlClient client, CrowdRequest req)
         {
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
+            
+            //if (boxCount > maxBoxCount) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Too many boxes");
+            //TestMod.mls.LogInfo($"boxCount: {boxCount}");
             try
             {
                 TestMod.ActionQueue.Enqueue(() =>
@@ -734,7 +788,7 @@ namespace BepinControl
 
                         Box box = Singleton<BoxGenerator>.Instance.SpawnBox(product, pos.position + Vector3.up * Singleton<DeliveryManager>.Instance.space * (float)2.0f, Quaternion.identity, null);
                         //-1 will make it empty, but will still use the products size from above
-                        box.Setup(-1, true);
+                        //box.Setup(-1, true);
 
 
                     }
@@ -838,14 +892,19 @@ namespace BepinControl
                     return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, message);
                 }
 
+                //ignore that this is inInteraction, we can determine if im holding or not
+                bool inInteraction = (bool)getProperty(player, "m_InInteraction");
+
+                if (!inInteraction) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, message);
+                if (!TestMod.currentHeldItem.Contains("BOX")) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, message);
 
                 TestMod.ActionQueue.Enqueue(() =>
                 {
                     try
                     {
-                        Singleton<PlayerObjectHolder>.Instance.ThrowObject();
+                        //Singleton<PlayerObjectHolder>.Instance.ThrowObject();
                         player.onThrow();
-                        
+
                     }
                     catch (Exception e)
                     {
@@ -875,9 +934,6 @@ namespace BepinControl
                 PlayerInteraction player = Singleton<PlayerInteraction>.Instance;
 
 
-                
-
-
                 GameObject obj = (GameObject)getProperty(hold, "m_CurrentObject");
 
                 if (obj == null)
@@ -897,15 +953,19 @@ namespace BepinControl
                     return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, message);
                 }
 
+                bool inInteraction = (bool)getProperty(player, "m_InInteraction");
+                TestMod.mls.LogInfo($"DROP ITEM: {inInteraction} {TestMod.currentHeldItem}");
+                if (!inInteraction) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, message);
+                if (!TestMod.currentHeldItem.Contains("BOX")) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, message);
 
                 TestMod.ActionQueue.Enqueue(() =>
                 {
                     try
                     {
                         Singleton<PlayerObjectHolder>.Instance.DropObject();
-                        player.onDrop();
-
-
+                        //player.onDrop();
+                        setProperty(player, "m_InInteraction", false);
+                        setProperty(player, "m_PlacingMode", false);
                     }
                     catch (Exception e)
                     {
@@ -987,6 +1047,9 @@ namespace BepinControl
             {
 
                 List<Customer> cust = (List<Customer>)getProperty(Singleton<CustomerManager>.Instance, "m_ActiveCustomers");
+
+               
+
 
                 bool found = false;
                 foreach (var c in cust)
@@ -1634,6 +1697,7 @@ namespace BepinControl
         {
             List<CashierSO> cashiers = (List<CashierSO>)getProperty(Singleton<IDManager>.Instance, "m_Cashiers");
 
+            if (Singleton<EmployeeManager>.Instance.CashiersData.Count > 4) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Can't hire any more cashiers.");
 
 
             CashierSO target = null;
@@ -1646,14 +1710,19 @@ namespace BepinControl
                 }
             }
 
+
             if (target == null) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            TestMod.mls.LogInfo($"TargetID: {target.ID}");
+            if (target.ID > 4) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Can't hire any more cashiers.");
+
+            if (Singleton<EmployeeManager>.Instance.CashiersData.Contains(target.ID)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
 
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
             try
             {
-
 
                 TestMod.ActionQueue.Enqueue(() =>
                 {
@@ -1681,10 +1750,12 @@ namespace BepinControl
             List<CashierSO> cashiers = (List<CashierSO>)getProperty(Singleton<IDManager>.Instance, "m_Cashiers");
 
 
+            EmployeeManager employeeManager = Singleton<EmployeeManager>.Instance;
 
+            int employeeCount = employeeManager.CashiersData?.Count ?? 0;
 
-            if (Singleton<EmployeeManager>.Instance.CashiersData.Count == 0)
-                return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            if (employeeCount < 1)
+                return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "");
 
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
@@ -1717,6 +1788,8 @@ namespace BepinControl
         public static CrowdResponse HireRestocker(ControlClient client, CrowdRequest req)
         {
             if (!Singleton<SaveManager>.Instance.Storage.Purchased) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+
             List<RestockerSO> restockers = (List<RestockerSO>)getProperty(Singleton<IDManager>.Instance, "m_Restockers");
 
             List<int> owned = (List<int>)getProperty(Singleton<EmployeeManager>.Instance, "m_RestockersData");
@@ -1764,11 +1837,7 @@ namespace BepinControl
         public static CrowdResponse FireRestocker(ControlClient client, CrowdRequest req)
         {
             List<int> owned = (List<int>)getProperty(Singleton<EmployeeManager>.Instance, "m_RestockersData");
-
-
-            if (owned.Count == 0)
-                return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
-
+            
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
@@ -2413,15 +2482,10 @@ namespace BepinControl
             if (currentLanguage == newLanguage) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "");
             if (TimedThread.isRunning(TimedType.SET_LANGUAGE)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
 
+            TestMod.NewLanguage = newLanguage;
+            TestMod.OrgLanguage = currentLanguage;
 
-            Dictionary<string, object> customVariables = new Dictionary<string, object>
-            {
-                { "oldLanguage", currentLanguage },
-                { "newLanguage", newLanguage }
-            };
-
-
-            new Thread(new TimedThread(req.GetReqID(), TimedType.SET_LANGUAGE, dur * 1000, customVariables).Run).Start();
+            new Thread(new TimedThread(req.GetReqID(), TimedType.SET_LANGUAGE, dur * 1000).Run).Start();
             return new TimedResponse(req.GetReqID(), dur * 1000, CrowdResponse.Status.STATUS_SUCCESS);
 
         }
