@@ -1042,46 +1042,10 @@ namespace BepinControl
 
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
-
-            try
-            {
-
-                List<Customer> cust = (List<Customer>)getProperty(Singleton<CustomerManager>.Instance, "m_ActiveCustomers");
-
-               
-
-
-                bool found = false;
-                foreach (var c in cust)
-                {
-
-                    bool isHandingPayment = (bool)getProperty(c, "m_HandingPayment");
-                    bool isPayingViaCard = (bool)getProperty(c, "m_PaymentViaCreditCard");
-
-                    Checkout checkingOut;
-                    checkingOut = (Checkout)getProperty(c, "m_Checkout");
-                    bool isCheckingOut = checkingOut ? true : false;
-
-                    bool isInCheckout = (bool)getProperty(c, "m_InCheckout");
-                    if (isInCheckout && !isCheckingOut && !isHandingPayment && !isPayingViaCard)
-                    {
-                        found = true;
-                        break;
-                    }
-
-                    bool isShopping = (bool)getProperty(c, "m_StartedShopping");
-
-                    if (isShopping && !isCheckingOut && !isHandingPayment && !isPayingViaCard)
-                    {
-                        found = true;
-                        break;
-                    }
-
-                }
-
-                if (!found) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
-
-
+        
+            List<Customer> cust = (List<Customer>)getProperty(Singleton<CustomerManager>.Instance, "m_ActiveCustomers");
+            bool despawned = false;
+   
                 TestMod.ActionQueue.Enqueue(() =>
                 {
                     try
@@ -1089,22 +1053,39 @@ namespace BepinControl
                         foreach (var c in cust)
                         {
 
-                            Checkout check;
-                            bool shop = (bool)getProperty(c, "m_StartedShopping");
-                            check = (Checkout)getProperty(c, "m_Checkout");
+                            if (!despawned)
+                            {
+                                Checkout check;
+                                check = (Checkout)getProperty(c, "m_Checkout");
+                                bool shop = (bool)getProperty(c, "m_StartedShopping");
 
-                            if (shop && !check)
-                            {
-                                //if (check) check.Unsubscribe(c);
-                                Singleton<CustomerGenerator>.Instance.DeSpawn(c);
-                                return;
-                            }
-                            shop = (bool)getProperty(c, "m_InCheckout");
-                            if (shop && !check)
-                            {
-                                //if (check) check.Unsubscribe(c);
-                                Singleton<CustomerGenerator>.Instance.DeSpawn(c);
-                                return;
+                                if (shop && !check && !despawned)
+                                {
+                                    despawned = true;
+                                    Singleton<CustomerGenerator>.Instance.DeSpawn(c);
+                                    status = CrowdResponse.Status.STATUS_SUCCESS;
+                                    break;
+                                }
+
+                                if (shop && check && !despawned)
+                                {
+
+                                    var customersFieldInfo = typeof(Checkout).GetField("m_Customers", BindingFlags.Instance | BindingFlags.NonPublic);
+                                    List<Customer> customerList = (List<Customer>)customersFieldInfo.GetValue(check);
+
+                                    if (customerList != null)
+                                    {
+                                        int firstCustomerID = customerList[0].GetInstanceID();
+                                        if (firstCustomerID != c.GetInstanceID())
+                                        {
+                                            callFunc(c, "OnDisable", null);
+                                            check.Unsubscribe(c);
+                                            Singleton<CustomerGenerator>.Instance.DeSpawn(c);
+                                            despawned = true;
+                                            status = CrowdResponse.Status.STATUS_SUCCESS;
+                                        }
+                                    } 
+                                }
                             }
 
                         }
@@ -1112,16 +1093,12 @@ namespace BepinControl
                     catch (Exception e)
                     {
                         TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+                        status = CrowdResponse.Status.STATUS_RETRY;
                     }
                 });
-            }
-            catch (Exception e)
-            {
-                status = CrowdResponse.Status.STATUS_RETRY;
-                TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
-            }
 
-            return new CrowdResponse(req.GetReqID(), status, message);
+                return new CrowdResponse(req.GetReqID(), status, message);
+            
         }
 
         public static CrowdResponse Theft(ControlClient client, CrowdRequest req)
