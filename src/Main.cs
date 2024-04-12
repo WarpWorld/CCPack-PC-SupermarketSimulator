@@ -323,6 +323,7 @@ namespace BepinControl
         {
             static void Postfix(InteractactableType type)
             {
+
                 currentHeldItem = type.ToString();
             }
         }

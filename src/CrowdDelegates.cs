@@ -815,8 +815,12 @@ namespace BepinControl
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
-            if (!Singleton<Checkout>.Instance.InInteraction) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            
             if (!Singleton<StoreStatus>.Instance.IsOpen) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            PlayerInteraction player = Singleton<PlayerInteraction>.Instance;
+            if (!player.InInteraction) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            if (TestMod.currentHeldItem != "CHECKOUT") return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
 
             List<Customer> cust = (List<Customer>)getProperty(Singleton<CustomerManager>.Instance, "m_ActiveCustomers");
 
@@ -2212,8 +2216,10 @@ namespace BepinControl
             int dur = 30;
             if (req.duration > 0) dur = req.duration / 1000;
 
-            if (!Singleton<Checkout>.Instance.InInteraction) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
             if (!Singleton<StoreStatus>.Instance.IsOpen) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            PlayerInteraction player = Singleton<PlayerInteraction>.Instance;
+            if (!player.InInteraction) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            if (TestMod.currentHeldItem != "CHECKOUT") return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
 
             if (TimedThread.isRunning(TimedType.FORCE_MATH)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
             if (TimedThread.isRunning(TimedType.FORCE_EXACT_CHANGE)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
@@ -2234,8 +2240,10 @@ namespace BepinControl
             int dur = 30;
             if (req.duration > 0) dur = req.duration / 1000;
 
-            if (!Singleton<Checkout>.Instance.InInteraction) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
             if (!Singleton<StoreStatus>.Instance.IsOpen) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            PlayerInteraction player = Singleton<PlayerInteraction>.Instance;
+            if (!player.InInteraction) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            if (TestMod.currentHeldItem != "CHECKOUT") return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
 
             if (TimedThread.isRunning(TimedType.FORCE_EXACT_CHANGE)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
             if (TimedThread.isRunning(TimedType.FORCE_REQUIRE_CHANGE)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
@@ -2253,8 +2261,10 @@ namespace BepinControl
             int dur = 30;
             if (req.duration > 0) dur = req.duration / 1000;
 
-            if (!Singleton<Checkout>.Instance.InInteraction) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
             if (!Singleton<StoreStatus>.Instance.IsOpen) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            PlayerInteraction player = Singleton<PlayerInteraction>.Instance;
+            if (!player.InInteraction) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            if (TestMod.currentHeldItem != "CHECKOUT") return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
 
             if (TimedThread.isRunning(TimedType.FORCE_EXACT_CHANGE)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
             if (TimedThread.isRunning(TimedType.FORCE_REQUIRE_CHANGE)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
@@ -2272,8 +2282,10 @@ namespace BepinControl
             int dur = 30;
             if (req.duration > 0) dur = req.duration / 1000;
 
-            if (!Singleton<Checkout>.Instance.InInteraction) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
             if (!Singleton<StoreStatus>.Instance.IsOpen) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            PlayerInteraction player = Singleton<PlayerInteraction>.Instance;
+            if (!player.InInteraction) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            if (TestMod.currentHeldItem != "CHECKOUT") return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
 
             if (TimedThread.isRunning(TimedType.ALLOW_MISCHARGE)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
             if (TimedThread.isRunning(TimedType.FORCE_EXACT_CHANGE)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
@@ -2293,8 +2305,10 @@ namespace BepinControl
             if (req.duration > 0) dur = req.duration / 1000;
             TestMod.mls.LogInfo($"running");
 
-            if (!Singleton<Checkout>.Instance.InInteraction) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
             if (!Singleton<StoreStatus>.Instance.IsOpen) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            PlayerInteraction player = Singleton<PlayerInteraction>.Instance;
+            if (!player.InInteraction) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            if (TestMod.currentHeldItem != "CHECKOUT") return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
 
             if (TimedThread.isRunning(TimedType.FORCE_LARGE_BILLS)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
             if (TimedThread.isRunning(TimedType.FORCE_CARD)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
