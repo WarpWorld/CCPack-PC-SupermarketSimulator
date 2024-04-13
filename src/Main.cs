@@ -325,6 +325,7 @@ namespace BepinControl
             {
 
                 currentHeldItem = type.ToString();
+                //mls.LogInfo($"{currentHeldItem}");
             }
         }
 

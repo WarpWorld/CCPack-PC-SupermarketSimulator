@@ -620,6 +620,10 @@ namespace BepinControl
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
+            PlayerInteraction player = Singleton<PlayerInteraction>.Instance;
+            if (player.InInteraction && TestMod.currentHeldItem == "COMPUTER") return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+
             try
             {
                 TestMod.ActionQueue.Enqueue(() =>
