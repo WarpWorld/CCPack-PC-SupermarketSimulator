@@ -1615,7 +1615,7 @@ namespace BepinControl
 
             //TestMod.mls.LogInfo($"level: {level.ToString()}");
             //if (level >= sections.Length) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
-            if (level >= 22) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            if (level >= 22) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Store has reached max level.");
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
@@ -1653,7 +1653,7 @@ namespace BepinControl
 
             if (!Singleton<SaveManager>.Instance.Storage.Purchased) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
             //if (level >= sections.Length) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
-            if (level >= 14) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            if (level >= 14) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Storage has reached max level.");
 
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
