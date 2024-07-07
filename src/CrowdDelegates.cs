@@ -6,6 +6,7 @@ using Steamworks.Data;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Reflection.Emit;
 using System.Threading;
 using System.Xml.Linq;
 using TMPro;
@@ -14,6 +15,7 @@ using UnityEngine;
 using UnityEngine.Localization.Components;
 using UnityEngine.UI;
 using static SaveManager;
+using static System.Collections.Specialized.BitVector32;
 using static System.Net.Mime.MediaTypeNames;
 using static UnityEngine.EventSystems.EventTrigger;
 using static UnityEngine.GraphicsBuffer;
@@ -1607,11 +1609,13 @@ namespace BepinControl
 
         public static CrowdResponse UpgradeStore(ControlClient client, CrowdRequest req)
         {
+
             int level = Singleton<SaveManager>.Instance.Progression.StoreUpgradeLevel;
-            Section[] sections = (Section[])getProperty(Singleton<SectionManager>.Instance, "m_Sections");
+            //Section[] sections = (Section[])getProperty(Singleton<SectionManager>.Instance, "m_Sections");
 
-            if (level >= sections.Length) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
-
+            //TestMod.mls.LogInfo($"level: {level.ToString()}");
+            //if (level >= sections.Length) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            if (level >= 22) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
@@ -1644,10 +1648,12 @@ namespace BepinControl
         public static CrowdResponse UpgradeStorage(ControlClient client, CrowdRequest req)
         {
             int level = Singleton<SaveManager>.Instance.Storage.StorageLevel;
-            StorageSection[] sections = (StorageSection[])getProperty(Singleton<StorageSectionManager>.Instance, "m_StorageSections");
+
+            //StorageSection[] sections = (StorageSection[])getProperty(Singleton<StorageSectionManager>.Instance, "m_StorageSections");
 
             if (!Singleton<SaveManager>.Instance.Storage.Purchased) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
-            if (level >= sections.Length) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            //if (level >= sections.Length) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            if (level >= 14) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
 
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
