@@ -51,7 +51,7 @@ namespace BepinControl
     public class CrowdDelegates
     {
         public static System.Random rnd = new System.Random();
-        public static int maxBoxCount = 100; 
+        public static int maxBoxCount = 100;
         public enum Language
         {
             English = 0,
@@ -126,10 +126,10 @@ namespace BepinControl
                 };
 
 
-        public static string GetChatMessage(string phrase) 
+        public static string GetChatMessage(string phrase)
         {
 
-            GetCurrentLanguage(); 
+            GetCurrentLanguage();
 
             Language currentLanguage = (Language)TestMod.CurrentLanguage;
             if (currentLanguage < 0) currentLanguage = 0;
@@ -141,7 +141,7 @@ namespace BepinControl
                 }
             }
 
-            
+
 
             return "Message not found";
 
@@ -374,7 +374,7 @@ namespace BepinControl
         {
             DayCycleManager dm = Singleton<DayCycleManager>.Instance;
 
-            
+
             if (!Singleton<StoreStatus>.Instance.IsOpen) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
             if (dm.CurrentHour >= 8 && !dm.AM) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
 
@@ -648,8 +648,10 @@ namespace BepinControl
                                 teleportPosition = new Vector3(15.80f, -0.06f, 6.22f);
                                 break;
                             case "computer":
-                                Transform computerPOS = (Transform)getProperty(Singleton<Computer>.Instance, "m_PlayerPosition");
-                                teleportPosition = computerPOS.position;
+                                //ComputerInteraction computer = Singleton<ComputerInteraction>.Instance;
+                                //Transform computerPOS = Singleton<ComputerInteraction>.Instance.transform;
+                                //Singleton<SaveManager>.Instance.Progression.ComputerTransform.Position
+                                teleportPosition = Singleton<SaveManager>.Instance.Progression.ComputerTransform.Position;
                                 break;
                             case "faraway":
                                 Vector3[] positions = new Vector3[]
@@ -666,7 +668,7 @@ namespace BepinControl
                         }
 
                         pos.position = teleportPosition;
-                             
+
                     }
                     catch (Exception e)
                     {
@@ -770,15 +772,15 @@ namespace BepinControl
 
             return new CrowdResponse(req.GetReqID(), status, message);
 
-           
+
         }
 
-    public static CrowdResponse PlayerSendEmptyBox(ControlClient client, CrowdRequest req)
+        public static CrowdResponse PlayerSendEmptyBox(ControlClient client, CrowdRequest req)
         {
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
-            
+
             //if (boxCount > maxBoxCount) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Too many boxes");
             //TestMod.mls.LogInfo($"boxCount: {boxCount}");
             try
@@ -821,7 +823,7 @@ namespace BepinControl
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
-            
+
             if (!Singleton<StoreStatus>.Instance.IsOpen) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
             PlayerInteraction player = Singleton<PlayerInteraction>.Instance;
             if (!player.InInteraction) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
@@ -842,9 +844,9 @@ namespace BepinControl
 
             if (TimedThread.isRunning(TimedType.FORCE_CASH)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
             if (TimedThread.isRunning(TimedType.FORCE_CARD)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
-            
+
             GetCurrentLanguage();
-            
+
             string paymentType = req.code.Split('_')[1];
 
             if (paymentType == "cash") new Thread(new TimedThread(req.GetReqID(), TimedType.FORCE_CASH, dur * 1000).Run).Start();
@@ -864,7 +866,7 @@ namespace BepinControl
             string message = "";
 
 
-                try
+            try
             {
                 PlayerObjectHolder hold = Singleton<PlayerObjectHolder>.Instance;
                 PlayerInteraction player = Singleton<PlayerInteraction>.Instance;
@@ -1014,14 +1016,14 @@ namespace BepinControl
                         TestMod.NameOverride = req.viewer;
                         Customer customer = Singleton<CustomerGenerator>.Instance.Spawn(door.position);
 
-                        
+
 
                         //CustomerChatNames.SetChatName(customer.gameObject.GetInstanceID(), req.viewer);
                         //TestMod.mls.LogInfo($"set name: {customer.gameObject.GetInstanceID()}");
                         customer.GoToStore(door.position);
 
                         List<Customer> cust = (List<Customer>)getProperty(Singleton<CustomerManager>.Instance, "m_ActiveCustomers");
-                        
+
                         cust.Add(customer);
                         //customer.SetChatName("jaku");
                         setProperty(Singleton<CustomerManager>.Instance, "m_ActiveCustomers", cust);
@@ -1052,63 +1054,63 @@ namespace BepinControl
 
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
-        
+
             List<Customer> cust = (List<Customer>)getProperty(Singleton<CustomerManager>.Instance, "m_ActiveCustomers");
             bool despawned = false;
-   
-                TestMod.ActionQueue.Enqueue(() =>
+
+            TestMod.ActionQueue.Enqueue(() =>
+            {
+                try
                 {
-                    try
+                    foreach (var c in cust)
                     {
-                        foreach (var c in cust)
+
+                        if (!despawned)
                         {
+                            Checkout check;
+                            check = (Checkout)getProperty(c, "m_Checkout");
+                            bool shop = (bool)getProperty(c, "m_StartedShopping");
 
-                            if (!despawned)
+                            if (shop && !check && !despawned)
                             {
-                                Checkout check;
-                                check = (Checkout)getProperty(c, "m_Checkout");
-                                bool shop = (bool)getProperty(c, "m_StartedShopping");
-
-                                if (shop && !check && !despawned)
-                                {
-                                    despawned = true;
-                                    Singleton<CustomerGenerator>.Instance.DeSpawn(c);
-                                    status = CrowdResponse.Status.STATUS_SUCCESS;
-                                    break;
-                                }
-
-                                if (shop && check && !despawned)
-                                {
-
-                                    var customersFieldInfo = typeof(Checkout).GetField("m_Customers", BindingFlags.Instance | BindingFlags.NonPublic);
-                                    List<Customer> customerList = (List<Customer>)customersFieldInfo.GetValue(check);
-
-                                    if (customerList != null)
-                                    {
-                                        int firstCustomerID = customerList[0].GetInstanceID();
-                                        if (firstCustomerID != c.GetInstanceID())
-                                        {
-                                            callFunc(c, "OnDisable", null);
-                                            check.Unsubscribe(c);
-                                            Singleton<CustomerGenerator>.Instance.DeSpawn(c);
-                                            despawned = true;
-                                            status = CrowdResponse.Status.STATUS_SUCCESS;
-                                        }
-                                    } 
-                                }
+                                despawned = true;
+                                Singleton<CustomerGenerator>.Instance.DeSpawn(c);
+                                status = CrowdResponse.Status.STATUS_SUCCESS;
+                                break;
                             }
 
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
-                        status = CrowdResponse.Status.STATUS_RETRY;
-                    }
-                });
+                            if (shop && check && !despawned)
+                            {
 
-                return new CrowdResponse(req.GetReqID(), status, message);
-            
+                                var customersFieldInfo = typeof(Checkout).GetField("m_Customers", BindingFlags.Instance | BindingFlags.NonPublic);
+                                List<Customer> customerList = (List<Customer>)customersFieldInfo.GetValue(check);
+
+                                if (customerList != null)
+                                {
+                                    int firstCustomerID = customerList[0].GetInstanceID();
+                                    if (firstCustomerID != c.GetInstanceID())
+                                    {
+                                        callFunc(c, "OnDisable", null);
+                                        check.Unsubscribe(c);
+                                        Singleton<CustomerGenerator>.Instance.DeSpawn(c);
+                                        despawned = true;
+                                        status = CrowdResponse.Status.STATUS_SUCCESS;
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                }
+                catch (Exception e)
+                {
+                    TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+                    status = CrowdResponse.Status.STATUS_RETRY;
+                }
+            });
+
+            return new CrowdResponse(req.GetReqID(), status, message);
+
         }
 
         public static CrowdResponse Theft(ControlClient client, CrowdRequest req)
@@ -1243,8 +1245,8 @@ namespace BepinControl
                                 TMP_Text text = (TMP_Text)getProperty(speechObject, "m_SpeechText");
 
                                 //setProperty(text, "m_text", "This is a robbery!");
-                                
-                                
+
+
                                 text.text = GetChatMessage("Robbery"); //chatMessages["Robbery"][currentLanguage];
                                 //text.text = "This is a robbery!";
                                 setProperty(speechObject, "m_SpeechText", text);
@@ -1335,7 +1337,7 @@ namespace BepinControl
                                 TMP_Text text = (TMP_Text)getProperty(speechObject, "m_SpeechText");
 
                                 Language currentLanguage = (Language)TestMod.CurrentLanguage;
-                                
+
                                 text.text = GetChatMessage("Soup"); //chatMessages["Soup"][currentLanguage];
                                 //text.text = "I'm at Soup!";
                                 setProperty(speechObject, "m_SpeechText", text);
@@ -1425,7 +1427,7 @@ namespace BepinControl
                                 TMP_Text text = (TMP_Text)getProperty(speechObject, "m_SpeechText");
 
                                 Language currentLanguage = (Language)TestMod.CurrentLanguage;
-                                
+
                                 text.text = GetChatMessage("Breakfast"); //chatMessages["Breakfast"][currentLanguage];
                                 //text.text = "It's breakfast time!";
                                 setProperty(speechObject, "m_SpeechText", text);
@@ -1504,7 +1506,7 @@ namespace BepinControl
                                 }
                                 CustomerSpeech prefab = (CustomerSpeech)getProperty(Singleton<WarningSystem>.Instance, "m_CustomerSpeechPrefab");
                                 float time = (float)getProperty(Singleton<WarningSystem>.Instance, "m_CustomerSpeechLifetime");
-                                
+
                                 GetCurrentLanguage();
 
                                 CustomerSpeech speechObject = LeanPool.Spawn<CustomerSpeech>(prefab, c.transform, false);
@@ -1515,7 +1517,7 @@ namespace BepinControl
                                 }, true);
 
                                 TMP_Text text = (TMP_Text)getProperty(speechObject, "m_SpeechText");
-                                
+
 
                                 text.text = GetChatMessage("Pizza");// chatMessages["Pizza"][currentLanguage];
                                 //text.text = "Lemme get that pizza BONELESS";
@@ -1828,7 +1830,7 @@ namespace BepinControl
         public static CrowdResponse FireRestocker(ControlClient client, CrowdRequest req)
         {
             List<int> owned = (List<int>)getProperty(Singleton<EmployeeManager>.Instance, "m_RestockersData");
-            
+
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
