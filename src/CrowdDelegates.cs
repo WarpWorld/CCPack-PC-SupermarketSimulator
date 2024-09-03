@@ -1011,7 +1011,9 @@ namespace BepinControl
                 {
                     try
                     {
-                        Transform door = (Transform)getProperty(Singleton<CustomerManager>.Instance, "m_StoreDoor");
+                        //moved spawn from door to delivery position cause m_StoreDoor is no longer used?
+                        //Transform door = (Transform)getProperty(Singleton<CustomerManager>.Instance, "m_StoreDoor");
+                        Transform door = (Transform)getProperty(Singleton<DeliveryManager>.Instance, "m_DeliveryPosition");
 
                         TestMod.NameOverride = req.viewer;
                         Customer customer = Singleton<CustomerGenerator>.Instance.Spawn(door.position);
