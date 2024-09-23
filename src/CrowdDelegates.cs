@@ -162,7 +162,9 @@ namespace BepinControl
                 {
                     try
                     {
-                        Singleton<MoneyManager>.Instance.MoneyTransition(100.0f, MoneyManager.TransitionType.CHECKOUT_INCOME);
+                        MoneyManager MM = Singleton<MoneyManager>.Instance;
+                        MM.MoneyTransition(100.0f, MoneyManager.TransitionType.CHECKOUT_INCOME, true);
+                        //MoneyTransition(100.0f, MoneyManager.TransitionType.CHECKOUT_INCOME);
 
                         //Time.timeScale = 10.0f;
 
@@ -222,7 +224,8 @@ namespace BepinControl
                 {
                     try
                     {
-                        Singleton<MoneyManager>.Instance.MoneyTransition(1000.0f, MoneyManager.TransitionType.CHECKOUT_INCOME);
+                        MoneyManager MM = Singleton<MoneyManager>.Instance;
+                        MM.MoneyTransition(1000.0f, MoneyManager.TransitionType.CHECKOUT_INCOME, true);
 
                     }
                     catch (Exception e)
@@ -252,7 +255,8 @@ namespace BepinControl
                 {
                     try
                     {
-                        Singleton<MoneyManager>.Instance.MoneyTransition(10000.0f, MoneyManager.TransitionType.CHECKOUT_INCOME);
+                        MoneyManager MM = Singleton<MoneyManager>.Instance; 
+                        MM.MoneyTransition(10000.0f, MoneyManager.TransitionType.CHECKOUT_INCOME, true);
 
                     }
                     catch (Exception e)
@@ -285,7 +289,8 @@ namespace BepinControl
                 {
                     try
                     {
-                        Singleton<MoneyManager>.Instance.MoneyTransition(-100.0f, MoneyManager.TransitionType.CHECKOUT_INCOME);
+                        MoneyManager MM = Singleton<MoneyManager>.Instance;
+                        MM.MoneyTransition(-100.0f, MoneyManager.TransitionType.CHECKOUT_INCOME, true);
 
                     }
                     catch (Exception e)
@@ -318,7 +323,8 @@ namespace BepinControl
                 {
                     try
                     {
-                        Singleton<MoneyManager>.Instance.MoneyTransition(-1000.0f, MoneyManager.TransitionType.CHECKOUT_INCOME);
+                        MoneyManager MM = Singleton<MoneyManager>.Instance;
+                        MM.MoneyTransition(-1000.0f, MoneyManager.TransitionType.CHECKOUT_INCOME, true);
 
                     }
                     catch (Exception e)
@@ -351,7 +357,8 @@ namespace BepinControl
                 {
                     try
                     {
-                        Singleton<MoneyManager>.Instance.MoneyTransition(-10000.0f, MoneyManager.TransitionType.CHECKOUT_INCOME);
+                        MoneyManager MM = Singleton<MoneyManager>.Instance;
+                        MM.MoneyTransition(-10000.0f, MoneyManager.TransitionType.CHECKOUT_INCOME, true);
 
                     }
                     catch (Exception e)
