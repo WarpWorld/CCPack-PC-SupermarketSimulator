@@ -16,7 +16,7 @@ public class SupermarketSimulator : SimpleTCPPack<SimpleTCPServerConnector>
 
     public override Game Game { get; } = new("Supermarket Simulator", "SupermarketSimulator", "PC", ConnectorType.SimpleTCPServerConnector);
 
-    public override EffectList Effects => new List<Effect>
+    public override EffectList Effects { get; } = new List<Effect>
     {
         new Effect("Give $100", "money100") { Description = "Give the player $100!", Category = "Money"},
         new Effect("Give $1000", "money1000") { Description = "Give the player $1,000!", Category = "Money"},
