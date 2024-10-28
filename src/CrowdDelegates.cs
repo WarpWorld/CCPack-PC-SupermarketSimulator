@@ -1,4 +1,5 @@
-﻿using DG.Tweening;
+﻿using BepInEx;
+using DG.Tweening;
 using Lean.Pool;
 using MyBox;
 using Newtonsoft.Json.Linq;
@@ -145,6 +146,162 @@ namespace BepinControl
 
             return "Message not found";
 
+        }
+
+
+        public AssetBundle bundle; // Make sure this is assigned when the plugin loads
+
+        //v2022.3.38.12965287
+
+        private static GameObject hypetrainPrefab;
+
+
+        // Static flag to ensure assets are loaded only once
+        private static bool loaded = false;
+
+        // Load all assets from the bundle and store them
+        public void LoadAssetsFromBundle()
+        {
+            if (loaded) return; // Only load once
+
+            //TestMod.mls.LogDebug("PATH " + System.IO.Path.Combine(Paths.PluginPath, "CrowdControl", "food"));
+
+                    
+
+
+
+            HypeTrainBoxData boxData = new HypeTrainBoxData();// Do this to load the dll... maybe do something different, but this works for now
+            bundle = AssetBundle.LoadFromFile(System.IO.Path.Combine(Paths.PluginPath, "CrowdControl", "warpworld.hypetrain"));
+            if (bundle == null)
+            {
+                Debug.LogError("Failed to load AssetBundle.");
+                return;
+            }
+
+            hypetrainPrefab = bundle.LoadAsset<GameObject>("HypeTrain");
+
+            if (hypetrainPrefab == null)
+            {
+                Debug.LogError("hypetrain prefab not found in AssetBundle.");
+            }
+
+            loaded = true; // Mark as loaded after successful loading
+        }
+
+        public static UnityEngine.Color ConvertUserNameToColor(string userName)
+        {
+            // Step 1: Hash the user name
+            using (var sha256 = System.Security.Cryptography.SHA256.Create())
+            {
+                byte[] hashBytes = sha256.ComputeHash(System.Text.Encoding.UTF8.GetBytes(userName));
+
+                // Step 2: Use the first three bytes of the hash to create RGB values (normalized 0-1 for Unity's Color)
+                float r = hashBytes[0] / 255f;
+                float g = hashBytes[1] / 255f;
+                float b = hashBytes[2] / 255f;
+
+                // Step 3: Return a new Unity Color object
+                return new UnityEngine.Color(r, g, b);
+            }
+        }
+
+        public void Spawn_HypeTrain(Vector3 position, Quaternion rotation, CrowdRequest.SourceDetails sourceDetails)
+        {
+            if (hypetrainPrefab != null)
+            {
+                /*for (int i = 0; i < 32; ++i)
+                {
+                    try
+                    {
+                        Debug.Log($"Layer {i} is: {LayerMask.LayerToName(i)}");
+						for (int j = 0; j < 32; ++j)
+						{
+							try
+							{
+                                if (i != j)
+                                {
+                                    Debug.Log($"Collide with  {LayerMask.LayerToName(j)}: {Physics.GetIgnoreLayerCollision(i, j)}");
+                                }
+							}
+							catch { }
+						}
+					}
+                    catch { }
+                }*/
+
+                HypeTrain hypeTrain = UnityEngine.Object.Instantiate(hypetrainPrefab, position, rotation).GetComponent<HypeTrain>();
+                if (null == hypeTrain)
+                {
+                    Debug.LogError("SAAAAAAAAAAAD");
+                }
+                else
+                {
+                    Vector3 initialStartOffset = new Vector3(-14.5f, 0.2f, 6.0f); // Further away by 2 units
+                    Vector3 initialStopOffset = new Vector3(14.5f, 0.2f, 6.0f); // Further away by 2 units
+
+                    Transform playerCamera = Camera.main?.transform;
+
+                    if (playerCamera == null)
+                    {
+                        playerCamera = UnityEngine.Object.FindObjectOfType<Camera>()?.transform;
+                        if (playerCamera == null)
+                        {
+                            return;
+                        }
+                    }
+
+                    PlayerInteraction player = Singleton<PlayerInteraction>.Instance;
+
+                    Transform playerTransform = Singleton<PlayerController>.Instance.transform;
+
+
+                    Vector3 startPos = playerTransform.position + playerCamera.TransformDirection(initialStartOffset);
+                    startPos.y = playerTransform.position.y;
+
+                    Vector3 stopPos = playerTransform.position + playerCamera.TransformDirection(initialStopOffset);
+                    stopPos.y = playerTransform.position.y;
+
+                    List<HypeTrainBoxData> hypeTrainBoxDataList = new List<HypeTrainBoxData>();
+
+                    foreach (var contribution in sourceDetails.top_contributions)
+                    {
+                        hypeTrainBoxDataList.Add(new HypeTrainBoxData()
+                        {
+                            name = contribution.user_name,
+                            box_color = ConvertUserNameToColor(contribution.user_name),
+                            bit_amount = contribution.type == "bits" ? contribution.total : 0 // Only set bit_amount if the contribution is bits
+                        });
+                    }
+
+                    bool isLastContributionInTop = true;// sourceDetails.top_contributions.Any(contribution => contribution.user_id == sourceDetails.last_contribution.user_id);
+
+                    // Only add last train car if the last_contribution user_id is not in top_contributions
+                    if (!isLastContributionInTop)
+                    {
+                        hypeTrainBoxDataList.Add(new HypeTrainBoxData()
+                        {
+                            name = sourceDetails.last_contribution.user_name,
+                            box_color = ConvertUserNameToColor(sourceDetails.last_contribution.user_name),
+                            bit_amount = sourceDetails.last_contribution.type == "bits" ? sourceDetails.last_contribution.total : 0
+                        });
+                    }
+
+
+                    // Now call StartHypeTrain with the generated hypeTrainBoxDataList
+                    hypeTrain.StartHypeTrain(startPos, stopPos, hypeTrainBoxDataList.ToArray(), playerTransform,
+                    new HypeTrainOptions()
+                    {
+                        train_layer = LayerMask.NameToLayer("FloorLayer"),
+                        max_bits_per_car = 100,
+                        //volume = SoundManager.SFXVolume
+                    });
+
+                }
+            }
+            else
+            {
+                Debug.LogError("train prefab not loaded.");
+            }
         }
 
         public static CrowdResponse Money100(ControlClient client, CrowdRequest req)
@@ -1864,6 +2021,48 @@ namespace BepinControl
                 status = CrowdResponse.Status.STATUS_RETRY;
                 TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
             }
+
+            return new CrowdResponse(req.GetReqID(), status, message);
+        }
+
+
+        public static CrowdResponse SpawnHypeTrain(ControlClient client, CrowdRequest req)
+        {
+            CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
+            string message = "";
+            PlayerInteraction player = Singleton<PlayerInteraction>.Instance;
+
+            Transform pos = Singleton<PlayerController>.Instance.transform;
+
+            Vector3 position = pos.position;
+            Quaternion rotation = pos.rotation;
+            Transform playerCamera = Camera.main?.transform ?? UnityEngine.Object.FindObjectOfType<Camera>()?.transform;
+            Vector3 forwardDirection = playerCamera.forward;
+
+            if (!playerCamera) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Unable to spawn item.");
+
+
+            TestMod.ActionQueue.Enqueue(() =>
+            {
+
+                CrowdDelegates crowdDelegatesInstance = new CrowdDelegates();
+
+                crowdDelegatesInstance.LoadAssetsFromBundle();
+
+                for (int i = 0; i < 1; i++)
+                {
+                    float spawnDifference = UnityEngine.Random.Range(0.1f, 1.0f);
+                    Vector3 spawnPosition = new Vector3(
+                        playerCamera.position.x + forwardDirection.x * spawnDifference,
+                        playerCamera.position.y + 1.0f,
+                        playerCamera.position.z + forwardDirection.z * spawnDifference
+                    );
+
+
+                    crowdDelegatesInstance.Spawn_HypeTrain(spawnPosition, Quaternion.identity, req.sourceDetails);
+
+                }
+            });
 
             return new CrowdResponse(req.GetReqID(), status, message);
         }

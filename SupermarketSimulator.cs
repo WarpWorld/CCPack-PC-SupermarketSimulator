@@ -131,7 +131,9 @@ public class SupermarketSimulator : SimpleTCPPack<SimpleTCPServerConnector>
         new Effect("Lower Random Price", "pricedown") { Category = "Prices"},
 
         new Effect("Remove Item From Shelf", "removeitem") { Category = "Shelves"},
-        new Effect("Add Item To Shelf", "additem") { Category = "Shelves"}
+        new Effect("Add Item To Shelf", "additem") { Category = "Shelves"},
+
+        new Effect("Hype Train", "event-hype-train") {}
 
     };
 }

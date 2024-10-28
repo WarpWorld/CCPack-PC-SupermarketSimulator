@@ -120,7 +120,7 @@ namespace BepinControl
                 {"playeremptybox_cereal", CrowdDelegates.PlayerSendEmptyBox},
                 {"playeremptybox_toilet", CrowdDelegates.PlayerSendEmptyBox},
 
-                {"clearunusedboxes", CrowdDelegates.ClearBoxes},
+                {"clearunusedboxes", CrowdDelegates.SpawnHypeTrain},
 
 
                 {"invertx", CrowdDelegates.InvertX},
@@ -174,6 +174,8 @@ namespace BepinControl
 
                 {"removeitem", CrowdDelegates.RemoveItem},
                 {"additem", CrowdDelegates.AddItem},
+                {"event-hype-train", CrowdDelegates.SpawnHypeTrain }
+
             };
         }
 
