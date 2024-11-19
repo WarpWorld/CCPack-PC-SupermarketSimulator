@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 using Steamworks.Data;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading;
@@ -229,6 +230,13 @@ namespace BepinControl
                     catch { }
                 }*/
 
+                if (sourceDetails.top_contributions.Length == 0)
+                {
+                    return;
+                }
+
+               
+
                 HypeTrain hypeTrain = UnityEngine.Object.Instantiate(hypetrainPrefab, position, rotation).GetComponent<HypeTrain>();
                 if (null == hypeTrain)
                 {
@@ -273,10 +281,10 @@ namespace BepinControl
                         });
                     }
 
-                    bool isLastContributionInTop = true;// sourceDetails.top_contributions.Any(contribution => contribution.user_id == sourceDetails.last_contribution.user_id);
+                    bool isLastContributionInTop = sourceDetails.last_contribution != null;
 
                     // Only add last train car if the last_contribution user_id is not in top_contributions
-                    if (!isLastContributionInTop)
+                    if (isLastContributionInTop)
                     {
                         hypeTrainBoxDataList.Add(new HypeTrainBoxData()
                         {
