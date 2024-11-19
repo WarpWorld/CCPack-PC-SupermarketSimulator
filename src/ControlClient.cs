@@ -45,6 +45,7 @@ namespace BepinControl
 
         private bool paused = false;
         public static Socket Socket { get; set; }
+        public static bool connected = false;
 
         public bool inGame = true;
 
@@ -234,30 +235,97 @@ namespace BepinControl
             res.Send(Socket);
         }
 
-        private void ClientLoop()
+private void ClientLoop()
+{
+    TestMod.mls.LogInfo("Connected to Crowd Control");
+
+    var timer = new System.Threading.Timer(timeUpdate, null, 0, 200);
+    connected = true;
+
+    try
+    {
+        while (Running)
         {
-
-            TestMod.mls.LogInfo("Connected to Crowd Control");
-
-            var timer = new Timer(timeUpdate, null, 0, 200);
-
             try
             {
-                while (Running)
+                //TestMod.mls.LogInfo("Waiting to receive CrowdRequest...");
+
+                if (Socket != null && Socket.Connected)
                 {
                     CrowdRequest req = CrowdRequest.Recieve(this, Socket);
-                    if (req == null || req.IsKeepAlive()) continue;
+
+                    if (req == null)
+                    {
+                        //TestMod.mls.LogInfo("Received null CrowdRequest.");
+                        continue;
+                    }
+
+                    if (req.IsKeepAlive())
+                    {
+                        //TestMod.mls.LogInfo("Received KeepAlive CrowdRequest, skipping.");
+                        continue;
+                    }
 
                     lock (Requests)
+                    {
+                        //TestMod.mls.LogInfo("Enqueuing CrowdRequest.");
                         Requests.Enqueue(req);
+                    }
+                }
+                else
+                {
+                    //TestMod.mls.LogInfo("Socket is not connected, exiting loop.");
+                    break;
                 }
             }
-            catch (Exception)
+            catch (ObjectDisposedException ode)
             {
-                TestMod.mls.LogInfo("Disconnected from Crowd Control");
-                Socket.Close();
+                //TestMod.mls.LogInfo($"ObjectDisposedException: {ode.Message}");
+                break; // Exit the loop if the socket is disposed
+            }
+            catch (SocketException se)
+            {
+                //TestMod.mls.LogInfo($"SocketException: {se.Message}");
+                break; // Handle socket errors and exit gracefully
+            }
+            catch (ThreadAbortException)
+            {
+                //TestMod.mls.LogInfo("ThreadAbortException caught, exiting loop gracefully.");
+                Thread.ResetAbort();
+                break;
+            }
+            catch (Exception innerEx)
+            {
+                //TestMod.mls.LogInfo($"Unhandled exception while receiving CrowdRequest: {innerEx}");
             }
         }
+    }
+    catch (Exception e)
+    {
+        TestMod.mls.LogInfo($"Critical Error: {e}");
+    }
+    finally
+    {
+        TestMod.mls.LogInfo("Disconnected from Crowd Control");
+        connected = false;
+
+        try
+        {
+            if (Socket != null)
+            {
+                //TestMod.mls.LogInfo("Closing socket...");
+                Socket.Dispose(); // Ensure proper resource cleanup
+            }
+
+            timer.Dispose(); // Clean up the timer
+        }
+        catch (Exception socketCloseEx)
+        {
+            //TestMod.mls.LogInfo($"Error closing socket: {socketCloseEx}");
+        }
+    }
+}
+
 
         public void timeUpdate(System.Object state)
         {
