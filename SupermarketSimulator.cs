@@ -53,6 +53,7 @@ public class SupermarketSimulator : SimpleTCPPack<SimpleTCPServerConnector>
         new Effect("Turn Lights Off", "lightsoff") { Description = "Turn the lights off!", Category = "Store"},
         new Effect("Upgrade Store", "upgrade") { Description = "Upgrade the store.", Category = "Store"},
         new Effect("Upgrade Storage", "upgradeb") { Description = "Upgrade the storage.", Category = "Store"},
+        new Effect("Spawn Garbage", "spawngarbage") { Description = "Spawn random garbage in the store.", Category = "Store"},
 
         new Effect("Deliver Cereal", "box_cereal") { Category = "Boxes"},
         new Effect("Deliver Bread", "box_bread") { Category = "Boxes"},
