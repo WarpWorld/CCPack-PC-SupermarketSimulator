@@ -175,7 +175,11 @@ namespace BepinControl
 
                 {"removeitem", CrowdDelegates.RemoveItem},
                 {"additem", CrowdDelegates.AddItem},
-                {"event-hype-train", CrowdDelegates.SpawnHypeTrain }
+                {"event-hype-train", CrowdDelegates.SpawnHypeTrain },
+
+
+                {"spawngarbage", CrowdDelegates.SpawnGarbage},
+
 
             };
         }

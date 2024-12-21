@@ -1,4 +1,6 @@
-﻿using BepInEx;
+﻿using __Project__.Scripts.Data;
+using __Project__.Scripts.Managers;
+using BepInEx;
 using DG.Tweening;
 using Lean.Pool;
 using MyBox;
@@ -327,6 +329,10 @@ namespace BepinControl
                 {
                     try
                     {
+
+
+
+
                         MoneyManager MM = Singleton<MoneyManager>.Instance;
                         MM.MoneyTransition(100.0f, MoneyManager.TransitionType.CHECKOUT_INCOME, true);
                         //MoneyTransition(100.0f, MoneyManager.TransitionType.CHECKOUT_INCOME);
@@ -1031,6 +1037,45 @@ namespace BepinControl
 
 
 
+ 
+
+
+        public static CrowdResponse SpawnGarbage(ControlClient client, CrowdRequest req)
+        {
+            CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
+            string message = "";
+
+
+            try
+            {
+                GarbageManager garbageManager = GarbageManager.Instance;
+
+
+                if (!garbageManager.CanSpawnGarbage) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Unable to Spawn Garbage");
+
+                TestMod.ActionQueue.Enqueue(() =>
+                {
+                    try
+                    {
+                        garbageManager.SpawnGarbage();
+                    }
+                    catch (Exception e)
+                    {
+                        TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+                    }
+                });
+
+            }
+
+            catch (Exception e)
+            {
+                status = CrowdResponse.Status.STATUS_RETRY;
+                TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+            }
+
+            return new CrowdResponse(req.GetReqID(), status, message);
+        }
+
 
         public static CrowdResponse ThrowItem(ControlClient client, CrowdRequest req)
         {
@@ -1086,8 +1131,8 @@ namespace BepinControl
                 {
                     try
                     {
-                        //Singleton<PlayerObjectHolder>.Instance.ThrowObject();
-                        player.onThrow();
+                        Singleton<PlayerObjectHolder>.Instance.ThrowObject();
+                        //player.onThrow();
 
                     }
                     catch (Exception e)
