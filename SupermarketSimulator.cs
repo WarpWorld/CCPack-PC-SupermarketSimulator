@@ -126,6 +126,9 @@ public class SupermarketSimulator : SimpleTCPPack<SimpleTCPServerConnector>
         new Effect("Hire Restocker", "hirerestocker") { Category = "Employees"},
         new Effect("Fire Restocker", "firerestocker") { Category = "Employees"},
 
+        new Effect("Hire Customer Helper", "hirecustomerhelper") { Category = "Employees"},
+        new Effect("Fire Customer Helper", "firecustomerhelper") { Category = "Employees"},
+
         new Effect("Raise All Prices", "pricesup") { Category = "Prices"},
         new Effect("Lower All Prices", "pricesdown") { Category = "Prices"},
         new Effect("Raise Random Price", "priceup") { Category = "Prices"},

@@ -1,4 +1,5 @@
-﻿using __Project__.Scripts.Data;
+﻿using __Project__.Scripts.Computer.Management.Hiring_Tab;
+using __Project__.Scripts.Data;
 using __Project__.Scripts.Managers;
 using BepInEx;
 using DG.Tweening;
@@ -17,6 +18,7 @@ using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Localization.Components;
+using UnityEngine.Localization.Pseudo;
 using UnityEngine.UI;
 using static SaveManager;
 using static System.Collections.Specialized.BitVector32;
@@ -1051,7 +1053,7 @@ namespace BepinControl
                 GarbageManager garbageManager = GarbageManager.Instance;
 
 
-                if (!garbageManager.CanSpawnGarbage) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Unable to Spawn Garbage");
+                //if (!garbageManager.CanSpawnGarbage) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Unable to Spawn Garbage");
 
                 TestMod.ActionQueue.Enqueue(() =>
                 {
@@ -1905,12 +1907,21 @@ namespace BepinControl
             return new CrowdResponse(req.GetReqID(), status, message);
         }
 
+
+
+
+
         public static CrowdResponse HireCashier(ControlClient client, CrowdRequest req)
         {
             List<CashierSO> cashiers = (List<CashierSO>)getProperty(Singleton<IDManager>.Instance, "m_Cashiers");
 
-            if (Singleton<EmployeeManager>.Instance.CashiersData.Count > 4) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Can't hire any more cashiers.");
+            if (Singleton<EmployeeManager>.Instance.CashiersData.Count >= 6) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Can't hire any more cashiers.");
 
+
+            if (!Singleton<SaveManager>.Instance.Storage.Purchased)
+            {
+                return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            }
 
             CashierSO target = null;
             foreach (CashierSO c in cashiers)
@@ -1924,41 +1935,61 @@ namespace BepinControl
 
 
             if (target == null) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
-            TestMod.mls.LogInfo($"TargetID: {target.ID}");
-            if (target.ID > 4) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Can't hire any more cashiers.");
+            if (target.ID > 6) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Can't hire any more cashiers.");
 
             if (Singleton<EmployeeManager>.Instance.CashiersData.Contains(target.ID)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
-
 
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
-            try
-            {
 
-                TestMod.ActionQueue.Enqueue(() =>
+            CashierItem[] cashierItems = UnityEngine.Object.FindObjectsOfType<CashierItem>();
+            TestMod.ActionQueue.Enqueue(() =>
+            {
+                try
                 {
-                    try
+
+                    if (cashierItems.Length == 0)
                     {
                         Singleton<EmployeeManager>.Instance.HireCashier(target.ID, 0);
                     }
-                    catch (Exception e)
+                    else
                     {
-                        TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+
+                        foreach (var cashierItem in cashierItems)
+                        {
+                            var hiredProperty = cashierItem.GetType().GetProperty("Hired", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+
+                            if (hiredProperty != null)
+                            {
+                                if (!(bool)hiredProperty.GetValue(cashierItem))
+                                {
+                                    cashierItem.Hire();
+                                    break;
+                                }
+                            }
+                        }
                     }
-                });
-            }
-            catch (Exception e)
-            {
-                status = CrowdResponse.Status.STATUS_RETRY;
-                TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
-            }
+
+
+
+                }
+                catch (Exception e)
+                {
+                    TestMod.mls.LogInfo($"Error during cashier hiring: {e.Message}");
+                }
+            });
 
             return new CrowdResponse(req.GetReqID(), status, message);
+
         }
+
+
+
 
         public static CrowdResponse FireCashier(ControlClient client, CrowdRequest req)
         {
+
             List<CashierSO> cashiers = (List<CashierSO>)getProperty(Singleton<IDManager>.Instance, "m_Cashiers");
 
 
@@ -1967,116 +1998,300 @@ namespace BepinControl
             int employeeCount = employeeManager.CashiersData?.Count ?? 0;
 
             if (employeeCount < 1)
-                return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "");
+                return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "No cashiers to fire.");
 
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
-            try
+
+            CashierItem[] cashierItems = UnityEngine.Object.FindObjectsOfType<CashierItem>();
+            TestMod.ActionQueue.Enqueue(() =>
             {
-
-
-                TestMod.ActionQueue.Enqueue(() =>
+                try
                 {
-                    try
+
+                    Singleton<EmployeeManager>.Instance.FireCashier(Singleton<EmployeeManager>.Instance.CashiersData[0]);
+
+                    if (cashierItems != null)
                     {
-                        Singleton<EmployeeManager>.Instance.FireCashier(Singleton<EmployeeManager>.Instance.CashiersData[0]);
+                        foreach (var cashierItem in cashierItems)
+                        {
+                            callFunc(cashierItem, "Start", null);
+                        }
                     }
-                    catch (Exception e)
-                    {
-                        TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
-                    }
-                });
-            }
-            catch (Exception e)
-            {
-                status = CrowdResponse.Status.STATUS_RETRY;
-                TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
-            }
+
+                }
+                catch (Exception e)
+                {
+                    TestMod.mls.LogInfo($"Error during cashier firing: {e.Message}");
+                }
+            });
 
             return new CrowdResponse(req.GetReqID(), status, message);
+
         }
 
-        public static CrowdResponse HireRestocker(ControlClient client, CrowdRequest req)
+
+        public static CrowdResponse HireCustomerHelper(ControlClient client, CrowdRequest req)
         {
-            if (!Singleton<SaveManager>.Instance.Storage.Purchased) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            List<CustomerHelperSO> customerHelpers = (List<CustomerHelperSO>)getProperty(Singleton<IDManager>.Instance, "m_CustomerHelpers");
+
+            if (Singleton<EmployeeManager>.Instance.ActiveCustomerHelpers.Count >= 2) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Can't hire any more customer helpers.");
 
 
-            List<RestockerSO> restockers = (List<RestockerSO>)getProperty(Singleton<IDManager>.Instance, "m_Restockers");
-
-            List<int> owned = (List<int>)getProperty(Singleton<EmployeeManager>.Instance, "m_RestockersData");
-
-            RestockerSO target = null;
-            foreach (RestockerSO c in restockers)
+            if (!Singleton<SaveManager>.Instance.Storage.Purchased)
             {
-                if (!owned.Contains(c.ID))
+                return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            }
+
+            CustomerHelperSO target = null;
+            foreach (CustomerHelperSO c in customerHelpers)
+            {
+                if (!Singleton<EmployeeManager>.Instance.CashiersData.Contains(c.ID))
                 {
                     target = c;
                     break;
                 }
             }
 
+
             if (target == null) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            if (target.ID > 2) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Can't hire any more customer helpers.");
+
+            //if (Singleton<EmployeeManager>.Instance.ActiveCustomerHelpers.Contains(target.ID)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            CustomerHelperItem[] customerHelperItems = UnityEngine.Object.FindObjectsOfType<CustomerHelperItem>();
+
+            TestMod.mls.LogInfo($"customerHelperItems: {customerHelperItems.Length}");
+
+
+            foreach (var customerHelperItem in customerHelperItems)
+            {
+                TestMod.mls.LogInfo($"customerHelperItem: {customerHelperItem}");
+            }
 
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
-            try
+
+            TestMod.ActionQueue.Enqueue(() =>
             {
-
-
-                TestMod.ActionQueue.Enqueue(() =>
+                try
                 {
-                    try
+
+                    if (customerHelperItems.Length == 0)
+                    {
+                        Singleton<EmployeeManager>.Instance.HireCustomerHelper(target.ID, 0);
+                    }
+                    else
+                    {
+
+                        foreach (var customerHelperItem in customerHelperItems)
+                        {
+                            var hiredProperty = customerHelperItem.GetType().GetProperty("Hired", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+
+                            if (hiredProperty != null)
+                            {
+                                if (!(bool)hiredProperty.GetValue(customerHelperItem))
+                                {
+                                    customerHelperItem.Hire();
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+
+
+                }
+                catch (Exception e)
+                {
+                    TestMod.mls.LogInfo($"Error during customer helper hiring: {e.Message}");
+                }
+            });
+
+            return new CrowdResponse(req.GetReqID(), status, message);
+
+        }
+
+
+
+
+        public static CrowdResponse FireCustomerHelper(ControlClient client, CrowdRequest req)
+        {
+
+            List<CustomerHelperSO> customerHelpers = (List<CustomerHelperSO>)getProperty(Singleton<IDManager>.Instance, "m_CustomerHelpers");
+
+
+            EmployeeManager employeeManager = Singleton<EmployeeManager>.Instance;
+
+            int employeeCount = employeeManager.ActiveCustomerHelpers?.Count ?? 0;
+
+            if (employeeCount < 1)
+                return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "No customer helpers to fire.");
+
+            CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
+            string message = "";
+
+
+            CustomerHelperItem[] customerHelperItems = UnityEngine.Object.FindObjectsOfType<CustomerHelperItem>();
+            TestMod.ActionQueue.Enqueue(() =>
+            {
+                try
+                {
+
+                    Singleton<EmployeeManager>.Instance.FireCustomerHelper(Singleton<EmployeeManager>.Instance.CashiersData[0]);
+
+                    if (customerHelperItems != null)
+                    {
+                        foreach (var customerHelperItem in customerHelperItems)
+                        {
+                            callFunc(customerHelperItem, "Start", null);
+                        }
+                    }
+
+                }
+                catch (Exception e)
+                {
+                    TestMod.mls.LogInfo($"Error during customer helper firing: {e.Message}");
+                }
+            });
+
+            return new CrowdResponse(req.GetReqID(), status, message);
+
+        }
+
+
+
+        public static CrowdResponse HireRestocker(ControlClient client, CrowdRequest req)
+        {
+
+
+            if (!Singleton<SaveManager>.Instance.Storage.Purchased)
+            {
+                return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            }
+
+            // Get available restockers and owned IDs
+            List<RestockerSO> restockers = (List<RestockerSO>)getProperty(Singleton<IDManager>.Instance, "m_Restockers");
+            List<int> owned = (List<int>)getProperty(Singleton<EmployeeManager>.Instance, "m_RestockersData");
+
+            // Find the first unowned restocker
+            RestockerSO target = restockers.FirstOrDefault(c => !owned.Contains(c.ID));
+            if (target == null)
+            {
+                return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            }
+
+            CrowdResponse.Status status = CrowdResponse.Status.STATUS_RETRY;
+            string message = "";
+
+
+            if (owned.Count >= 6 )
+            {
+                status = CrowdResponse.Status.STATUS_FAILURE;
+                message = "Max restockers hired.";
+                return new CrowdResponse(req.GetReqID(), status, message);
+            }
+
+            TestMod.ActionQueue.Enqueue(() =>
+            {
+                try
+                {
+                    RestockerItem[] restockerItems = UnityEngine.Object.FindObjectsOfType<RestockerItem>();
+
+                    if (restockerItems.Length == 0)
                     {
                         Singleton<EmployeeManager>.Instance.HireRestocker(target.ID, 0);
                     }
-                    catch (Exception e)
+                    else
                     {
-                        TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
-                    }
-                });
-            }
-            catch (Exception e)
-            {
-                status = CrowdResponse.Status.STATUS_RETRY;
-                TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
-            }
 
-            return new CrowdResponse(req.GetReqID(), status, message);
+                        foreach (var restockerItem in restockerItems)
+                        {
+                            var hiredProperty = restockerItem.GetType().GetProperty("Hired", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+
+                            if (hiredProperty != null)
+                            {
+                                if (!(bool)hiredProperty.GetValue(restockerItem))
+                                {
+                                    restockerItem.Hire();
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+
+                    
+                }
+                catch (Exception e)
+                {
+                    TestMod.mls.LogInfo($"Error during restocker hiring: {e.Message}");
+                }
+            });
+
+                status = CrowdResponse.Status.STATUS_SUCCESS;
+                return new CrowdResponse(req.GetReqID(), status, message);
+  
         }
+
+
+
 
         public static CrowdResponse FireRestocker(ControlClient client, CrowdRequest req)
         {
+
+
+            if (!Singleton<SaveManager>.Instance.Storage.Purchased)
+            {
+                return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            }
+
+            // Get available restockers and owned IDs
+            List<RestockerSO> restockers = (List<RestockerSO>)getProperty(Singleton<IDManager>.Instance, "m_Restockers");
             List<int> owned = (List<int>)getProperty(Singleton<EmployeeManager>.Instance, "m_RestockersData");
 
+  
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
-            try
+
+            if (owned.Count == 0 || owned == null)
             {
+                status = CrowdResponse.Status.STATUS_FAILURE;
+                message = "No Restockers to fire.";
+                return new CrowdResponse(req.GetReqID(), status, message);
+            }
 
-
-                TestMod.ActionQueue.Enqueue(() =>
+            RestockerItem[] restockerItems = UnityEngine.Object.FindObjectsOfType<RestockerItem>();
+            TestMod.ActionQueue.Enqueue(() =>
+            {
+                try
                 {
-                    try
+
+                    Singleton<EmployeeManager>.Instance.FireRestocker(owned[0]);
+
+                    if (restockerItems != null)
                     {
-                        Singleton<EmployeeManager>.Instance.FireRestocker(owned[0]);
+                        foreach (var restockerItem in restockerItems)
+                        {
+                            callFunc(restockerItem, "Start", null);
+                        }
                     }
-                    catch (Exception e)
-                    {
-                        TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
-                    }
-                });
-            }
-            catch (Exception e)
-            {
-                status = CrowdResponse.Status.STATUS_RETRY;
-                TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
-            }
+
+                }
+                catch (Exception e)
+                {
+                    TestMod.mls.LogInfo($"Error during restocker firing: {e.Message}");
+                }
+            });
 
             return new CrowdResponse(req.GetReqID(), status, message);
+
         }
+
+
+
 
 
         public static CrowdResponse SpawnHypeTrain(ControlClient client, CrowdRequest req)
