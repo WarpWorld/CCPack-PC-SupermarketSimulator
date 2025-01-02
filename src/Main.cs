@@ -30,6 +30,8 @@ using System.Runtime.ConstrainedExecution;
 using System.Security.Cryptography;
 using TMPro;
 using UnityEngine.EventSystems;
+using __Project__.Scripts.Computer.Management.Hiring_Tab;
+using MyBox;
 
 
 
@@ -41,7 +43,7 @@ namespace BepinControl
         // Mod Details
         private const string modGUID = "WarpWorld.CrowdControl";
         private const string modName = "Crowd Control";
-        private const string modVersion = "1.2.0.0";
+        private const string modVersion = "1.3.0.0";
 
         private readonly Harmony harmony = new Harmony(modGUID);
 
@@ -234,13 +236,7 @@ namespace BepinControl
         static void RunEffects()
         {
 
-            foreach (GameObject namePlate in nameplates)
-            {
-                if (namePlate)
-                {
-                    namePlate.transform.LookAt(2 * namePlate.transform.position - Camera.main.transform.position);
-                }
-            }
+
 
             while (ActionQueue.Count > 0)
             {
@@ -454,6 +450,46 @@ namespace BepinControl
             }
         }
 
+
+
+        [HarmonyPatch(typeof(HiringTab), "OnEnable")]
+        public static class HiringTabOnEnablePatch
+        {
+            static void Prefix(HiringTab __instance)
+            {
+                try
+                {
+
+
+                    RestockerItem[] restockerItems = UnityEngine.Object.FindObjectsOfType<RestockerItem>();
+
+                    foreach (var restockerItem in restockerItems)
+                    {
+                        CrowdDelegates.callFunc(restockerItem, "Start", null);
+                    }
+
+                    CashierItem[] cashierItems = UnityEngine.Object.FindObjectsOfType<CashierItem>();
+
+                    foreach (var cashierItem in cashierItems)
+                    {
+                        CrowdDelegates.callFunc(cashierItem, "Start", null);
+                    }
+
+                    CustomerHelperItem[] customerHelperItems = UnityEngine.Object.FindObjectsOfType<CustomerHelperItem>();
+
+                    foreach (var customerHelperItem in customerHelperItems)
+                    {
+                        CrowdDelegates.callFunc(customerHelperItem, "Start", null);
+                    }
+
+
+                }
+                catch (Exception ex)
+                {
+                    TestMod.mls.LogError($"Error in HiringTab OnEnable patch: {ex.Message}");
+                }
+            }
+        }
 
         [HarmonyPatch(typeof(Checkout), "ChangeState")]
         public static class Checkout_ChangeState_Patch
