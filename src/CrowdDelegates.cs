@@ -803,7 +803,9 @@ namespace BepinControl
             string message = "";
 
             PlayerInteraction player = Singleton<PlayerInteraction>.Instance;
-            if (player.InInteraction && TestMod.currentHeldItem == "COMPUTER") return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+     
+
+            if (player.InInteraction && (TestMod.currentHeldItem == "COMPUTER" || TestMod.currentHeldItem == "CHECKOUT")) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
 
 
             try
@@ -814,7 +816,7 @@ namespace BepinControl
                     {
 
                         Transform pos = Singleton<PlayerController>.Instance.transform;
-                        TestMod.mls.LogInfo($"Player POS: {pos.position}");
+                        //TestMod.mls.LogInfo($"Player POS: {pos.position}");
 
                         string location = req.code.Split('_')[1];
                         Vector3 teleportPosition = new Vector3();
@@ -825,7 +827,7 @@ namespace BepinControl
                                 teleportPosition = loadingPOS.position;
                                 break;
                             case "acrossstreet":
-                                teleportPosition = new Vector3(15.80f, -0.06f, 6.22f);
+                                teleportPosition = new Vector3(32.07f, -0.07f, 4.14f);
                                 break;
                             case "computer":
                                 //ComputerInteraction computer = Singleton<ComputerInteraction>.Instance;
@@ -838,7 +840,7 @@ namespace BepinControl
                                 {
                                     new Vector3(-64.75f, -0.04f, 46.34f),
                                     new Vector3(90.38f, -0.06f, -52.40f),
-                                    new Vector3(98.13f, -0.01f, 64.64f),
+                                    //  new Vector3(98.13f, -0.01f, 64.64f),
                                     new Vector3(-65.27f, -0.06f, -24.99f)
                                 };
                                 System.Random random = new System.Random();
@@ -847,6 +849,7 @@ namespace BepinControl
                                 break;
                         }
 
+                        //TestMod.mls.LogInfo($"teleportPosition: {teleportPosition}");
                         pos.position = teleportPosition;
 
                     }
@@ -1951,7 +1954,8 @@ namespace BepinControl
 
                     if (cashierItems.Length == 0)
                     {
-                        Singleton<EmployeeManager>.Instance.HireCashier(target.ID, 0);
+                        Singleton<EmployeeManager>.Instance.HireCashier(target.ID, 0, out bool success);
+
                     }
                     else
                     {
@@ -2080,7 +2084,7 @@ namespace BepinControl
 
                     if (customerHelperItems.Length == 0)
                     {
-                        Singleton<EmployeeManager>.Instance.HireCustomerHelper(target.ID, 0);
+                        Singleton<EmployeeManager>.Instance.HireCustomerHelper(target.ID, 0, out bool success);
                     }
                     else
                     {
