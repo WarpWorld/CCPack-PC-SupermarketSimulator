@@ -833,7 +833,20 @@ namespace BepinControl
                                 //ComputerInteraction computer = Singleton<ComputerInteraction>.Instance;
                                 //Transform computerPOS = Singleton<ComputerInteraction>.Instance.transform;
                                 //Singleton<SaveManager>.Instance.Progression.ComputerTransform.Position
-                                teleportPosition = Singleton<SaveManager>.Instance.Progression.ComputerTransform.Position;
+                                //teleportPosition = Singleton<SaveManager>.Instance.Progression.ComputerTransform.Position;
+
+                                TransformData computerTransform = Singleton<SaveManager>.Instance.Progression.ComputerTransform;
+
+                                Vector3 computerPos = computerTransform.Position;
+                                Quaternion computerRot = computerTransform.Rotation;
+
+                                // Direction the computer is facing
+                                Vector3 forward = computerRot * Vector3.forward;
+
+                                // Step behind the forward vector instead of in front
+                                float offsetDistance = 1.0f;
+                                teleportPosition = computerPos - forward * offsetDistance;
+
                                 break;
                             case "faraway":
                                 Vector3[] positions = new Vector3[]
