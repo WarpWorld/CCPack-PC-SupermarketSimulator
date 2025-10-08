@@ -1,5 +1,5 @@
 @echo off
-REM Update the src subtree from WarpWorld/BepinEx-Example-Plugin
+REM Update the src subtree from WarpWorld/MelonLoader-Example-Plugin
 
 REM Ensure working tree is clean
 for /f "delims=" %%i in ('git status --porcelain') do (
@@ -20,12 +20,12 @@ if not exist src (
 )
 
 REM Ensure remote exists
-git remote get-url bepinex-example >nul 2>&1
+git remote get-url melonloader-example >nul 2>&1
 if errorlevel 1 (
     echo.
-    echo Remote "bepinex-example" not found.
+    echo Remote "melonloader-example" not found.
     echo Please add it with:
-    echo   git remote add bepinex-example https://github.com/WarpWorld/BepinEx-Example-Plugin.git
+    echo   git remote add melonloader-example https://github.com/WarpWorld/MelonLoader-Example-Plugin.git
     pause
     exit /b 1
 )
@@ -33,7 +33,7 @@ if errorlevel 1 (
 REM Fetch and pull updates
 echo.
 echo Fetching updates from upstream...
-git fetch bepinex-example
+git fetch melonloader-example
 if errorlevel 1 (
     echo.
     echo Failed to fetch from upstream. Check your network or remote URL.
@@ -43,7 +43,7 @@ if errorlevel 1 (
 
 echo.
 echo Pulling updates into src...
-git subtree pull --prefix=src bepinex-example main --squash
+git subtree pull --prefix=src melonloader-example main --squash
 if errorlevel 1 (
     echo.
     echo Failed to pull updates into src.
