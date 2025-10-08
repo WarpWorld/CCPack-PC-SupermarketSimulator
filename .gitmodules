@@ -1,0 +1,3 @@
+[submodule "src/ConnectorLib.JSON"]
+	path = src/ConnectorLib.JSON
+	url = https://github.com/WarpWorld/ConnectorLib.JSON.git
