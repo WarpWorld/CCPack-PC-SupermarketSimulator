@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using ConnectorLib.JSON;
 using Il2Cpp;
-using Il2CppAssets.Scripts.Actors.Player;
+using Il2CppPG;
 using UnityEngine;
 
 namespace CrowdControl;
@@ -11,6 +11,24 @@ public class GameStateManager
     //Everything in the game-specific region will need to be changed for each game
     
     #region Game-Specific Code
+    
+    public static bool isFocused = true;
+    public static bool ForceUseCash = false;
+    public static bool ForceUseCredit = false;
+    public static bool ForceRequireChange = false;
+    public static bool ForceMath = false;
+    public static bool ForceExactChange = false;
+    public static bool AllowMischarge = false;
+    public static bool ForceLargeBills = false;
+    public static int CurrentLanguage = 0;
+
+    public static int OrgLanguage = 0;
+    public static int NewLanguage = 0;
+    
+    public static string currentHeldItem;
+    
+    public static string NameOverride = "";
+    public static List<GameObject> nameplates = new List<GameObject>();
 
     /// <summary>Checks if the game is in a state where effects can be applied.</summary>
     /// <param name="code">The effect codename the caller is intending to apply.</param>
@@ -27,80 +45,23 @@ public class GameStateManager
     {
         try
         {
-            // Application isn't even focused, game has probably autopaused or is about to
-            if (!Application.isFocused)
+            //make sure the game is in focus otherwise don't let effects trigger
+            if (!isFocused)
                 return GameState.Paused;
-
-            // No player, probably in main menu or loading screen
-            if (!MyPlayer.Instance)
-                return GameState.Menu;
             
-            // No game manager, probably in main menu or loading screen
-            if (!GameManager.Instance)
-                return GameState.Menu;
+            //add check for whether the game is in a state it can accept effects
+            PlayerInteraction player = Singleton<PlayerInteraction>.Instance;
+            if (player == null) return GameState.BadPlayerState;
             
-            // Game reports it's in a cutscene
-            if (GameManager.Instance.cutscene)
-                return GameState.Cutscene;
-
-            // The level time is very low so we're probably loading in or just loaded in
-            if (GameManager.Instance.totalStageTime <= 1)
-                return GameState.Loading;
-
-            // Game is over so player is presumably dead or has won (can you win in this game?)
-            if (GameManager.Instance.isGameOver)
-                return GameState.BadPlayerState;
+            bool isPaused = (bool)CrowdDelegates.getProperty(player, "m_Paused");
+            if (isPaused) return GameState.Paused;
             
-            // Game explicitly reports not playing (main menu, level select, etc)
-            if (!GameManager.Instance.isPlaying)
-                return GameState.Menu;
-
-            // Catch unexpected null refs inside IsDead
-            try
-            {
-                // Player is dead
-                if (MyPlayer.Instance.IsDead())
-                    return GameState.BadPlayerState;
-            }
-            catch { /**/ }
-            
-            // Game is paused, or one of several UI screens (which also pause the action) is open
-            if (Il2CppAssets.Scripts.Utility.MyTime.paused || isPausedChecker() || chestOpen() || levelUpOpen())
-                return GameState.Paused;
-
-            // If all checks pass, we're ready for effects
             return GameState.Ready;
         }
         catch (Exception e)
         {
             CrowdControlMod.Instance.Logger.Error($"GameStateManager Error: {e}");
             return GameState.Error;
-        }
-
-        // Helper functions to keep things tidy
-
-        // Check if the pause menu is open
-        bool isPausedChecker()
-        {
-            PauseUi pauseUi = UiManager.Instance?.pause;
-            return pauseUi != null && pauseUi.isActiveAndEnabled;
-        }
-
-        // Check if a chest UI is open
-        bool chestOpen()
-        {
-            ChestWindowUi chestUi = UnityEngine.Object.FindObjectOfType<ChestWindowUi>();
-            return chestUi != null
-                   && chestUi.window != null
-                   && chestUi.window.gameObject.activeInHierarchy;
-        }
-
-        // Check if the level up UI is open
-        bool levelUpOpen()
-        {
-            LevelupScreen level = UnityEngine.Object.FindObjectOfType<LevelupScreen>();
-            return (level != null && level.window != null && level.window.activeInHierarchy)
-                   || LevelupScreen.isLevelingUp;
         }
     }
 

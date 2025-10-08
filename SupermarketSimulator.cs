@@ -8,11 +8,7 @@ namespace CrowdControl.Games.Packs.SupermarketSimulator;
 public class SupermarketSimulator : SimpleTCPPack<SimpleTCPServerConnector>
 {
     public override string Host => "127.0.0.1";
-
     public override ushort Port => 51337;
-
-    [SuppressMessage("CrowdControl.PackMetadata", "CC1009:Message Format Property")] //todo - check if this should be changed
-    public override ISimpleTCPPack.MessageFormatType MessageFormat => ISimpleTCPPack.MessageFormatType.CrowdControlLegacy;
 
     public SupermarketSimulator(UserRecord player, Func<CrowdControlBlock, bool> responseHandler, Action<object> statusUpdateHandler) : base(player, responseHandler, statusUpdateHandler) { }
 
@@ -20,126 +16,124 @@ public class SupermarketSimulator : SimpleTCPPack<SimpleTCPServerConnector>
 
     public override EffectList Effects { get; } = new List<Effect>
     {
-        new Effect("Give $100", "money100") { Description = "Give the player $100!", Category = "Money"},
-        new Effect("Give $1000", "money1000") { Description = "Give the player $1,000!", Category = "Money"},
-        new Effect("Give $10000", "money10000") { Description = "Give the player $10,000!", Category = "Money"},
-        new Effect("Take $100", "money-100") { Description = "Take $100 from the player. They must have $100 or more for this to trigger.", Category = "Money"},
-        new Effect("Take $1000", "money-1000") { Description = "Take $1,000 from the player. They must have $1,000 or more for this to trigger.", Category = "Money"},
-        new Effect("Take $10000", "money-10000") { Description = "Take $10,000 from the player. They must have $10,000 or more for this to trigger.", Category = "Money"},
+        new("Give $100", "money100") { Description = "Give the player $100!", Category = "Money", Alignment = (Alignment)Morality.SlightlyHelpful + Orderliness.Controlled },
+        new("Give $1000", "money1000") { Description = "Give the player $1,000!", Category = "Money", Alignment = (Alignment)Morality.Helpful + Orderliness.Controlled },
+        new("Give $10000", "money10000") { Description = "Give the player $10,000!", Category = "Money", Alignment = (Alignment)Morality.VeryHelpful + Orderliness.Controlled },
+        new("Take $100", "money-100") { Description = "Take $100 from the player. They must have $100 or more for this to trigger.", Category = "Money", Alignment = (Alignment)Morality.SlightlyHarmful + Orderliness.Controlled },
+        new("Take $1000", "money-1000") { Description = "Take $1,000 from the player. They must have $1,000 or more for this to trigger.", Category = "Money", Alignment = (Alignment)Morality.Harmful + Orderliness.Controlled },
+        new("Take $10000", "money-10000") { Description = "Take $10,000 from the player. They must have $10,000 or more for this to trigger.", Category = "Money", Alignment = (Alignment)Morality.VeryHarmful + Orderliness.Controlled },
 
-        new Effect("Game Speed: Ultra Slow", "ultraslow") { Description = "Make everything in the game run very slow!", Duration = 15, Category = "Game Speed"},
-        new Effect("Game Speed: Slow", "slow") { Description = "Make everything in the game run slow!", Duration = 30, Category = "Game Speed"},
-        new Effect("Game Speed: Fast", "fast") { Description = "Make everything in the game run fast!", Duration = 30, Category = "Game Speed"},
-        new Effect("Game Speed: Ultra Fast", "ultrafast") { Description = "Make everything in the game run very fast!", Duration = 15, Category = "Game Speed"},
+        new("Game Speed: Ultra Slow", "ultraslow") { Description = "Make everything in the game run very slow!", Duration = 15, Category = "Game Speed", Alignment = (Alignment)Morality.VeryHarmful + Orderliness.Controlled },
+        new("Game Speed: Slow", "slow") { Description = "Make everything in the game run slow!", Duration = 30, Category = "Game Speed", Alignment = (Alignment)Morality.Harmful + Orderliness.Controlled },
+        new("Game Speed: Fast", "fast") { Description = "Make everything in the game run fast!", Duration = 30, Category = "Game Speed", Alignment = (Alignment)Morality.SlightlyHarmful + Orderliness.Controlled },
+        new("Game Speed: Ultra Fast", "ultrafast") { Description = "Make everything in the game run very fast!", Duration = 15, Category = "Game Speed", Alignment = (Alignment)Morality.Harmful + Orderliness.Chaotic },
 
-        new Effect("High FOV", "highfov") { Description = "Set the FOV for the player higher than normal!", Duration = 30, Category = "Game FOV"},
-        new Effect("Low FOV", "lowfov") { Description = "Set the FOV for the player lower, giving them tunnel vision!", Duration = 30, Category = "Game FOV"},
+        new("High FOV", "highfov") { Description = "Set the FOV for the player higher than normal!", Duration = 30, Category = "Game FOV", Alignment = (Alignment)Morality.SlightlyHelpful + Orderliness.Controlled },
+        new("Low FOV", "lowfov") { Description = "Set the FOV for the player lower, giving them tunnel vision!", Duration = 30, Category = "Game FOV", Alignment = (Alignment)Morality.Harmful + Orderliness.Controlled },
 
-        new Effect("Set Language to English", "setlanguage_english") { Description = "Set Language to English.", Duration = 60, Category = "Game Language"},
-        new Effect("Set Language to French", "setlanguage_french") { Description = "Set Language to French.", Duration = 60, Category = "Game Language"},
-        new Effect("Set Language to German", "setlanguage_german") { Description = "Set Language to German.", Duration = 60, Category = "Game Language"},
-        new Effect("Set Language to Italian", "setlanguage_italiano") { Description = "Set Language to Italian.", Duration = 60, Category = "Game Language"},
-        new Effect("Set Language to Spanish", "setlanguage_espanol") { Description = "Set Language to Spanish.", Duration = 60, Category = "Game Language"},
-        new Effect("Set Language to Portuguese (Portugal)", "setlanguage_portugal") { Description = "Set Language to Portuguese (Portugal).", Duration = 60, Category = "Game Language"},
-        new Effect("Set Language to Portuguese (Brazil)", "setlanguage_brazil") { Description = "Set Language to Portuguese (Brazil).", Duration = 60, Category = "Game Language"},
-        new Effect("Set Language to Dutch", "setlanguage_nederlands") { Description = "Set Language to Dutch.", Duration = 60, Category = "Game Language"},
-        new Effect("Set Language to Turkey", "setlanguage_turkce") { Description = "Set Language to Turkey.", Duration = 60, Category = "Game Language"},
-
-
-        new Effect("Advance Time One Hour", "plushour") { Description = "Advance time One Hour", Category = "Time"},
-        new Effect("Rollback Time One Hour", "minushour") { Description = "Rollback time One Hour", Category = "Time"},
-
-        new Effect("Open Store", "open") { Description = "Open the store!", Category = "Store"},
-        new Effect("Close Store", "close") { Description = "Close the store!", Category = "Store"},
-        new Effect("Turn Lights On", "lightson") { Description = "Turn the lights on!", Category = "Store"},
-        new Effect("Turn Lights Off", "lightsoff") { Description = "Turn the lights off!", Category = "Store"},
-        new Effect("Upgrade Store", "upgrade") { Description = "Upgrade the store.", Category = "Store"},
-        new Effect("Upgrade Storage", "upgradeb") { Description = "Upgrade the storage.", Category = "Store"},
-        new Effect("Spawn Garbage", "spawngarbage") { Description = "Spawn random garbage in the store.", Category = "Store"},
-
-        new Effect("Deliver Cereal", "box_cereal") { Category = "Boxes"},
-        new Effect("Deliver Bread", "box_bread") { Category = "Boxes"},
-        new Effect("Deliver Milk", "box_milk") { Category = "Boxes"},
-        new Effect("Deliver Soda", "box_soda") { Category = "Boxes"},
-        new Effect("Deliver Eggs", "box_eggs") { Category = "Boxes"},
-        new Effect("Deliver Salmon", "box_salmon") { Category = "Boxes"},
-        new Effect("Deliver Mayo", "box_mayo") { Category = "Boxes"},
-        new Effect("Deliver Whiskey", "box_whiskey") { Category = "Boxes"},
-        new Effect("Deliver Books", "box_book") { Category = "Boxes"},
-        new Effect("Deliver Toilet Paper", "box_toilet") { Category = "Boxes"},
-        new Effect("Deliver Cat Food", "box_cat") { Category = "Boxes"},
-        new Effect("Deliver Lasagna", "box_lasag") { Category = "Boxes"},
-
-        new Effect("Clear Unused Boxes", "clearunusedboxes") { Description = "This will clear any boxes not previously touched by the store owner. Does not include furniture boxes.", Category = "Boxes"},
+        new("Set Language to English", "setlanguage_english") { Description = "Set Language to English.", Duration = 60, Category = "Game Language", Alignment = (Alignment)Morality.Neutral + Orderliness.Chaotic },
+        new("Set Language to French", "setlanguage_french") { Description = "Set Language to French.", Duration = 60, Category = "Game Language", Alignment = (Alignment)Morality.Neutral + Orderliness.Chaotic },
+        new("Set Language to German", "setlanguage_german") { Description = "Set Language to German.", Duration = 60, Category = "Game Language", Alignment = (Alignment)Morality.Neutral + Orderliness.Chaotic },
+        new("Set Language to Italian", "setlanguage_italiano") { Description = "Set Language to Italian.", Duration = 60, Category = "Game Language", Alignment = (Alignment)Morality.Neutral + Orderliness.Chaotic },
+        new("Set Language to Spanish", "setlanguage_espanol") { Description = "Set Language to Spanish.", Duration = 60, Category = "Game Language", Alignment = (Alignment)Morality.Neutral + Orderliness.Chaotic },
+        new("Set Language to Portuguese (Portugal)", "setlanguage_portugal") { Description = "Set Language to Portuguese (Portugal).", Duration = 60, Category = "Game Language", Alignment = (Alignment)Morality.Neutral + Orderliness.Chaotic },
+        new("Set Language to Portuguese (Brazil)", "setlanguage_brazil") { Description = "Set Language to Portuguese (Brazil).", Duration = 60, Category = "Game Language", Alignment = (Alignment)Morality.Neutral + Orderliness.Chaotic },
+        new("Set Language to Dutch", "setlanguage_nederlands") { Description = "Set Language to Dutch.", Duration = 60, Category = "Game Language", Alignment = (Alignment)Morality.Neutral + Orderliness.Chaotic },
+        new("Set Language to Turkey", "setlanguage_turkce") { Description = "Set Language to Turkey.", Duration = 60, Category = "Game Language", Alignment = (Alignment)Morality.Neutral + Orderliness.Chaotic },
 
 
-        new Effect("Send a Small Empty Box", "playeremptybox_eggs") { Description = "Send a small empty box to the player.", Category = "Player Boxes"},
-        new Effect("Send a Medium Empty Box", "playeremptybox_cereal") { Description = "Send a small empty box to the player.", Category = "Player Boxes"},
-        new Effect("Send a Large Empty Box", "playeremptybox_toilet") { Description = "Send a small empty box to the player.", Category = "Player Boxes"},
+        new("Advance Time One Hour", "plushour") { Description = "Advance time One Hour", Category = "Time", Alignment = (Alignment)Morality.Neutral + Orderliness.Controlled /* TODO: Impact may depend on current schedule */ },
+        new("Rollback Time One Hour", "minushour") { Description = "Rollback time One Hour", Category = "Time", Alignment = (Alignment)Morality.Neutral + Orderliness.Controlled /* TODO: Impact may depend on current schedule */ },
 
-        new Effect("Send Cereal to Player", "playerbox_cereal") { Description = "Send some cereal to the player.", Category = "Player Boxes"},
-        new Effect("Send Bread to Player", "playerbox_bread") { Description = "Send some bread to the player.", Category = "Player Boxes"},
-        new Effect("Send Milk to Player", "playerbox_milk") { Description = "Send some milk to the player.", Category = "Player Boxes"},
-        new Effect("Send Soda to Player", "playerbox_soda") { Description = "Send some soda to the player.", Category = "Player Boxes"},
-        new Effect("Send Eggs to Player", "playerbox_eggs") { Description = "Send some eggs to the player.", Category = "Player Boxes"},
-        new Effect("Send Salmon to Player", "playerbox_salmon") { Description = "Send some salmon to the player.", Category = "Player Boxes"},
-        new Effect("Send Mayo to Player", "playerbox_mayo") { Description = "Send some mayo to the player.", Category = "Player Boxes"},
-        new Effect("Send Whiskey to Player", "playerbox_whiskey") { Description = "Send some whiskey to the player.", Category = "Player Boxes"},
-        new Effect("Send Books to Player", "playerbox_book") { Description = "Send some books to the player.", Category = "Player Boxes"},
-        new Effect("Send Toilet Paper to Player", "playerbox_toilet") { Description = "Send some toilet paper to the player.", Category = "Player Boxes"},
-        new Effect("Send Cat Food to Player", "playerbox_cat") { Description = "Send some cat food to the player.", Category = "Player Boxes"},
-        new Effect("Send Lasagna to Player", "playerbox_lasag") { Description = "Send some lasagna to the player.", Category = "Player Boxes"},
+        new("Open Store", "open") { Description = "Open the store!", Category = "Store", Alignment = (Alignment)Morality.Helpful + Orderliness.Controlled },
+        new("Close Store", "close") { Description = "Close the store!", Category = "Store", Alignment = (Alignment)Morality.Harmful + Orderliness.Controlled },
+        new("Turn Lights On", "lightson") { Description = "Turn the lights on!", Category = "Store", Alignment = (Alignment)Morality.SlightlyHelpful + Orderliness.Controlled },
+        new("Turn Lights Off", "lightsoff") { Description = "Turn the lights off!", Category = "Store", Alignment = (Alignment)Morality.SlightlyHarmful + Orderliness.Controlled },
+        new("Upgrade Store", "upgrade") { Description = "Upgrade the store.", Category = "Store", Alignment = (Alignment)Morality.VeryHelpful + Orderliness.Controlled },
+        new("Upgrade Storage", "upgradeb") { Description = "Upgrade the storage.", Category = "Store", Alignment = (Alignment)Morality.Helpful + Orderliness.Controlled },
+        new("Spawn Garbage", "spawngarbage") { Description = "Spawn random garbage in the store.", Category = "Store", Alignment = (Alignment)Morality.SlightlyHarmful + Orderliness.Chaotic },
 
+        new("Deliver Cereal", "box_cereal") { Category = "Boxes", Alignment = (Alignment)Morality.SlightlyHelpful + Orderliness.Controlled },
+        new("Deliver Bread", "box_bread") { Category = "Boxes", Alignment = (Alignment)Morality.SlightlyHelpful + Orderliness.Controlled },
+        new("Deliver Milk", "box_milk") { Category = "Boxes", Alignment = (Alignment)Morality.SlightlyHelpful + Orderliness.Controlled },
+        new("Deliver Soda", "box_soda") { Category = "Boxes", Alignment = (Alignment)Morality.SlightlyHelpful + Orderliness.Controlled },
+        new("Deliver Eggs", "box_eggs") { Category = "Boxes", Alignment = (Alignment)Morality.SlightlyHelpful + Orderliness.Controlled },
+        new("Deliver Salmon", "box_salmon") { Category = "Boxes", Alignment = (Alignment)Morality.Helpful + Orderliness.Controlled },
+        new("Deliver Mayo", "box_mayo") { Category = "Boxes", Alignment = (Alignment)Morality.SlightlyHelpful + Orderliness.Controlled },
+        new("Deliver Whiskey", "box_whiskey") { Category = "Boxes", Alignment = (Alignment)Morality.Helpful + Orderliness.Controlled },
+        new("Deliver Books", "box_book") { Category = "Boxes", Alignment = (Alignment)Morality.SlightlyHelpful + Orderliness.Controlled },
+        new("Deliver Toilet Paper", "box_toilet") { Category = "Boxes", Alignment = (Alignment)Morality.SlightlyHelpful + Orderliness.Controlled },
+        new("Deliver Cat Food", "box_cat") { Category = "Boxes", Alignment = (Alignment)Morality.SlightlyHelpful + Orderliness.Controlled },
+        new("Deliver Lasagna", "box_lasag") { Category = "Boxes", Alignment = (Alignment)Morality.Helpful + Orderliness.Controlled },
 
-        new Effect("Teleport Outside Store", "teleport_outsidestore") { Description = "Teleport the player to the delivery spot outside.", Category = "Teleport"},
-        new Effect("Teleport Across Street", "teleport_acrossstreet") { Description = "Teleport the player across the street from the store.",Category = "Teleport"},
-        new Effect("Teleport Far Away", "teleport_faraway") { Description = "Teleport the player somewhere far away around town!.",Category = "Teleport"},
-        new Effect("Teleport to Computer", "teleport_computer") { Description = "Teleport the player to their computer.",Category = "Teleport"},
-
-        new Effect("Force Cash Only", "forcepayment_cash") { Description = "Force all customers to pay with cash only.", Duration = 60, Category = "Payments"},
-        new Effect("Force Card Only", "forcepayment_card") { Description = "Force all customers to pay with card only.", Duration = 60, Category = "Payments"},
-        new Effect("Force Exact Change", "forceexactchange") { Description = "Force all customers to pay with exact change when paying in cash.", Duration = 60, Category = "Payments"},
-        new Effect("Customers Overpay", "forcerequirechange") { Description = "Force all customers to not pay with exact change when paying in cash.", Duration = 60, Category = "Payments"},
-        new Effect("Force Large Bills", "forcelargebills") { Description = "Force customers that are paying with cash to use \"Large Bills\".", Duration = 60, Category = "Payments"},
-
-        new Effect("Allow Credit Mischarges", "allowmischarges") { Description = "Allow the caisher to mischarge the customer by a certain amount.", Duration = 60, Category = "Payments"},
-        new Effect("Force Math", "forcemath") { Description = "Forces the player to do the math for correct change!", Duration = 60, Category = "Payments"},
+        new("Clear Unused Boxes", "clearunusedboxes") { Description = "This will clear any boxes not previously touched by the store owner. Does not include furniture boxes.", Category = "Boxes", Alignment = (Alignment)Morality.SlightlyHelpful + Orderliness.Controlled },
 
 
-        new Effect("Invert X-Axis", "invertx") { Description = "Invert the X-Axis of the players controls!", Duration = 30, Category = "Axis Control"},
-        new Effect("Invert Y-Axis", "inverty") { Description = "Invert the Y-Axis of the players controls!", Duration = 30, Category = "Axis Control"},
+        new("Send a Small Empty Box", "playeremptybox_eggs") { Description = "Send a small empty box to the player.", Category = "Player Boxes", Alignment = (Alignment)Morality.Neutral + Orderliness.SlightlyChaotic },
+        new("Send a Medium Empty Box", "playeremptybox_cereal") { Description = "Send a small empty box to the player.", Category = "Player Boxes", Alignment = (Alignment)Morality.Neutral + Orderliness.SlightlyChaotic },
+        new("Send a Large Empty Box", "playeremptybox_toilet") { Description = "Send a small empty box to the player.", Category = "Player Boxes", Alignment = (Alignment)Morality.Neutral + Orderliness.SlightlyChaotic },
 
-        // new Effect("Close Checkout", "closecheckout") { Category = "Checkout"},
-        // new Effect("Open Checkout", "opencheckout") { Category = "Checkout"},
+        new("Send Cereal to Player", "playerbox_cereal") { Description = "Send some cereal to the player.", Category = "Player Boxes", Alignment = (Alignment)Morality.Neutral + Orderliness.SlightlyChaotic },
+        new("Send Bread to Player", "playerbox_bread") { Description = "Send some bread to the player.", Category = "Player Boxes", Alignment = (Alignment)Morality.Neutral + Orderliness.SlightlyChaotic },
+        new("Send Milk to Player", "playerbox_milk") { Description = "Send some milk to the player.", Category = "Player Boxes", Alignment = (Alignment)Morality.Neutral + Orderliness.SlightlyChaotic },
+        new("Send Soda to Player", "playerbox_soda") { Description = "Send some soda to the player.", Category = "Player Boxes", Alignment = (Alignment)Morality.Neutral + Orderliness.SlightlyChaotic },
+        new("Send Eggs to Player", "playerbox_eggs") { Description = "Send some eggs to the player.", Category = "Player Boxes", Alignment = (Alignment)Morality.Neutral + Orderliness.SlightlyChaotic },
+        new("Send Salmon to Player", "playerbox_salmon") { Description = "Send some salmon to the player.", Category = "Player Boxes", Alignment = (Alignment)Morality.Neutral + Orderliness.SlightlyChaotic },
+        new("Send Mayo to Player", "playerbox_mayo") { Description = "Send some mayo to the player.", Category = "Player Boxes", Alignment = (Alignment)Morality.Neutral + Orderliness.SlightlyChaotic },
+        new("Send Whiskey to Player", "playerbox_whiskey") { Description = "Send some whiskey to the player.", Category = "Player Boxes", Alignment = (Alignment)Morality.Neutral + Orderliness.SlightlyChaotic },
+        new("Send Books to Player", "playerbox_book") { Description = "Send some books to the player.", Category = "Player Boxes", Alignment = (Alignment)Morality.Neutral + Orderliness.SlightlyChaotic },
+        new("Send Toilet Paper to Player", "playerbox_toilet") { Description = "Send some toilet paper to the player.", Category = "Player Boxes", Alignment = (Alignment)Morality.Neutral + Orderliness.SlightlyChaotic },
+        new("Send Cat Food to Player", "playerbox_cat") { Description = "Send some cat food to the player.", Category = "Player Boxes", Alignment = (Alignment)Morality.Neutral + Orderliness.SlightlyChaotic },
+        new("Send Lasagna to Player", "playerbox_lasag") { Description = "Send some lasagna to the player.", Category = "Player Boxes", Alignment = (Alignment)Morality.Neutral + Orderliness.SlightlyChaotic },
 
-        new Effect("Drop Held Item", "drop") { Category = "Held Items"},
-        new Effect("Throw Held Item", "throw") { Category = "Held Items"},
+        new("Teleport Outside Store", "teleport_outsidestore") { Description = "Teleport the player to the delivery spot outside.", Category = "Teleport", Alignment = (Alignment)Morality.Neutral + Orderliness.Controlled },
+        new("Teleport Across Street", "teleport_acrossstreet") { Description = "Teleport the player across the street from the store.",Category = "Teleport", Alignment = (Alignment)Morality.Neutral + Orderliness.Controlled },
+        new("Teleport Far Away", "teleport_faraway") { Description = "Teleport the player somewhere far away around town!.",Category = "Teleport", Alignment = (Alignment)Morality.Harmful + Orderliness.Chaotic },
+        new("Teleport to Computer", "teleport_computer") { Description = "Teleport the player to their computer.",Category = "Teleport", Alignment = (Alignment)Morality.Helpful + Orderliness.Controlled },
 
-        new Effect("Spawn Customer", "spawn") { Category = "Customers"},
-        new Effect("Despawn Customer", "despawn") { Category = "Customers"},
-        new Effect("Complain About Theft", "theft") { Category = "Customers"},
-        new Effect("This is a robbery!", "robbery") { Category = "Customers"},
-        new Effect("I'm at Soup!", "soup") { Category = "Customers"},
-        new Effect("It's Breakfast Time!", "breakfast") { Category = "Customers"},
-        new Effect("Boneless?", "boneless") { Category = "Customers"},
+        new("Force Cash Only", "forcepayment_cash") { Description = "Force all customers to pay with cash only.", Duration = 60, Category = "Payments", Alignment = (Alignment)Morality.SlightlyHarmful + Orderliness.Controlled },
+        new("Force Card Only", "forcepayment_card") { Description = "Force all customers to pay with card only.", Duration = 60, Category = "Payments", Alignment = (Alignment)Morality.Neutral + Orderliness.Controlled /* TODO: Could be SlightlyHelpful if speeds checkout */ },
+        new("Force Exact Change", "forceexactchange") { Description = "Force all customers to pay with exact change when paying in cash.", Duration = 60, Category = "Payments", Alignment = (Alignment)Morality.SlightlyHarmful + Orderliness.Controlled },
+        new("Customers Overpay", "forcerequirechange") { Description = "Force all customers to not pay with exact change when paying in cash.", Duration = 60, Category = "Payments", Alignment = (Alignment)Morality.Helpful + Orderliness.Controlled /* Assumes store profits from overpay */ },
+        new("Force Large Bills", "forcelargebills") { Description = "Force customers that are paying with cash to use \"Large Bills\".", Duration = 60, Category = "Payments", Alignment = (Alignment)Morality.SlightlyHarmful + Orderliness.Controlled },
 
-        new Effect("Hire Cashier", "hirecashier") { Category = "Employees"},
-        new Effect("Fire Cashier", "firecashier") { Category = "Employees"},
-        new Effect("Hire Restocker", "hirerestocker") { Category = "Employees"},
-        new Effect("Fire Restocker", "firerestocker") { Category = "Employees"},
+        new("Allow Credit Mischarges", "allowmischarges") { Description = "Allow the caisher to mischarge the customer by a certain amount.", Duration = 60, Category = "Payments", Alignment = (Alignment)Morality.SlightlyHelpful + Orderliness.Controlled },
+        new("Force Math", "forcemath") { Description = "Forces the player to do the math for correct change!", Duration = 60, Category = "Payments", Alignment = (Alignment)Morality.SlightlyHarmful + Orderliness.Controlled },
 
-        new Effect("Hire Customer Helper", "hirecustomerhelper") { Category = "Employees"},
-        new Effect("Fire Customer Helper", "firecustomerhelper") { Category = "Employees"},
 
-        new Effect("Raise All Prices", "pricesup") { Category = "Prices"},
-        new Effect("Lower All Prices", "pricesdown") { Category = "Prices"},
-        new Effect("Raise Random Price", "priceup") { Category = "Prices"},
-        new Effect("Lower Random Price", "pricedown") { Category = "Prices"},
+        new("Invert X-Axis", "invertx") { Description = "Invert the X-Axis of the players controls!", Duration = 30, Category = "Axis Control", Alignment = (Alignment)Morality.SlightlyHarmful + Orderliness.Chaotic },
+        new("Invert Y-Axis", "inverty") { Description = "Invert the Y-Axis of the players controls!", Duration = 30, Category = "Axis Control", Alignment = (Alignment)Morality.SlightlyHarmful + Orderliness.Chaotic },
 
-        new Effect("Remove Item From Shelf", "removeitem") { Category = "Shelves"},
-        new Effect("Add Item To Shelf", "additem") { Category = "Shelves"},
+        // new("Close Checkout", "closecheckout") { Category = "Checkout"},
+        // new("Open Checkout", "opencheckout") { Category = "Checkout"},
 
-        new Effect("Hype Train", "event-hype-train") {}
+        new("Drop Held Item", "drop") { Category = "Held Items", Alignment = (Alignment)Morality.SlightlyHarmful + Orderliness.Chaotic },
+        new("Throw Held Item", "throw") { Category = "Held Items", Alignment = (Alignment)Morality.SlightlyHarmful + Orderliness.Chaotic },
 
+        new("Spawn Customer", "spawn") { Category = "Customers", Alignment = (Alignment)Morality.SlightlyHelpful + Orderliness.Controlled },
+        new("Despawn Customer", "despawn") { Category = "Customers", Alignment = (Alignment)Morality.SlightlyHarmful + Orderliness.Controlled },
+        new("Complain About Theft", "theft") { Category = "Customers", Alignment = (Alignment)Morality.Neutral + Orderliness.Neutral },
+        new("This is a robbery!", "robbery") { Category = "Customers", Alignment = (Alignment)Morality.Neutral + Orderliness.Neutral },
+        new("I'm at Soup!", "soup") { Category = "Customers", Alignment = (Alignment)Morality.Neutral + Orderliness.Neutral },
+        new("It's Breakfast Time!", "breakfast") { Category = "Customers", Alignment = (Alignment)Morality.Neutral + Orderliness.Neutral },
+        new("Boneless?", "boneless") { Category = "Customers", Alignment = (Alignment)Morality.Neutral + Orderliness.Neutral },
+
+        new("Hire Cashier", "hirecashier") { Category = "Employees", Alignment = (Alignment)Morality.Helpful + Orderliness.Controlled },
+        new("Fire Cashier", "firecashier") { Category = "Employees", Alignment = (Alignment)Morality.Harmful + Orderliness.Controlled },
+        new("Hire Restocker", "hirerestocker") { Category = "Employees", Alignment = (Alignment)Morality.Helpful + Orderliness.Controlled },
+        new("Fire Restocker", "firerestocker") { Category = "Employees", Alignment = (Alignment)Morality.Harmful + Orderliness.Controlled },
+
+        new("Hire Customer Helper", "hirecustomerhelper") { Category = "Employees", Alignment = (Alignment)Morality.SlightlyHelpful + Orderliness.Controlled },
+        new("Fire Customer Helper", "firecustomerhelper") { Category = "Employees", Alignment = (Alignment)Morality.SlightlyHarmful + Orderliness.Controlled },
+
+        new("Raise All Prices", "pricesup") { Category = "Prices", Alignment = (Alignment)Morality.Neutral + Orderliness.Controlled },
+        new("Lower All Prices", "pricesdown") { Category = "Prices", Alignment = (Alignment)Morality.Neutral + Orderliness.Controlled },
+        new("Raise Random Price", "priceup") { Category = "Prices", Alignment = (Alignment)Morality.Neutral + Orderliness.Chaotic },
+        new("Lower Random Price", "pricedown") { Category = "Prices", Alignment = (Alignment)Morality.Neutral + Orderliness.Chaotic },
+
+        new("Remove Item From Shelf", "removeitem") { Category = "Shelves", Alignment = (Alignment)Morality.SlightlyHarmful + Orderliness.Controlled },
+        new("Add Item To Shelf", "additem") { Category = "Shelves", Alignment = (Alignment)Morality.SlightlyHelpful + Orderliness.Controlled },
+
+        new("Hype Train", "event-hype-train") { Alignment = (Alignment)Morality.Neutral + Orderliness.Neutral }
     };
 }
