@@ -1,5 +1,5 @@
 @echo off
-REM Create the src subtree from WarpWorld/BepinEx-Example-Plugin
+REM Create the src subtree from WarpWorld/MelonLoader-Example-Plugin
 
 REM Ensure working tree is clean
 for /f "delims=" %%i in ('git status --porcelain') do (
@@ -20,15 +20,15 @@ if exist src (
 )
 
 REM Add remote if missing
-git remote get-url bepinex-example >nul 2>&1
+git remote get-url melonloader-example >nul 2>&1
 if errorlevel 1 (
-    git remote add bepinex-example https://github.com/WarpWorld/BepinEx-Example-Plugin.git
+    git remote add melonloader-example https://github.com/WarpWorld/MelonLoader-Example-Plugin.git
 )
 
 REM Add the subtree
 echo.
 echo Adding src subtree from upstream...
-git subtree add --prefix=src bepinex-example main --squash
+git subtree add --prefix=src melonloader-example main --squash
 if errorlevel 1 (
     echo.
     echo Failed to create subtree.
