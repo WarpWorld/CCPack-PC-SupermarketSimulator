@@ -3,7 +3,7 @@
     <PropertyGroup>
         <!-- ALWAYS SET THESE FOR A NEW GAME! -->
         <TargetFramework>net6.0</TargetFramework>
-        <GameBaseDir>C:\Program Files (x86)\Steam\steamapps\common\Megabonk</GameBaseDir>
+        <GameBaseDir>C:\Program Files (x86)\Steam\steamapps\common\Supermarket Simulator</GameBaseDir>
         <GameAssemblyDir>$(GameBaseDir)\MelonLoader\Il2CppAssemblies</GameAssemblyDir>
         <DotNetAssemblyDir>$(GameBaseDir)\MelonLoader\net6</DotNetAssemblyDir>
         <!--========================================-->
@@ -70,10 +70,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\ConnectorLib.JSON\ConnectorLib.JSON.csproj"/>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Harmony\" />
     </ItemGroup>
 
     <PropertyGroup>

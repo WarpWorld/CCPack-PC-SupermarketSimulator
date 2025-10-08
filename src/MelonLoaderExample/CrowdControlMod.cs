@@ -3,8 +3,8 @@ using CrowdControl.Delegates.Effects;
 using MelonLoader;
 using UnityEngine;
 
-[assembly: MelonGame("Ved", "Megabonk")]
-[assembly: MelonInfo(typeof(CrowdControlMod), CrowdControlMod.MOD_NAME, "1.0.3", CrowdControlMod.MOD_DEVELOPER, "https://crowdcontrol.live/")]
+[assembly: MelonGame("Nokta Games", "Supermarket Simulator")]
+[assembly: MelonInfo(typeof(CrowdControlMod), CrowdControlMod.MOD_NAME, CrowdControlMod.MOD_VERSION, CrowdControlMod.MOD_DEVELOPER, CrowdControlMod.MOD_LINK)]
 
 namespace CrowdControl;
 
@@ -17,7 +17,8 @@ public class CrowdControlMod : MelonMod
     public const string MOD_GUID = "WarpWorld.CrowdControl";
     public const string MOD_DEVELOPER = "Warp World";
     public const string MOD_NAME = "Crowd Control";
-    public const string MOD_VERSION = "1.0.3.0";
+    public const string MOD_VERSION = "1.0.3";
+    public const string MOD_LINK = "https://crowdcontrol.live/";
     
     public static float DeltaTime => Time.fixedDeltaTime; //change this to Time.deltaTime if using Update instead of FixedUpdate
 
