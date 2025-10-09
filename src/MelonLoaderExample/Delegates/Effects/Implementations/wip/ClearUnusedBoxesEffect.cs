@@ -25,4 +25,3 @@ public class ClearUnusedBoxesEffect : Effect
         catch(System.Exception e){CrowdControlMod.Instance.Logger.Error($"ClearBoxes error: {e}"); return EffectResponse.Retry(request.ID);}        
     }
 }
-

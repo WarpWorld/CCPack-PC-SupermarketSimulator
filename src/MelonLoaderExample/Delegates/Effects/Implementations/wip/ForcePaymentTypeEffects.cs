@@ -29,4 +29,3 @@ public class ForcePaymentTypeEffects : Effect
         GameStateManager.ForceUseCash = false; GameStateManager.ForceUseCredit = false; return EffectResponse.Finished(request.ID);
     }
 }
-

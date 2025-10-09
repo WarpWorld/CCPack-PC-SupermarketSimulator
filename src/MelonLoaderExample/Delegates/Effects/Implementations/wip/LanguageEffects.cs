@@ -48,4 +48,3 @@ public class LanguageEffects : Effect
         return EffectResponse.Finished(request.ID);
     }
 }
-

@@ -36,4 +36,3 @@ public class HeldItemEffects : Effect
         catch(Exception e){CrowdControlMod.Instance.Logger.Error($"HeldItem error: {e}"); return EffectResponse.Retry(request.ID);}        
     }
 }
-
