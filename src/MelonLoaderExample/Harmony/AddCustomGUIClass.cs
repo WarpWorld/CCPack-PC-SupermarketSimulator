@@ -3,7 +3,7 @@ using Il2Cpp;
 
 namespace CrowdControl;
 
-[HarmonyPatch(typeof(PlayerInteraction), "Start")]
+[HarmonyPatch(typeof(PlayerInteraction), "Awake")]
 public static class AddCustomGUIClass
 {
     static void Postfix(PlayerInteraction __instance)
