@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using ConnectorLib.JSON;
 using CrowdControl.Delegates.Metadata;
 

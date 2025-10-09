@@ -1,4 +1,6 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using ConnectorLib.JSON;
 using Il2Cpp;
 using Il2CppPG;
@@ -28,7 +30,7 @@ public class GameStateManager
     public static string currentHeldItem;
     
     public static string NameOverride = "";
-    public static List<GameObject> nameplates = new List<GameObject>();
+    public static List<GameObject> nameplates = new();
 
     /// <summary>Checks if the game is in a state where effects can be applied.</summary>
     /// <param name="code">The effect codename the caller is intending to apply.</param>
@@ -37,7 +39,7 @@ public class GameStateManager
     /// The <paramref name="code"/> parameter is not normally checked.
     /// Use this is you want to exempt certain effects from checks (e.g. debug or "fix-it" effects).
     /// </remarks>
-    public bool IsReady(string code = "") => GetGameState() == ConnectorLib.JSON.GameState.Ready;
+    public bool IsReady(string code = "") => GetGameState() == GameState.Ready;
 
     /// <summary>Gets the current game state as it pertains to the firing of effects.</summary>
     /// <returns>The current game state.</returns>
@@ -50,10 +52,10 @@ public class GameStateManager
                 return GameState.Paused;
             
             //add check for whether the game is in a state it can accept effects
-            PlayerInteraction player = Singleton<PlayerInteraction>.Instance;
+            PlayerInteraction player = UnityEngine.Object.FindObjectOfType<PlayerInteraction>();
             if (player == null) return GameState.BadPlayerState;
             
-            bool isPaused = (bool)CrowdDelegates.getProperty(player, "m_Paused");
+            bool isPaused = player.m_Paused;
             if (isPaused) return GameState.Paused;
             
             return GameState.Ready;
@@ -82,9 +84,9 @@ public class GameStateManager
     /// <param name="force">True to force the report to be sent, even if the state is the same as the previous state, false to only report the state if it has changed.</param>
     /// <returns>True if the data was sent successfully, false otherwise.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool UpdateGameState(ConnectorLib.JSON.GameState newState, bool force) => UpdateGameState(newState, null, force);
+    public bool UpdateGameState(GameState newState, bool force) => UpdateGameState(newState, null, force);
 
-    private ConnectorLib.JSON.GameState? _last_game_state;
+    private GameState? _last_game_state;
     private readonly CrowdControlMod m_mod;
     public GameStateManager(CrowdControlMod mod)
     {
@@ -96,7 +98,7 @@ public class GameStateManager
     /// <param name="message">The message to attach to the state report.</param>
     /// <param name="force">True to force the report to be sent, even if the state is the same as the previous state, false to only report the state if it has changed.</param>
     /// <returns>True if the data was sent successfully, false otherwise.</returns>
-    public bool UpdateGameState(ConnectorLib.JSON.GameState newState, string? message = null, bool force = false)
+    public bool UpdateGameState(GameState newState, string? message = null, bool force = false)
     {
         if (force || (_last_game_state != newState))
         {

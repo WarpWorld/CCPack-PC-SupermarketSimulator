@@ -1,4 +1,5 @@
-﻿using ConnectorLib.JSON;
+﻿using System;
+using ConnectorLib.JSON;
 
 //Everything in the Metadata namespace is free-form and just needs to have static methods with the Metadata attribute
 //non-effect helper methods are allowed and encouraged - kat

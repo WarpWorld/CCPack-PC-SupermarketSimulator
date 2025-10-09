@@ -1,4 +1,8 @@
-﻿namespace CrowdControl.Delegates.Effects;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace CrowdControl.Delegates.Effects;
 
 /// <summary>Attribute used to mark a method for starting an effect with the specified ID(s).</summary>
 [AttributeUsage(AttributeTargets.Class)]

@@ -1,4 +1,8 @@
-﻿namespace CrowdControl.Delegates.Metadata;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace CrowdControl.Delegates.Metadata;
 
 /// <summary> Attribute used to mark a method as metadata with the specified IDs.</summary>
 [AttributeUsage(AttributeTargets.Method)]

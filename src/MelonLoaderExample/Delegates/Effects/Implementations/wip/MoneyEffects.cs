@@ -1,11 +1,11 @@
+using System;
 using ConnectorLib.JSON;
 using Il2Cpp;
-using Il2CppPG;
 
 namespace CrowdControl.Delegates.Effects.Implementations;
 
 // Handles give/take money effects (legacy: Money100 / MoneyN100 etc)
-[Effect(new[] { "money100", "money1000", "money10000", "money-100", "money-1000", "money-10000" })]
+[Effect("money100", "money1000", "money10000", "money-100", "money-1000", "money-10000")]
 public class MoneyEffects : Effect
 {
     public MoneyEffects(CrowdControlMod mod, NetworkClient client) : base(mod, client) { }
@@ -14,7 +14,7 @@ public class MoneyEffects : Effect
     {
         try
         {
-            var moneyManager = Singleton<MoneyManager>.Instance;
+            MoneyManager moneyManager = MoneyManager.Instance;
             if (moneyManager == null)
                 return EffectResponse.Retry(request.ID, "Money manager not ready");
 
@@ -39,7 +39,7 @@ public class MoneyEffects : Effect
             }
 
             // TransitionType chosen to mirror legacy usage (CHECKOUT_INCOME)
-            moneyManager.MoneyTransition(amount, MoneyManager.TransitionType.CHECKOUT_INCOME, true);
+            moneyManager.MoneyTransition(amount, MoneyManager.TransitionType.CHECKOUT_INCOME);
             return EffectResponse.Success(request.ID);
         }
         catch (Exception e)

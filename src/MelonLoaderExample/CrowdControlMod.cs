@@ -1,4 +1,5 @@
-﻿using CrowdControl;
+﻿using System;
+using CrowdControl;
 using CrowdControl.Delegates.Effects;
 using MelonLoader;
 using UnityEngine;

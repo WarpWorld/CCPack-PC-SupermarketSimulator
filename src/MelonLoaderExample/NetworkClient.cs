@@ -1,7 +1,12 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Globalization;
+using System.IO;
+using System.Linq;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using ConnectorLib.JSON;
 
 namespace CrowdControl;
@@ -260,7 +265,7 @@ public partial class NetworkClient : IDisposable
     {
         if (message != null)
         {
-            Send(new MessageResponse()
+            Send(new MessageResponse
             {
                 type = ResponseType.Disconnect,
                 message = message
