@@ -1,5 +1,4 @@
 using ConnectorLib.JSON;
-using Il2CppAssets.Scripts.Actors.Player;
 using UnityEngine;
 
 namespace CrowdControl.Delegates.Effects.Implementations;

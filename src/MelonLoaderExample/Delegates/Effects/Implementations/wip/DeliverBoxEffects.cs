@@ -37,4 +37,3 @@ public class DeliverBoxEffects : Effect
         catch(Exception e){CrowdControlMod.Instance.Logger.Error($"DeliverBox error: {e}"); return EffectResponse.Retry(request.ID);}        
     }
 }
-

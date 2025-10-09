@@ -55,4 +55,3 @@ public class HourAdjustEffects : Effect
         catch(Exception e){CrowdControlMod.Instance.Logger.Error($"HourAdjust error: {e}"); return EffectResponse.Retry(request.ID);}        
     }
 }
-

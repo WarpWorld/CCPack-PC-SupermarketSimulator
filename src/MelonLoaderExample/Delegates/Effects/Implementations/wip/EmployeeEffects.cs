@@ -105,4 +105,3 @@ public class EmployeeEffects : Effect
 
     private void Call(object obj,string name){obj.GetType().GetMethod(name,System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Public)?.Invoke(obj,null);}    
 }
-

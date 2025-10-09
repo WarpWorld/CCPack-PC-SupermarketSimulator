@@ -115,4 +115,3 @@ public class CustomerEffects : Effect
         return EffectResponse.Success(req.ID);
     }
 }
-
