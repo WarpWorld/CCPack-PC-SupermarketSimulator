@@ -16,7 +16,6 @@ public static class Customer_DoPayment
         if (GameStateManager.ForceUseCredit)
         {
             viaCreditCard = true;
-            return;
         }
 
     }

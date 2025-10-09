@@ -1,6 +1,8 @@
+using System;
 using HarmonyLib;
 using Il2Cpp__Project__.Scripts.Computer.Management.Hiring_Tab;
 using Il2Cpp;
+using Object = UnityEngine.Object;
 
 namespace CrowdControl;
 
@@ -11,34 +13,18 @@ public static class HiringTab_OnEnable
     {
         try
         {
+            foreach (RestockerItem restockerItem in Object.FindObjectsOfType<RestockerItem>())
+                restockerItem.Start();
+            
+            foreach (var cashierItem in Object.FindObjectsOfType<CashierItem>())
+                cashierItem.Start();
 
-
-            RestockerItem[] restockerItems = UnityEngine.Object.FindObjectsOfType<RestockerItem>();
-
-            foreach (var restockerItem in restockerItems)
-            {
-                CrowdDelegates.callFunc(restockerItem, "Start", null);
-            }
-
-            CashierItem[] cashierItems = UnityEngine.Object.FindObjectsOfType<CashierItem>();
-
-            foreach (var cashierItem in cashierItems)
-            {
-                CrowdDelegates.callFunc(cashierItem, "Start", null);
-            }
-
-            CustomerHelperItem[] customerHelperItems = UnityEngine.Object.FindObjectsOfType<CustomerHelperItem>();
-
-            foreach (var customerHelperItem in customerHelperItems)
-            {
-                CrowdDelegates.callFunc(customerHelperItem, "Start", null);
-            }
-
-
+            foreach (var customerHelperItem in Object.FindObjectsOfType<CustomerHelperItem>())
+                customerHelperItem.Start();
         }
         catch (Exception ex)
         {
-            TestMod.mls.LogError($"Error in HiringTab OnEnable patch: {ex.Message}");
+            CrowdControlMod.Instance.Logger.Error($"Error in HiringTab OnEnable patch: {ex.Message}");
         }
     }
 }

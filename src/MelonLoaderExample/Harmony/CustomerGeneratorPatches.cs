@@ -3,6 +3,7 @@ using HarmonyLib;
 using Il2Cpp;
 using Il2CppTMPro;
 using UnityEngine;
+using Type = System.Type;
 
 namespace CrowdControl;
 
@@ -14,7 +15,7 @@ public static class CustomerGeneratorPatches
         var postfixSpawn = new HarmonyMethod(typeof(CustomerGeneratorPatches).GetMethod(nameof(SpawnPostfix), BindingFlags.Static | BindingFlags.NonPublic));
         harmonyInstance.Patch(originalSpawn, null, postfixSpawn);
 
-        var originalSpawnVector = typeof(CustomerGenerator).GetMethod("Spawn", new Type[] { typeof(Vector3) });
+        var originalSpawnVector = typeof(CustomerGenerator).GetMethod("Spawn", new[] { typeof(Vector3) });
         var postfixSpawnVector = new HarmonyMethod(typeof(CustomerGeneratorPatches).GetMethod(nameof(SpawnVectorPostfix), BindingFlags.Static | BindingFlags.NonPublic));
         harmonyInstance.Patch(originalSpawnVector, null, postfixSpawnVector);
     }

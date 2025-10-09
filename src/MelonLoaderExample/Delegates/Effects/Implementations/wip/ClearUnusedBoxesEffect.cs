@@ -1,3 +1,4 @@
+using System;
 using ConnectorLib.JSON;
 using Il2Cpp;
 using UnityEngine;
@@ -15,13 +16,13 @@ public class ClearUnusedBoxesEffect : Effect
         {
             GameObject[] boxes = GameObject.FindGameObjectsWithTag("Box");
             if (boxes.Length < 1) return EffectResponse.Failure(request.ID, "No boxes to despawn.");
-            foreach (var b in boxes)
+            foreach (GameObject b in boxes)
             {
-                var comp = b.GetComponent<Box>();
+                Box comp = b.GetComponent<Box>();
                 if (comp) b.SetActive(false);
             }
             return EffectResponse.Success(request.ID);
         }
-        catch(System.Exception e){CrowdControlMod.Instance.Logger.Error($"ClearBoxes error: {e}"); return EffectResponse.Retry(request.ID);}        
+        catch(Exception e){CrowdControlMod.Instance.Logger.Error($"ClearBoxes error: {e}"); return EffectResponse.Retry(request.ID);}        
     }
 }

@@ -1,10 +1,10 @@
+using System;
 using ConnectorLib.JSON;
 using Il2Cpp;
-using Il2CppPG;
 
 namespace CrowdControl.Delegates.Effects.Implementations;
 
-[Effect(new[]{"setlanguage_english","setlanguage_french","setlanguage_german","setlanguage_italiano","setlanguage_espanol","setlanguage_portugal","setlanguage_brazil","setlanguage_nederlands","setlanguage_turkce"})]
+[Effect("setlanguage_english", "setlanguage_french", "setlanguage_german", "setlanguage_italiano", "setlanguage_espanol", "setlanguage_portugal", "setlanguage_brazil", "setlanguage_nederlands", "setlanguage_turkce")]
 public class LanguageEffects : Effect
 {
     private bool _changed;
@@ -14,7 +14,7 @@ public class LanguageEffects : Effect
     {
         try
         {
-            var save = Singleton<SaveManager>.Instance; if (save==null) return EffectResponse.Retry(request.ID);
+            SaveManager save = SaveManager.Instance; if (save==null) return EffectResponse.Retry(request.ID);
             int current = save.Settings.LanguageSetting;
             int newLang = current;
             switch(request.code)
@@ -43,7 +43,7 @@ public class LanguageEffects : Effect
     {
         if (_changed)
         {
-            try{ var save = Singleton<SaveManager>.Instance; save.Settings.LanguageSetting = GameStateManager.OrgLanguage; }catch{}
+            try{ SaveManager save = SaveManager.Instance; save.Settings.LanguageSetting = GameStateManager.OrgLanguage; }catch{}
         }
         return EffectResponse.Finished(request.ID);
     }

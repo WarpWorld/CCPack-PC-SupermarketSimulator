@@ -50,7 +50,7 @@ public class HypeTrainEffect : Effect
             {
                 list.Add(new HypeTrainBoxData{ name = request.sourceDetails.last_contribution.user_name, box_color = NameToColor(request.sourceDetails.last_contribution.user_name), bit_amount = request.sourceDetails.last_contribution.type=="bits"? request.sourceDetails.last_contribution.total:0 });
             }
-            var playerT = Singleton<PlayerController>.Instance.transform;
+            var playerT = PlayerController.Instance.transform;
             Vector3 startPos = playerT.position + cam.TransformDirection(new Vector3(-14.5f,0.2f,6.0f)); startPos.y = playerT.position.y;
             Vector3 stopPos = playerT.position + cam.TransformDirection(new Vector3(14.5f,0.2f,6.0f)); stopPos.y = playerT.position.y;
             hype.StartHypeTrain(startPos, stopPos, list.ToArray(), playerT, new HypeTrainOptions{ train_layer = LayerMask.NameToLayer("FloorLayer"), max_bits_per_car = 100 });

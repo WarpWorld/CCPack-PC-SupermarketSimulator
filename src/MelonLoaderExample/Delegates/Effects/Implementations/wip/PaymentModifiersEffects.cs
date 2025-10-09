@@ -1,10 +1,11 @@
+using System;
 using ConnectorLib.JSON;
 using Il2Cpp;
 using Il2CppPG;
 
 namespace CrowdControl.Delegates.Effects.Implementations;
 
-[Effect(new[]{"forceexactchange","forcerequirechange","forcelargebills","allowmischarges","forcemath"})]
+[Effect("forceexactchange", "forcerequirechange", "forcelargebills", "allowmischarges", "forcemath")]
 public class PaymentModifiersEffects : Effect
 {
     public PaymentModifiersEffects(CrowdControlMod mod, NetworkClient client) : base(mod, client) { }
@@ -13,8 +14,9 @@ public class PaymentModifiersEffects : Effect
     {
         try
         {
-            if (!Singleton<StoreStatus>.Instance.IsOpen) return EffectResponse.Retry(request.ID);
-            var player = Singleton<PlayerInteraction>.Instance; if (!player.InInteraction) return EffectResponse.Retry(request.ID);
+            if (!StoreStatus.Instance.IsOpen) return EffectResponse.Retry(request.ID);
+            PlayerInteraction player = UnityEngine.Object.FindObjectOfType<PlayerInteraction>();
+            if (!player.InInteraction) return EffectResponse.Retry(request.ID);
             if (GameStateManager.currentHeldItem != "CHECKOUT") return EffectResponse.Retry(request.ID);
 
             switch(request.code)

@@ -39,6 +39,24 @@
         <Reference Include="Il2Cppmscorlib">
             <HintPath>$(GameAssemblyDir)\Il2Cppmscorlib.dll</HintPath>
         </Reference>
+        <Reference Include="Il2Cppmscorlib">
+            <HintPath>$(GameAssemblyDir)\Il2Cppmscorlib.dll</HintPath>
+        </Reference>
+        <Reference Include="Il2CppSystem">
+            <HintPath>$(GameAssemblyDir)\Il2CppSystem.dll</HintPath>
+        </Reference>
+        <Reference Include="Il2CppDOTween">
+            <HintPath>$(GameAssemblyDir)\Il2CppDOTween.dll</HintPath>
+        </Reference>
+        <Reference Include="Il2CppLeanPool">
+            <HintPath>$(GameAssemblyDir)\Il2CppLeanPool.dll</HintPath>
+        </Reference>
+        <Reference Include="Il2CppNaisuPorter">
+            <HintPath>$(GameAssemblyDir)\Il2CppNaisuPorter.dll</HintPath>
+        </Reference>
+        <Reference Include="Il2CppPhotonUnityNetworking">
+            <HintPath>$(GameAssemblyDir)\Il2CppPhotonUnityNetworking.dll</HintPath>
+        </Reference>
         <Reference Include="MelonLoader">
             <HintPath>$(DotNetAssemblyDir)\MelonLoader.dll</HintPath>
         </Reference>
@@ -72,6 +90,11 @@
         <ProjectReference Include="..\ConnectorLib.JSON\ConnectorLib.JSON.csproj"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Remove="Delegates\Effects\Implementations\wip\HypeTrainEffect.cs" />
+      <None Include="Delegates\Effects\Implementations\wip\HypeTrainEffect.cs" />
+    </ItemGroup>
+
     <PropertyGroup>
         <LangVersion>10.0</LangVersion>
         <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
@@ -79,7 +102,7 @@
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
         <Nullable>disable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-        <ImplicitUsings>enable</ImplicitUsings>
+        <ImplicitUsings>disable</ImplicitUsings> <!-- probably don't want this enabled for an il2cpp mod project since it's going to pull in the wrong versions of a bunch of classes -->
         <PlatformTarget>x64</PlatformTarget>
         <SelfContained>false</SelfContained>
         <Platforms>AnyCPU;x64</Platforms>
