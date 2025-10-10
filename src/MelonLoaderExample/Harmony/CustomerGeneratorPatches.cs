@@ -11,44 +11,32 @@ public static class CustomerGeneratorPatches
 {
     public static void ApplyPatches(HarmonyLib.Harmony harmonyInstance)
     {
-        var originalSpawn = typeof(CustomerGenerator).GetMethod("Spawn", new Type[] { });
-        var postfixSpawn = new HarmonyMethod(typeof(CustomerGeneratorPatches).GetMethod(nameof(SpawnPostfix), BindingFlags.Static | BindingFlags.NonPublic));
+        MethodInfo originalSpawn = typeof(CustomerGenerator).GetMethod("Spawn", new Type[] { });
+        HarmonyMethod postfixSpawn = new(typeof(CustomerGeneratorPatches).GetMethod(nameof(SpawnPostfix), BindingFlags.Static | BindingFlags.NonPublic));
         harmonyInstance.Patch(originalSpawn, null, postfixSpawn);
 
-        var originalSpawnVector = typeof(CustomerGenerator).GetMethod("Spawn", new[] { typeof(Vector3) });
-        var postfixSpawnVector = new HarmonyMethod(typeof(CustomerGeneratorPatches).GetMethod(nameof(SpawnVectorPostfix), BindingFlags.Static | BindingFlags.NonPublic));
+        MethodInfo originalSpawnVector = typeof(CustomerGenerator).GetMethod("Spawn", new[] { typeof(Vector3) });
+        HarmonyMethod postfixSpawnVector = new(typeof(CustomerGeneratorPatches).GetMethod(nameof(SpawnVectorPostfix), BindingFlags.Static | BindingFlags.NonPublic));
         harmonyInstance.Patch(originalSpawnVector, null, postfixSpawnVector);
     }
 
-    private static void SpawnPostfix(Customer __result)
-    {
-        AddNamePlateToCustomer(__result);
-    }
+    private static void SpawnPostfix(Customer __result) => AddNamePlateToCustomer(__result);
 
-    private static void SpawnVectorPostfix(Customer __result)
-    {
-        AddNamePlateToCustomer(__result);
-    }
+    private static void SpawnVectorPostfix(Customer __result) => AddNamePlateToCustomer(__result);
 
     private static void AddNamePlateToCustomer(Customer customer)
     {
         if (customer == null) return;
-
-
-
         if (customer.transform.Find("NamePlate") != null) return;
 
         //string chatName = CustomerChatNames.GetChatName(customer.gameObject.GetInstanceID());
         string chatName = GameStateManager.NameOverride;
-
-
-
+        
         if (string.IsNullOrEmpty(chatName)) return;
-
-
+        
         GameStateManager.NameOverride = "";
 
-        GameObject namePlate = new GameObject("NamePlate");
+        GameObject namePlate = new("NamePlate");
         namePlate.transform.SetParent(customer.transform);
         namePlate.transform.localPosition = Vector3.up * 1.6f;
         namePlate.transform.LookAt(2 * namePlate.transform.position - Camera.main.transform.position);
@@ -61,6 +49,5 @@ public static class CustomerGeneratorPatches
         tmp.fontSize = 1;
 
         //need to make it always face the camera... at least would be nice
-
     }
 }

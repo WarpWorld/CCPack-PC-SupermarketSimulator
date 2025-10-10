@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using CrowdControl;
 using CrowdControl.Delegates.Effects;
+using Il2CppInterop.Runtime;
 using MelonLoader;
 using UnityEngine;
 
@@ -48,6 +50,13 @@ public class CrowdControlMod : MelonMod
     
     private const float GAME_STATUS_UPDATE_INTERVAL = 1f;
     private float m_gameStatusUpdateTimer;
+    
+    private GameObject m_focusWatcher;
+
+    public class FocusWatcher : MonoBehaviour
+    {
+        void OnApplicationFocus(bool hasFocus) => GameStateManager.isFocused = hasFocus;
+    }
 
     /// <summary>
     /// Called when the mod is created.
@@ -67,6 +76,8 @@ public class CrowdControlMod : MelonMod
             Client = new(this);
             EffectLoader = new(this, Client);
             Scheduler = new(this, Client);
+
+            Application.focusChanged += new Action<bool>(OnFocusChanged);
         }
         catch (Exception e)
         {
@@ -89,6 +100,17 @@ public class CrowdControlMod : MelonMod
         }
 
         Scheduler?.Tick();
+    }
+
+    private static void OnFocusChanged(bool hasFocus)
+    {
+        GameStateManager.isFocused = hasFocus;
+    }
+
+    public override void OnApplicationQuit()
+    {
+        try { Client?.Dispose(); }
+        catch { /**/ }
     }
 
     /***** == ONLY USE THIS IF FixedUpdate() ISN'T ALREADY BEING CALLED EVERY TICK == *****/

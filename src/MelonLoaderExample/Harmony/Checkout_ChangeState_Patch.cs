@@ -6,10 +6,8 @@ namespace CrowdControl;
 [HarmonyPatch(typeof(Checkout), "ChangeState")]
 public static class Checkout_ChangeState
 {
-
     public static void Prefix(ref Checkout.State newState)
     {
-
         if (GameStateManager.ForceUseCredit || GameStateManager.ForceUseCash)
         {
             if (newState == Checkout.State.CUSTOMER_HANDING_CASH || newState == Checkout.State.CUSTOMER_HANDING_CARD)
@@ -24,7 +22,5 @@ public static class Checkout_ChangeState
                 if (GameStateManager.ForceUseCredit) newState = Checkout.State.PAYMENT_CREDIT_CARD;
             }
         }
-
-
     }
 }
