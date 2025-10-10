@@ -1,4 +1,3 @@
-using System.Reflection;
 using HarmonyLib;
 using Il2Cpp;
 
@@ -7,13 +6,13 @@ namespace CrowdControl;
 [HarmonyPatch(typeof(Checkout), "TryFinishingCardPayment")]
 public static class TryFinishingCardPayment
 {
-    public static bool Prefix(ref bool __result, ref float posTotal, Checkout __instance)
+    static bool Prefix(ref bool __result, ref float posTotal, Checkout __instance)
     {
         if (!GameStateManager.AllowMischarge) return true;
-        FieldInfo totalPriceField = AccessTools.Field(typeof(Checkout), "m_TotalPrice");
-        if (((float)totalPriceField.GetValue(__instance)) * 1.5 >= posTotal) totalPriceField.SetValue(__instance, posTotal);
+
+        if (__instance.TotalPrice * 1.5f >= posTotal)
+            __instance.TotalPrice = posTotal;
 
         return true;
     }
-
 }

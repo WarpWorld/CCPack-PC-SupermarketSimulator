@@ -16,10 +16,10 @@ public static class HiringTab_OnEnable
             foreach (RestockerItem restockerItem in Object.FindObjectsOfType<RestockerItem>())
                 restockerItem.Start();
             
-            foreach (var cashierItem in Object.FindObjectsOfType<CashierItem>())
+            foreach (CashierItem cashierItem in Object.FindObjectsOfType<CashierItem>())
                 cashierItem.Start();
 
-            foreach (var customerHelperItem in Object.FindObjectsOfType<CustomerHelperItem>())
+            foreach (CustomerHelperItem customerHelperItem in Object.FindObjectsOfType<CustomerHelperItem>())
                 customerHelperItem.Start();
         }
         catch (Exception ex)

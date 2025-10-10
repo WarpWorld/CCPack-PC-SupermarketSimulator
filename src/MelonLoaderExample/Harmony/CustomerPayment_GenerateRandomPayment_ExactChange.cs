@@ -11,19 +11,13 @@ public static class CustomerPayment_GenerateRandomPayment_ExactChange
     {
         if (GameStateManager.ForceRequireChange)
         {
-
             float badLuck = Random.Range(0.0f, 1.0f);
             float randomChange = Random.Range(0.00f, 0.99f);
 
             if (badLuck < 0.1f)
-            {
                 __result = totalPrice + Random.Range(1, 100) + 1000 + randomChange;
-
-            }
             else
-            {
                 __result = totalPrice + Random.Range(1, 100) + randomChange;
-            }
 
             return false;
 

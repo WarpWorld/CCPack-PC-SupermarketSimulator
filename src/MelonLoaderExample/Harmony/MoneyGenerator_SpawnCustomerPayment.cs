@@ -16,9 +16,8 @@ public static class MoneyGenerator_SpawnCustomerPayment
             if (GameStateManager.ForceLargeBills)
             {
                 float size = Random.Range(6.0f, 24.0f);
-                __result.transform.localScale = new Vector3(size, size, size);
+                __result.transform.localScale = new(size, size, size);
             }
         }
     }
-
 }

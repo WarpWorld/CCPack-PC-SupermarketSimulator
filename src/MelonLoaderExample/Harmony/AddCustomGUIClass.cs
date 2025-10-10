@@ -3,11 +3,8 @@ using Il2Cpp;
 
 namespace CrowdControl;
 
-[HarmonyPatch(typeof(PlayerInteraction), "Awake")]
-public static class AddCustomGUIClass
+[HarmonyPatch(typeof(PlayerInteraction), "Update")]
+public static class PlayerInteraction_Update
 {
-    static void Postfix(PlayerInteraction __instance)
-    {
-        if (__instance.gameObject.GetComponent<CustomGUIMessages>() == null) __instance.gameObject.AddComponent<CustomGUIMessages>();
-    }
+    static void Postfix(PlayerInteraction __instance) => CustomGUIMessages.Update();
 }
