@@ -39,9 +39,6 @@
         <Reference Include="Il2Cppmscorlib">
             <HintPath>$(GameAssemblyDir)\Il2Cppmscorlib.dll</HintPath>
         </Reference>
-        <Reference Include="Il2Cppmscorlib">
-            <HintPath>$(GameAssemblyDir)\Il2Cppmscorlib.dll</HintPath>
-        </Reference>
         <Reference Include="Il2CppSystem">
             <HintPath>$(GameAssemblyDir)\Il2CppSystem.dll</HintPath>
         </Reference>
@@ -92,7 +89,10 @@
 
     <ItemGroup>
       <Compile Remove="Delegates\Effects\Implementations\wip\HypeTrainEffect.cs" />
-      <None Include="Delegates\Effects\Implementations\wip\HypeTrainEffect.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Include="Delegates\Effects\Implementations\HypeTrainEffect.cs" />
     </ItemGroup>
 
     <PropertyGroup>

@@ -1,5 +1,4 @@
-using ConnectorLib.JSON;
-using Il2CppPG;
+/*using ConnectorLib.JSON;
 using UnityEngine;
 
 namespace CrowdControl.Delegates.Effects.Implementations;
@@ -58,4 +57,4 @@ public class HypeTrainEffect : Effect
         }
         catch(Exception e){CrowdControlMod.Instance.Logger.Error($"HypeTrain error: {e}"); return EffectResponse.Retry(request.ID);}        
     }
-}
+}*/

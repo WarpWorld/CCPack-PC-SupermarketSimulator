@@ -6,9 +6,9 @@ using Action = Il2CppSystem.Action;
 namespace CrowdControl.Delegates.Effects.Implementations;
 
 [Effect("plushour", "minushour")]
-public class HourAdjustEffects : Effect
+public class TimeChangeEffects : Effect
 {
-    public HourAdjustEffects(CrowdControlMod mod, NetworkClient client) : base(mod, client) { }
+    public TimeChangeEffects(CrowdControlMod mod, NetworkClient client) : base(mod, client) { }
     
     public override EffectResponse Start(EffectRequest request)
     {

@@ -2,7 +2,6 @@ using System;
 using ConnectorLib.JSON;
 using Il2Cpp;
 using UnityEngine;
-using PlayerController = Il2CppPG.PlayerController;
 
 namespace CrowdControl.Delegates.Effects.Implementations;
 
@@ -11,13 +10,13 @@ public class PlayerBoxEffects : BoxEffectBase
 {
     public PlayerBoxEffects(CrowdControlMod mod, NetworkClient client) : base(mod, client) { }
     
-    
     public override EffectResponse Start(EffectRequest request)
     {
         try
         {
             string prod = request.code.Split('_')[1];
-            Transform playerPos = PlayerController.Instance.transform;
+            PlayerController pc = UnityEngine.Object.FindObjectOfType<PlayerController>();
+            Transform playerPos = pc.gameObject.transform;
             ProductSO product = GetProduct(prod);
             if (product==null) return EffectResponse.Failure(request.ID,"Product not found");
             bool empty = request.code.StartsWith("playeremptybox_");
