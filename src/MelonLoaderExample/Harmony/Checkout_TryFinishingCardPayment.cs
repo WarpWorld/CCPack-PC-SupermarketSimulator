@@ -4,7 +4,7 @@ using Il2Cpp;
 namespace CrowdControl;
 
 [HarmonyPatch(typeof(Checkout), "TryFinishingCardPayment")]
-public static class TryFinishingCardPayment
+public static class Checkout_TryFinishingCardPayment
 {
     static bool Prefix(ref bool __result, ref float posTotal, Checkout __instance)
     {

@@ -5,7 +5,7 @@ using Il2CppTMPro;
 namespace CrowdControl;
 
 [HarmonyPatch(typeof(CashRegisterScreen), "CorrectChangeText", MethodType.Setter)]
-public static class CorrectChangeText
+public static class CashRegisterScreen_CorrectChangeText
 {
     static bool Prefix(CashRegisterScreen __instance)
     {

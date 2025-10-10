@@ -1,7 +1,6 @@
 using System;
 using ConnectorLib.JSON;
 using Il2Cpp;
-using Il2CppPG;
 
 namespace CrowdControl.Delegates.Effects.Implementations;
 

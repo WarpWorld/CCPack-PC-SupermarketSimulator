@@ -1,10 +1,7 @@
 using System;
 using ConnectorLib.JSON;
 using Il2Cpp;
-using Il2CppNaisuPorter.CommonScripts;
-using Il2CppPG;
 using UnityEngine;
-using PlayerController = Il2CppPG.PlayerController;
 using Random = System.Random;
 
 namespace CrowdControl.Delegates.Effects.Implementations;
@@ -22,7 +19,8 @@ public class TeleportEffects : Effect
             if (player != null && player.InInteraction && (GameStateManager.currentHeldItem == "COMPUTER" || GameStateManager.currentHeldItem == "CHECKOUT"))
                 return EffectResponse.Retry(request.ID);
 
-            Transform pcTransform = PlayerController.Instance.transform;
+            PlayerController pc = UnityEngine.Object.FindObjectOfType<PlayerController>();
+            Transform pcTransform = pc.gameObject.transform;
             string location = request.code.Split('_')[1];
             Vector3 teleportPosition = pcTransform.position;
             switch (location)

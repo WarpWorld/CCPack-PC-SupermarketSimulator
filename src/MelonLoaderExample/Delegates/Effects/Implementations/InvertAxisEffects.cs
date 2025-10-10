@@ -1,7 +1,6 @@
-using System;
+/*using System;
 using ConnectorLib.JSON;
 using Il2Cpp;
-using Il2CppPG;
 
 namespace CrowdControl.Delegates.Effects.Implementations;
 
@@ -56,4 +55,4 @@ public class InvertAxisEffects : Effect
             return EffectResponse.Retry(request.ID);
         }
     }
-}
+}*/
