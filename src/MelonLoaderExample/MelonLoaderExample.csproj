@@ -4,6 +4,7 @@
         <!-- ALWAYS SET THESE FOR A NEW GAME! -->
         <TargetFramework>net6.0</TargetFramework>
         <GameBaseDir>C:\Program Files (x86)\Steam\steamapps\common\Supermarket Simulator</GameBaseDir>
+        <!--<GameBaseDir>D:\SteamLibrary\steamapps\common\Supermarket Simulator</GameBaseDir>-->
         <GameAssemblyDir>$(GameBaseDir)\MelonLoader\Il2CppAssemblies</GameAssemblyDir>
         <DotNetAssemblyDir>$(GameBaseDir)\MelonLoader\net6</DotNetAssemblyDir>
         <!--========================================-->
