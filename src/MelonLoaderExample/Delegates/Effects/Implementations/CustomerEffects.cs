@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using ConnectorLib.JSON;
 using Il2Cpp;
 using Il2CppDG.Tweening;
@@ -137,9 +136,8 @@ public class CustomerEffects : Effect
 
                 if (shop && check != null)
                 {
-                    FieldInfo fi = typeof(Checkout).GetField("m_Customers", BindingFlags.Instance | BindingFlags.NonPublic);
-                    Il2CppSystem.Collections.Generic.List<Customer> list = (Il2CppSystem.Collections.Generic.List<Customer>)fi.GetValue(check);
-                    if (list != null && list.Count > 0 && list[0].GetInstanceID() != c.GetInstanceID())
+                    Il2CppSystem.Collections.Generic.List<Customer> list = check.m_Customers;
+                    if (list is { Count: > 0 } && list[0].GetInstanceID() != c.GetInstanceID())
                     {
                         c.OnDisable();
                         check.Unsubscribe(c);
@@ -154,29 +152,23 @@ public class CustomerEffects : Effect
         return despawned ? EffectResponse.Success(req.ID) : EffectResponse.Retry(req.ID);
     }
 
-    private EffectResponse SpeechAll(EffectRequest req, CustomerSpeechType? theftType, string phrase)
+    private EffectResponse SpeechAll(EffectRequest req, CustomerSpeechType? speechType, string phrase)
     {
         if (!StoreStatus.Instance.IsOpen) return EffectResponse.Retry(req.ID);
         Il2CppSystem.Collections.Generic.List<Customer> custList = CustomerManager.Instance.m_ActiveCustomers;
         bool found = false;
         foreach (Customer c in custList)
         {
-            bool shop = c.m_StartedShopping;
-            if (!shop) shop = c.m_InCheckout;
-            if (shop)
-            {
-                found = true;
-                break;
-            }
+            if (!c.m_StartedShopping && !c.m_InCheckout) continue;
+            found = true;
+            break;
         }
 
         if (!found) return EffectResponse.Retry(req.ID);
         foreach (Customer c in custList)
         {
-            bool shop = c.m_StartedShopping;
-            if (!shop) shop = c.m_InCheckout;
-            if (!shop) continue;
-            if (theftType.HasValue) WarningSystem.Instance.SpawnCustomerSpeech(CustomerSpeechType.THIS_IS_THEFT, c.transform, Array.Empty<string>());
+            if (!(c.m_StartedShopping || c.m_InCheckout)) continue;
+            if (speechType.HasValue) WarningSystem.Instance.SpawnCustomerSpeech(speechType.Value, c.transform, Array.Empty<string>());
             else
             {
                 LocalizationEntry localizationEntry = CustomerSpeechType.THIS_IS_THEFT.LocalizationEntry();

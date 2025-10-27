@@ -1,4 +1,4 @@
-/*using System;
+using System;
 using ConnectorLib.JSON;
 using Il2Cpp;
 
@@ -16,13 +16,10 @@ public class InvertAxisEffects : Effect
             SaveManager saveManager = SaveManager.Instance;
             SettingsMenuManager settingsMenuManager = UnityEngine.Object.FindObjectOfType<SettingsMenuManager>();
             if (request.code == "invertx")
-            {
                 settingsMenuManager.InvertXAxis(!saveManager.Settings.InvertXAxis);
-            }
             else
-            {
                 settingsMenuManager.InvertYAxis(!saveManager.Settings.InvertYAxis);
-            }
+
             return EffectResponse.Success(request.ID);
         }
         catch (Exception e)
@@ -40,13 +37,10 @@ public class InvertAxisEffects : Effect
             SettingsMenuManager settingsMenuManager = UnityEngine.Object.FindObjectOfType<SettingsMenuManager>();
 
             if (request.code == "invertx")
-            {
                 settingsMenuManager.InvertXAxis(!saveManager.Settings.InvertXAxis);
-            }
             else
-            {
                 settingsMenuManager.InvertYAxis(!saveManager.Settings.InvertYAxis);
-            }
+
             return EffectResponse.Finished(request.ID);
         }
         catch (Exception e)
@@ -55,4 +49,4 @@ public class InvertAxisEffects : Effect
             return EffectResponse.Retry(request.ID);
         }
     }
-}*/
+}
