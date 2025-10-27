@@ -1,4 +1,3 @@
-using System.Reflection;
 using HarmonyLib;
 using Il2Cpp;
 using Il2CppTMPro;
@@ -7,24 +6,9 @@ using Type = System.Type;
 
 namespace CrowdControl;
 
-public static class CustomerGeneratorPatches
+internal static class CustomerGeneratorPatches
 {
-    public static void ApplyPatches(HarmonyLib.Harmony harmonyInstance)
-    {
-        MethodInfo originalSpawn = typeof(CustomerGenerator).GetMethod("Spawn", new Type[] { });
-        HarmonyMethod postfixSpawn = new(typeof(CustomerGeneratorPatches).GetMethod(nameof(SpawnPostfix), BindingFlags.Static | BindingFlags.NonPublic));
-        harmonyInstance.Patch(originalSpawn, null, postfixSpawn);
-
-        MethodInfo originalSpawnVector = typeof(CustomerGenerator).GetMethod("Spawn", new[] { typeof(Vector3) });
-        HarmonyMethod postfixSpawnVector = new(typeof(CustomerGeneratorPatches).GetMethod(nameof(SpawnVectorPostfix), BindingFlags.Static | BindingFlags.NonPublic));
-        harmonyInstance.Patch(originalSpawnVector, null, postfixSpawnVector);
-    }
-
-    private static void SpawnPostfix(Customer __result) => AddNamePlateToCustomer(__result);
-
-    private static void SpawnVectorPostfix(Customer __result) => AddNamePlateToCustomer(__result);
-
-    private static void AddNamePlateToCustomer(Customer customer)
+    public static void AddNamePlateToCustomer(Customer customer)
     {
         if (customer == null) return;
         if (customer.transform.Find("NamePlate") != null) return;
@@ -50,4 +34,16 @@ public static class CustomerGeneratorPatches
 
         //need to make it always face the camera... at least would be nice
     }
+}
+
+[HarmonyPatch(typeof(CustomerGenerator), "Spawn", typeof(bool))]
+public static class CustomerGenerator_Spawn_Patch
+{
+    public static void Prefix(Customer __instance) => CustomerGeneratorPatches.AddNamePlateToCustomer(__instance);
+}
+
+[HarmonyPatch(typeof(CustomerGenerator), "Spawn", typeof(Vector3))]
+public static class CustomerGenerator_Spawn_Vector_Patch
+{
+    public static void Prefix(Customer __instance) => CustomerGeneratorPatches.AddNamePlateToCustomer(__instance);
 }

@@ -14,7 +14,8 @@ public class LanguageEffects : Effect
     {
         try
         {
-            SaveManager save = SaveManager.Instance; if (save==null) return EffectResponse.Retry(request.ID);
+            SaveManager save = SaveManager.Instance;
+            if (save == null) return EffectResponse.Retry(request.ID);
             int current = save.Settings.LanguageSetting;
             int newLang = current;
             switch(request.code)
@@ -36,14 +37,26 @@ public class LanguageEffects : Effect
             _changed = true;
             return EffectResponse.Success(request.ID);
         }
-        catch(Exception e){CrowdControlMod.Instance.Logger.Error($"Language error: {e}"); return EffectResponse.Retry(request.ID);}        
+        catch (Exception e)
+        {
+            CrowdControlMod.Instance.Logger.Error($"Error setting language: {e}");
+            return EffectResponse.Retry(request.ID);
+        }
     }
 
     public override EffectResponse Stop(EffectRequest request)
     {
         if (_changed)
         {
-            try{ SaveManager save = SaveManager.Instance; save.Settings.LanguageSetting = GameStateManager.OrgLanguage; }catch{}
+            try
+            {
+                SaveManager save = SaveManager.Instance;
+                save.Settings.LanguageSetting = GameStateManager.OrgLanguage;
+            }
+            catch (Exception e)
+            {
+                CrowdControlMod.Instance.Logger.Error($"Error restoring language: {e}");
+            }
         }
         return EffectResponse.Finished(request.ID);
     }

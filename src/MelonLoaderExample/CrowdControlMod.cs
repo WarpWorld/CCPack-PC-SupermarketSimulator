@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections;
 using CrowdControl;
 using CrowdControl.Delegates.Effects;
-using Il2CppInterop.Runtime;
 using MelonLoader;
 using UnityEngine;
 
@@ -22,8 +20,8 @@ public class CrowdControlMod : MelonMod
     public const string MOD_NAME = "Crowd Control";
     public const string MOD_VERSION = "1.0.3";
     public const string MOD_LINK = "https://crowdcontrol.live/";
-    
-    public static float DeltaTime => Time.fixedDeltaTime; //change this to Time.deltaTime if using Update instead of FixedUpdate
+
+    public static float DeltaTime => Time.fixedDeltaTime / Time.timeScale;
 
     private readonly HarmonyLib.Harmony harmony = new(MOD_GUID);
 

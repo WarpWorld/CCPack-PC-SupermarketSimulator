@@ -18,7 +18,7 @@ public class PlayerBoxEffects : BoxEffectBase
             PlayerController pc = UnityEngine.Object.FindObjectOfType<PlayerController>();
             Transform playerPos = pc.gameObject.transform;
             ProductSO product = GetProduct(prod);
-            if (product==null) return EffectResponse.Failure(request.ID,"Product not found");
+            if (product == null) return EffectResponse.Failure(request.ID, "Product not found");
             bool empty = request.code.StartsWith("playeremptybox_");
             Box box = BoxGenerator.Instance.SpawnBox(product, playerPos.position + Vector3.up * DeliveryManager.Instance.space * 2.0f, Quaternion.identity, null);
             if (!empty) box.Setup(product.ID, true);

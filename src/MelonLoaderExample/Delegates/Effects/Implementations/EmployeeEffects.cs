@@ -1,5 +1,4 @@
 using System;
-using System.Reflection;
 using ConnectorLib.JSON;
 using Il2Cpp;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
@@ -57,14 +56,7 @@ public class EmployeeEffects : Effect
         else
         {
             foreach (CashierItem ci in cashierItems)
-            {
-                PropertyInfo hiredProp = ci.GetType().GetProperty("Hired", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-                if (hiredProp != null && !(bool)hiredProp.GetValue(ci))
-                {
-                    ci.Hire();
-                    break;
-                }
-            }
+                if (!ci.Hired) ci.Hire();
         }
 
         return EffectResponse.Success(req.ID);
@@ -76,7 +68,7 @@ public class EmployeeEffects : Effect
         if (em.CashiersData == null || em.CashiersData.Count < 1) return EffectResponse.Failure(req.ID, "No cashiers to fire.");
         Il2CppArrayBase<CashierItem> items = Object.FindObjectsOfType<CashierItem>();
         EmployeeManager.Instance.FireCashier(em.CashiersData[0]);
-        foreach (CashierItem i in items) Call(i, "Start");
+        foreach (CashierItem it in items) it.Start();
         return EffectResponse.Success(req.ID);
     }
 
@@ -93,14 +85,8 @@ public class EmployeeEffects : Effect
         else
         {
             foreach (RestockerItem it in items)
-            {
-                PropertyInfo hiredProp = it.GetType().GetProperty("Hired", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-                if (hiredProp != null && !(bool)hiredProp.GetValue(it))
-                {
+                if (!it.Hired)
                     it.Hire();
-                    break;
-                }
-            }
         }
 
         return EffectResponse.Success(req.ID);
@@ -113,7 +99,7 @@ public class EmployeeEffects : Effect
         if (owned == null || owned.Count == 0) return EffectResponse.Failure(req.ID, "No Restockers to fire.");
         Il2CppArrayBase<RestockerItem> items = Object.FindObjectsOfType<RestockerItem>();
         EmployeeManager.Instance.FireRestocker(owned[0]);
-        foreach (RestockerItem it in items) Call(it, "Start");
+        foreach (RestockerItem it in items) it.Start();
         return EffectResponse.Success(req.ID);
     }
 
@@ -138,14 +124,8 @@ public class EmployeeEffects : Effect
         else
         {
             foreach (CustomerHelperItem it in items)
-            {
-                PropertyInfo hiredProp = it.GetType().GetProperty("Hired", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-                if (hiredProp != null && !(bool)hiredProp.GetValue(it))
-                {
+                if (!it.Hired)
                     it.Hire();
-                    break;
-                }
-            }
         }
 
         return EffectResponse.Success(req.ID);
@@ -157,12 +137,7 @@ public class EmployeeEffects : Effect
         if (em.ActiveCustomerHelpers == null || em.ActiveCustomerHelpers.Count < 1) return EffectResponse.Failure(req.ID, "No customer helpers to fire.");
         Il2CppArrayBase<CustomerHelperItem> items = Object.FindObjectsOfType<CustomerHelperItem>();
         EmployeeManager.Instance.FireCustomerHelper(EmployeeManager.Instance.CashiersData[0]);
-        foreach (CustomerHelperItem it in items) Call(it, "Start");
+        foreach (CustomerHelperItem it in items) it.Start();
         return EffectResponse.Success(req.ID);
-    }
-
-    private void Call(object obj, string name)
-    {
-        obj.GetType().GetMethod(name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)?.Invoke(obj, null);
     }
 }
