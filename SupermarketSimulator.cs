@@ -40,8 +40,7 @@ public class SupermarketSimulator : SimpleTCPPack<SimpleTCPServerConnector>
         new("Set Language to Portuguese (Brazil)", "setlanguage_brazil") { Description = "Set Language to Portuguese (Brazil).", Duration = 60, Category = "Game Language", Alignment = (Alignment)Morality.Neutral + Orderliness.Chaotic },
         new("Set Language to Dutch", "setlanguage_nederlands") { Description = "Set Language to Dutch.", Duration = 60, Category = "Game Language", Alignment = (Alignment)Morality.Neutral + Orderliness.Chaotic },
         new("Set Language to Turkey", "setlanguage_turkce") { Description = "Set Language to Turkey.", Duration = 60, Category = "Game Language", Alignment = (Alignment)Morality.Neutral + Orderliness.Chaotic },
-
-
+        
         new("Advance Time One Hour", "plushour") { Description = "Advance time One Hour", Category = "Time", Alignment = (Alignment)Morality.Neutral + Orderliness.Controlled /* TODO: Impact may depend on current schedule */ },
         new("Rollback Time One Hour", "minushour") { Description = "Rollback time One Hour", Category = "Time", Alignment = (Alignment)Morality.Neutral + Orderliness.Controlled /* TODO: Impact may depend on current schedule */ },
 
