@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using ConnectorLib.SimpleTCP;
 using CrowdControl.Common;
 using ConnectorType = CrowdControl.Common.ConnectorType;
@@ -9,6 +9,8 @@ public class SupermarketSimulator : SimpleTCPPack<SimpleTCPServerConnector>
 {
     public override string Host => "127.0.0.1";
     public override ushort Port => 51337;
+
+    protected override SITimeSpan GameStateCheckInterval { get; } = 0.5f;
     [SuppressMessage("CrowdControl.PackMetadata", "CC1009:Message Format Property")]
     public override ISimpleTCPPack.MessageFormatType MessageFormat => ISimpleTCPPack.MessageFormatType.CrowdControlLegacy;
     public SupermarketSimulator(UserRecord player, Func<CrowdControlBlock, bool> responseHandler, Action<object> statusUpdateHandler) : base(player, responseHandler, statusUpdateHandler) { }
