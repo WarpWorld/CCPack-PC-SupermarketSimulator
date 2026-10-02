@@ -1,5 +1,13 @@
 # Supermarket Simulator
 
+## Pack metadata
+
+- **Game:** Supermarket Simulator
+- **Crowd Control game ID:** `SupermarketSimulator`
+- **Connector:** `SimpleTCPServerConnector`
+- **Port:** `51337`
+- **Mod frameworks:** BepInEx; MelonLoader
+
 This repository contains the Crowd Control desktop pack, an archived BepInEx
 payload (`mod\SupermarketSimulator-CC.zip`), and a newer
 MelonLoader-oriented source project in `src\MelonLoaderExample`. These are
